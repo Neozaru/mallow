@@ -357,7 +357,7 @@ const [krakenBalances, setKrakenBalances] = useState<YieldPosition[]>([])
       balanceSortingFn
     },
     aggregationFns: {
-      balanceAggregation: (leafRows) => {
+      balanceAggregation: (columnId, leafRows, childRows) => {
         const res = sumBy(leafRows, leafRow => leafRow.getUniqueValues('balance')[0].balanceUsd)
         return {
           balanceUsd: res

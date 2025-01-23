@@ -1,3 +1,4 @@
+[mallow.money](https://mallow.money)
 
 Mallow is a stablecoin-centric portfolio tracker for web3 wallets and platforms.
 

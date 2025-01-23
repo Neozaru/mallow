@@ -3,7 +3,7 @@ import { useReadContracts } from 'wagmi';
 import { erc20Abi } from 'viem';
 
 export function useTokenBalances(accountAddresses: string[], tokenConfigs: {address: string, chainId: number}[]) {
-  const [contractReadCalls, setContractReadCalls] = useState({ contracts: [] })
+  const [contractReadCalls, setContractReadCalls] = useState({ batchSize: 512, contracts: [] })
   const { data, isLoading } = useReadContracts(contractReadCalls);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export function useTokenBalances(accountAddresses: string[], tokenConfigs: {addr
         functionName: 'balanceOf',
         args: [accountAddress],
         chainId
-      }));
+      }))
     })
     setContractReadCalls({
       batchSize: 512, // 1024 default value fails with Alchemy when tracking too many addresses

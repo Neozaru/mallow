@@ -91,9 +91,8 @@ function DashboardComponent() {
 
   const [onChainAccounts, setOnChainAccounts] = useState([])
   const manualPositions = SettingsService.getSettings().manualPositions
-  const onChainAccountsFromSettings = SettingsService.getSettings().onChainAccounts
 
-  const isAdvanced = onChainAccountsFromSettings.length > 0 || manualPositions.length > 0
+  const isAdvanced = SettingsService.getSettings().onChainAccounts.length > 0 || manualPositions.length > 0
 
   const { connectors, connect } = useConnect()
   const { address } = useAccount()
@@ -111,7 +110,7 @@ function DashboardComponent() {
   useEffect(() => {
     if (!params?.address) {
       if (isAdvanced) {
-        setOnChainAccounts(onChainAccountsFromSettings)
+        setOnChainAccounts(SettingsService.getSettings().onChainAccounts)
       }
       return
     } 
@@ -120,7 +119,7 @@ function DashboardComponent() {
     } else {
       router.push(`/dashboard`)
     }
-  }, [params?.address, isAdvanced, onChainAccountsFromSettings, router])
+  }, [params?.address, isAdvanced, router])
 
   const accountAddresses = useMemo(() => {
     return map(onChainAccounts, 'address')
