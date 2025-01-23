@@ -28,7 +28,7 @@ const contractCalls = [{
 
 export function useSDaiData() {
   const [sDaiData, setSDaiData] = useState({ apy: 0, rho: 0, chi: 0 })
-  const { data, error, isLoading } = useReadContracts({
+  const { data, error } = useReadContracts({
     contracts: contractCalls
   })
   

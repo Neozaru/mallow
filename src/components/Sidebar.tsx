@@ -5,13 +5,6 @@ import { usePathname } from "next/navigation";
 import styled from "styled-components";
 import { DashboardIcon, ExploreIcon, SettingsIcon } from "./MenuIcons"; // Import icons
 
-const Title = styled.div`
-  display: flex;
-  align-items: center;
-  text-align: center;
-  font-size: 24px;
-  padding: 20px;
-`
 const SidebarContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -24,12 +17,12 @@ const SidebarContainer = styled.div`
   @media (max-width: 768px) {
     display: none; /* Hide sidebar on mobile */
   }
-`;
+`
 
 const SidebarList = styled.ul`
   list-style-type: none;
   padding: 0;
-`;
+`
 
 const SidebarItem = styled.li<{ $iscurrentpage: boolean | undefined }>`
   padding: 15px;
@@ -40,20 +33,19 @@ const SidebarItem = styled.li<{ $iscurrentpage: boolean | undefined }>`
   &:hover {
     background-color:  #8d54b2;
   }
-`;
+`
 
 const Icon = styled.span`
   margin-right: 10px;
-`;
+`
 
 const Logo = styled.img`
   margin: 20px;
   height: 40px;
-`;
+`
 
 const Sidebar: React.FC = () => {
-  const pathname = usePathname();
-
+  const pathname = usePathname()
   return (
     <SidebarContainer>
       <Link href="/" passHref>
@@ -86,7 +78,7 @@ const Sidebar: React.FC = () => {
         </Link>
       </SidebarList>
     </SidebarContainer>
-  );
-};
+  )
+}
 
 export default Sidebar;

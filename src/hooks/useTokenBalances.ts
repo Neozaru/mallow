@@ -4,7 +4,7 @@ import { erc20Abi } from 'viem';
 
 export function useTokenBalances(accountAddresses: string[], tokenConfigs: {address: string, chainId: number}[]) {
   const [contractReadCalls, setContractReadCalls] = useState({ contracts: [] })
-  const { data, error, isLoading } = useReadContracts(contractReadCalls);
+  const { data, isLoading } = useReadContracts(contractReadCalls);
 
   useEffect(() => {
     if (!accountAddresses || !tokenConfigs) {

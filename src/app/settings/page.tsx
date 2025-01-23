@@ -94,8 +94,8 @@ const Settings = () => {
     )
   }, []);
 
-  function onlyUnique(value, index, array) {
-    return array.indexOf(value) === index;
+  function onlyUnique(value: unknown, index: number, array: unknown[]) {
+    return array.indexOf(value) === index
   }  
 
   const saveSettings = (e: React.FormEvent) => {

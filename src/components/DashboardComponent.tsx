@@ -3,16 +3,14 @@
 import AllBalances from '@/components/AllBalances';
 import Layout from '@/components/Layout';
 import SettingsService from '@/lib/settingsService';
-import { wagmiconfig } from '@/wagmiconfig';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { map } from 'lodash';
 import Link from 'next/link';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
 import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { useAccount, useConnect, useDisconnect, WagmiProvider } from 'wagmi';
+import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import EthereumAddress from './EthereumAddress';
 import dynamic from 'next/dynamic';
 
@@ -77,10 +75,6 @@ const OrText = styled.div`
   font-size: 16px;
 `;
 
-const SettingsLink = styled.span`
-  text-decoration: underline;
-`;
-
 const LogoWrapper = styled.div`
   text-align: center;
 `;
@@ -95,7 +89,6 @@ function DashboardComponent() {
   const params = useParams<{ address: string }>()
   const router = useRouter()
 
-  const [isLoading, setIsLoading] = useState(true)
   const [onChainAccounts, setOnChainAccounts] = useState([])
   const manualPositions = SettingsService.getSettings().manualPositions
   const onChainAccountsFromSettings = SettingsService.getSettings().onChainAccounts
@@ -124,12 +117,10 @@ function DashboardComponent() {
     } 
     if (params.address.startsWith('0x') && params.address.length === 42) {
       setOnChainAccounts([{ address: params.address, chainType: 'evm'}])
-      setIsLoading(false)
     } else {
       router.push(`/dashboard`)
     }
-    setIsLoading(false)
-  }, [params?.address, isAdvanced])
+  }, [params?.address, isAdvanced, onChainAccountsFromSettings, router])
 
   const accountAddresses = useMemo(() => {
     return map(onChainAccounts, 'address')
@@ -166,7 +157,7 @@ function DashboardComponent() {
             <Logo src='/mallowLogoWhiteTransparentBackground.svg' alt=''></Logo>
           </LogoWrapper>
           {metamaskConnector && <div>
-            <Button onClick={e => connect({ connector: metamaskConnector })}>🦊 Connect Metamask</Button>
+            <Button onClick={() => connect({ connector: metamaskConnector })}>🦊 Connect Metamask</Button>
             <OrText>or</OrText>
           </div>}
           <Label htmlFor="watchAddress">watch any address</Label>
@@ -178,9 +169,9 @@ function DashboardComponent() {
             />
           </ConnectOrWatchWrapper>}
           {/* Watching Connected Wallet */}
-          {onChainAccounts.length === 1 && !isAdvanced && address && <WatchingStatus><div>🦊 Currently watching connected wallet <EthereumAddress address={onChainAccounts[0].address}/></div><Button onClick={(e) => disconnectAndStopWatching()}>Disconnect</Button></WatchingStatus>}
+          {onChainAccounts.length === 1 && !isAdvanced && address && <WatchingStatus><div>🦊 Currently watching connected wallet <EthereumAddress address={onChainAccounts[0].address}/></div><Button onClick={() => disconnectAndStopWatching()}>Disconnect</Button></WatchingStatus>}
           {/* Watching Query Address */}
-          {onChainAccounts.length === 1 && params?.address && <WatchingStatus><div>👀 Currently watching <EthereumAddress address={onChainAccounts[0].address}/></div><Button onClick={(e) => stopWatchingAddress()}>Stop watching</Button></WatchingStatus>}
+          {onChainAccounts.length === 1 && params?.address && <WatchingStatus><div>👀 Currently watching <EthereumAddress address={onChainAccounts[0].address}/></div><Button onClick={() => stopWatchingAddress()}>Stop watching</Button></WatchingStatus>}
           {/* Watching Address(es) as Set in Settings */}
           {isAdvanced && !params?.address && <WatchingStatus>🕵️ Watching <Link href='/settings'>{onChainAccounts.length} addresses from Settings</Link></WatchingStatus>}
         </WelcomeActionsWrapper>

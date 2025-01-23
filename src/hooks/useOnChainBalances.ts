@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useAaveBalances } from './useAaveBalances'
 import { useMorphoBalances } from './useMorphoBalances'
 import { useBeefyBalances } from './useBeefyBalances'

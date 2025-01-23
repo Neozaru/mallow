@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from 'axios';
 // Courtesy of ChatGPT
 
 // Store data here
-const axiosGetCache: { [url: string]: { data: any; timestamp: number } } = {};
+const axiosGetCache = {};
 
 // Function with caching and retry logic
 export const axiosGetCached = async <T>(
@@ -32,7 +32,7 @@ export const axiosGetCached = async <T>(
       // Cache the response
       axiosGetCache[url] = { data: response, timestamp: currentTime };
       return response; // Return successful response
-    } catch (error: any) {
+    } catch (error) {
       if (error.response?.status === 429 && attempt < maxRetries) {
         attempt++;
         console.warn(`Attempt ${attempt} failed. Retrying in ${waitTime} ms...`);

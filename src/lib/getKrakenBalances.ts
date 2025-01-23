@@ -1,5 +1,5 @@
 import stablecoins from '@/constants/stablecoins';
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import SettingsService from './settingsService';
 import { createHash, createHmac } from 'crypto';
 import { stringify } from 'querystring';
@@ -21,8 +21,8 @@ class RequestQueue {
 // Create a global instance of the queue
 const requestQueue = new RequestQueue()
 
-const postWithQueue = <T = any>(url: string, data: any, extra: any = null): Promise<AxiosResponse<T>> => {
-  return requestQueue.add(() => axios.post<T>(url, data, extra))
+const postWithQueue = (url: string, data, extra = null) => {
+  return requestQueue.add(() => axios.pos(url, data, extra))
 }
 
 function getKrakenSignature(endpoint, data, secret) {
@@ -77,7 +77,7 @@ export async function getKrakenBalances(): Promise<YieldPosition[]> {
       ...stablecoins,
       ...stablecoins.flatMap(symbol => [`${symbol}.F`, `${symbol}.M`])
     ]
-    let balances = []
+    const balances = []
     Object.entries(response.data.result)
       .map(([asset, balance]) => {
         if (!stablecoinsWithSuffixes.includes(asset)) {

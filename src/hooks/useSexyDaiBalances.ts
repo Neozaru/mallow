@@ -19,7 +19,7 @@ export function useSexyDaiBalances(accountAddresses: string[]) {
   const { apy } = useSDaiData()
 
   const [assetConvertcontractReadCalls, setAssetConvertContractReadCalls] = useState({ contracts: [] })
-  const { data: assetBalanceData, error, isLoading: isLoadingReadContracts } = useReadContracts(assetConvertcontractReadCalls);
+  const { data: assetBalanceData, isLoading: isLoadingReadContracts } = useReadContracts(assetConvertcontractReadCalls);
 
   useEffect(() => {
     if (isLoadingBalances) {

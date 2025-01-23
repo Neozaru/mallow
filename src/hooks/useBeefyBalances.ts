@@ -101,5 +101,5 @@ export function useBeefyBalances(accountAddresses: string[]) {
     }) || []
     const balances = [...beefyBalancesVaults, ...beefyBalancesBoosts].filter(item => item !== null)
     return { balances, isLoading: false }
-  }, [balancesVaults, balancesBoosts, apys])
+  }, [balancesVaults, balancesBoosts, vaults, boosts, apys])
 }

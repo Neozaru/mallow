@@ -15,7 +15,7 @@ import SettingsService from '@/lib/settingsService';
 
 type AllBalancesProps = {
   accountAddresses: Array<string> | [];
-  manualPositions: Array<Object> | [];
+  manualPositions: Array<object> | [];
 };
 
 const formatUsdBalance = (balance: number, minimumFractionDigits = 0, maximumFractionDigits = 0)  => {
@@ -70,7 +70,11 @@ const TableRow = styled.div`
   }
 `;
 
-const TableCell = styled.div`
+interface CustomAlignProp {
+  align?: 'left' | 'center' | 'right';  // Define the possible values for `align`
+}
+
+const TableCell = styled.div<CustomAlignProp>`
   flex: 1;
   padding: 5px 5px;
   text-align: ${({ align }) => align || 'left'};
@@ -80,23 +84,12 @@ const TableCell = styled.div`
     flex: 2;
   }
 `;
-
-const SortingButton = styled.button`
-  background: transparent;
-  border: none;
-  color: inherit;
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
 ///
 
 const ComponentWrapper = styled.div`
   background-color: #1e093f;
   color: white;
-`
+`;
 
 const ComponentHeader = styled.div`
   display: flex;
@@ -114,13 +107,6 @@ const Summary = styled.div`
   justify-content: space-between;
 
   color: #fff;
-`;
-
-const Menu = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding-right: 20px;
 `;
 
 const Total = styled.div`
@@ -169,7 +155,7 @@ const NothingToShow = styled.div`
 
 const columnHelper = createColumnHelper()
 
-const balanceSortingFn: SortingFn<TData> = (rowA: Row<TData>, rowB: Row<TData>, columnId: string) => {
+const balanceSortingFn = (rowA, rowB) => {
   return rowA.original.balanceUsd > rowB.original.balanceUsd
   ? 1
   : -1
@@ -371,7 +357,7 @@ const [krakenBalances, setKrakenBalances] = useState<YieldPosition[]>([])
       balanceSortingFn
     },
     aggregationFns: {
-      balanceAggregation: (columnId, leafRows, childRows) => {
+      balanceAggregation: (leafRows) => {
         const res = sumBy(leafRows, leafRow => leafRow.getUniqueValues('balance')[0].balanceUsd)
         return {
           balanceUsd: res

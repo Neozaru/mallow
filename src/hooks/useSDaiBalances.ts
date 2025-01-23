@@ -36,6 +36,6 @@ export function useSDaiBalances(accountAddress: string) {
         type: 'dapp'
       }
     })
-  }, [apy, dsrBalances])
-  return dsrBalancesRet
+  }, [apy, dsrBalances, accountAddress, chi])
+  return { balances: dsrBalancesRet, isLoading }
 }
