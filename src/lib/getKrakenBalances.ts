@@ -22,7 +22,7 @@ class RequestQueue {
 const requestQueue = new RequestQueue()
 
 const postWithQueue = (url: string, data, extra = null) => {
-  return requestQueue.add(() => axios.pos(url, data, extra))
+  return requestQueue.add(() => axios.post(url, data, extra))
 }
 
 function getKrakenSignature(endpoint, data, secret) {
