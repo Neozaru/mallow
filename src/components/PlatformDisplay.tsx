@@ -26,7 +26,7 @@ const chainIcons = {
   100: "https://cryptologos.cc/logos/gnosis-gno-gno-logo.png",
   10: "https://cryptologos.cc/logos/optimism-ethereum-op-logo.png",
   42161: "https://cryptologos.cc/logos/arbitrum-arb-logo.png",
-  324: "https://cryptologos.cc/logos/zksync-logo.png",
+  324: "https://s2.coinmarketcap.com/static/img/coins/200x200/24091.png",
   534352: "https://scroll.io/_next/static/media/Scroll_Logomark.ad5d0348.svg",
   8453: "https://www.base.org/document/apple-touch-icon.png"
 }
@@ -120,10 +120,12 @@ interface PlatformParameters {
   symbol: string;
   pool: string;
   chainId: number | undefined;
+  type: string | undefined;
 }
 
 const PlatformDisplay = (params: PlatformParameters) => {
-  const { platform, symbol, pool, chainId } = params
+  const { platform, symbol, pool, chainId, type } = params
+  const isSpot = type === 'spot' 
   const platformIconUrl = platformIcons[platform] || `https://placehold.co/32x32?text=${platform}`;
   const tokenIconUrl = tokenIcons[symbol] || `https://placehold.co/32x32?text=${symbol}`;
   const platformName = platformNames[platform] || platform || 'Unknown Platform';
@@ -136,7 +138,7 @@ const PlatformDisplay = (params: PlatformParameters) => {
     <PlatformWrapper>
       <TokenWrapper>
         <TokenIcon src={tokenIconUrl} alt={symbol} />
-        <PlatformIcon src={platformIconUrl} alt={platform} />
+        {!isSpot && <PlatformIcon src={platformIconUrl} alt={platform} />}
       </TokenWrapper>
       <PlatformInfo>
         <PlatformNameWrapper>

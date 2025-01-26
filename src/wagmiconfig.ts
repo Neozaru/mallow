@@ -1,10 +1,10 @@
 "use client";
 
 import { http, createConfig } from 'wagmi'
-import { arbitrum, base, gnosis, mainnet, optimism, scroll, zksync } from 'wagmi/chains'
+import { arbitrum, base, gnosis, mainnet, optimism, scroll, zksync, polygon } from 'wagmi/chains'
 
 export const wagmiconfig = createConfig({
-  chains: [mainnet, optimism, arbitrum, scroll, base, zksync, gnosis],
+  chains: [mainnet, optimism, arbitrum, scroll, base, zksync, gnosis, polygon],
   transports: {
     [mainnet.id]: http(process.env.NEXT_PUBLIC_MAINNET_URL),
     [optimism.id]: http(process.env.NEXT_PUBLIC_OPTIMISM_URL),
@@ -13,5 +13,6 @@ export const wagmiconfig = createConfig({
     [zksync.id]: http(process.env.NEXT_PUBLIC_ZKSYNC_URL),
     [gnosis.id]: http(process.env.NEXT_PUBLIC_GNOSIS_URL),
     [base.id]: http(process.env.NEXT_PUBLIC_BASE_URL),
+    [polygon.id]: http(process.env.NEXT_PUBLIC_POLYGON_URL),
   },
 })

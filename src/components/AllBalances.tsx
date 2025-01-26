@@ -203,15 +203,15 @@ const LoadingLogo = styled.img`
 `
 
 const columns = [
-  columnHelper.accessor(row => pick(row, ['protocol', 'poolName', 'symbol', 'chainId']), {
+  columnHelper.accessor(row => pick(row, ['protocol', 'poolName', 'symbol', 'chainId', 'type']), {
     id: 'platform',
     header: () => <span>Position</span>,
     sortingFn: 'alphanumeric',
     aggregationFn: 'uniqueCount',
     enableGrouping: false,
     cell: info => {
-      const { protocol, poolName, symbol, chainId } = info.getValue()
-      return (<PlatformDisplay platform={protocol} pool={poolName} symbol={symbol} chainId={chainId}></PlatformDisplay>)
+      const { protocol, poolName, symbol, chainId, type } = info.getValue()
+      return (<PlatformDisplay platform={protocol} pool={poolName} symbol={symbol} chainId={chainId} type={type}></PlatformDisplay>)
     }
   }),
   columnHelper.accessor(row => pick(row, ['formattedBalance', 'balanceUsd', 'symbol', 'type']), {
@@ -330,15 +330,19 @@ const [krakenBalances, setKrakenBalances] = useState<YieldPosition[]>([])
     }
   }, [balancesSum, averageAPY])
 
-  const smallBalancesHideAmount = 0
+  const smallBalancesHideAmount = 1
 
   const hasEnoughBalance = useMemo(() => balancesSum > smallBalancesHideAmount, [balancesSum, smallBalancesHideAmount])
+
+  const allBalancesFiltered = useMemo(() => {
+    return allBalances.filter(({ balanceUsd }) => balanceUsd >= smallBalancesHideAmount)
+  }, [allBalances])
 
   const [sorting, setSorting] = useState<SortingState>([{id: 'balance', desc: true}])
   const [grouping, setGrouping] = React.useState<GroupingState>([])
 
   const table = useReactTable({
-    data: allBalances,
+    data: allBalancesFiltered,
     columns,
     initialState: {
       columnVisibility: { accountAddress: false, chainId: false },

@@ -4,7 +4,7 @@ import { erc20Abi } from 'viem';
 
 export function useTokenBalances(accountAddresses: string[], tokenConfigs: {address: string, chainId: number}[]) {
   const [contractReadCalls, setContractReadCalls] = useState({ batchSize: 512, contracts: [] })
-  const { data, isLoading } = useReadContracts(contractReadCalls);
+  const { data, error, isLoading } = useReadContracts(contractReadCalls);
 
   useEffect(() => {
     if (!accountAddresses || !tokenConfigs) {
@@ -37,5 +37,5 @@ export function useTokenBalances(accountAddresses: string[], tokenConfigs: {addr
     })
   }, [data, contractReadCalls])
 
-  return { balances, isLoading }
+  return { balances, error, isLoading }
 }
