@@ -30,16 +30,19 @@ export function useAaveBalances(accountAddresses: string[]) {
     const balances = aTokenBalances?.map(bal => {
       const { balance, chainId, accountAddress, tokenAddress } = bal
       const { id, symbol, apy } = aaveStablecoinData.find(d => d.aTokenAddress === tokenAddress)
-      const formattedBalance = formatBalanceWithSymbol(balance, symbol)
+      // Assuming not legitimate stablecoin with ever start with 'A'.
+      const isNewAToken = symbol.startsWith('A')
+      const spotTokenSymbol = isNewAToken ? symbol.slice(1) : symbol
+      const formattedBalance = formatBalanceWithSymbol(balance, spotTokenSymbol)
       return {
         id,
         accountAddress,
-        symbol,
+        symbol: spotTokenSymbol,
         balance,
         balanceUsd: parseFloat(formattedBalance),
         formattedBalance,
         protocol: 'aave',
-        poolName: `Aave ${symbol}`,
+        poolName: `Aave ${spotTokenSymbol}`,
         chainId,
         apy,
         type: 'dapp'

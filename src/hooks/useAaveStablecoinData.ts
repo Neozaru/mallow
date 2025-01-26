@@ -9,7 +9,7 @@ export function useAaveStablecoinData() {
   useEffect(() => {
     async function fetchData() {
       const supportedChainIds = wagmiconfig.chains.map(({ id }) => id)
-      const stablecoinsAaveSymbols = stablecoins.flatMap(symbol => [symbol, `${symbol}.E`])
+      const stablecoinsAaveSymbols = stablecoins.flatMap(symbol => [symbol, `${symbol}.E`, `A${symbol}`])
       const { data } = await axiosGetCached(
         `/api/defi/aave/poolsdata?symbols=${stablecoinsAaveSymbols}&chainIds=${supportedChainIds}`,
         600000
