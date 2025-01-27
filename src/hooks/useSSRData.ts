@@ -8,8 +8,8 @@ export function useSSRData() {
   useEffect(() => {
     async function fetchData() {
       const { data } = await axiosGetCached(
-        `https://info-sky.blockanalitica.com/api/v1/overall/?format=json`,
-        600000
+        `/api/defi/sky/overall`,
+        60000
       )
       const newSSRData = {
         apy: parseFloat(data[0].sky_savings_rate_apy),
