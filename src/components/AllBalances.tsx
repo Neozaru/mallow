@@ -202,6 +202,12 @@ const LoadingLogo = styled.img`
   animation: ${wobbleSquish} 1.5s infinite ease-in-out;
 `
 
+const GrandTotal = styled.div`
+  font-size: 13px;
+  color: #b4b0c4;
+  display: none;
+`
+
 const columns = [
   columnHelper.accessor(row => pick(row, ['protocol', 'poolName', 'symbol', 'chainId', 'type']), {
     id: 'platform',
@@ -309,18 +315,32 @@ const [krakenBalances, setKrakenBalances] = useState<YieldPosition[]>([])
     manualPositions
   ])
 
+  const smallBalancesHideAmount = 1
+
+  const hideZeroApy = false
+  
+  const allBalancesFiltered = useMemo(() => {
+    return allBalances.filter(({ balanceUsd, apy }) => balanceUsd >= smallBalancesHideAmount && (!hideZeroApy || apy > 0))
+  }, [allBalances, hideZeroApy])
+
+
   const balancesSum = useMemo(
+    () => sumBy(allBalancesFiltered, 'balanceUsd'),
+    [allBalancesFiltered]
+  )
+
+  const balancesGrandTotal = useMemo(
     () => sumBy(allBalances, 'balanceUsd'),
     [allBalances]
   )
 
   const averageAPY = useMemo(
     () => {
-      return allBalances.reduce((acc, bal) => acc + bal.apy * bal.balanceUsd, 0) / balancesSum
+      return allBalancesFiltered.reduce((acc, bal) => acc + bal.apy * bal.balanceUsd, 0) / balancesSum
     },
-    [allBalances, balancesSum]
+    [allBalancesFiltered, balancesSum]
   )
-
+  
   const earnings = useMemo(() => {
     const year = averageAPY * balancesSum
     return {
@@ -330,14 +350,8 @@ const [krakenBalances, setKrakenBalances] = useState<YieldPosition[]>([])
     }
   }, [balancesSum, averageAPY])
 
-  const smallBalancesHideAmount = 1
-
   const hasEnoughBalance = useMemo(() => balancesSum > smallBalancesHideAmount, [balancesSum, smallBalancesHideAmount])
-
-  const allBalancesFiltered = useMemo(() => {
-    return allBalances.filter(({ balanceUsd }) => balanceUsd >= smallBalancesHideAmount)
-  }, [allBalances])
-
+  
   const [sorting, setSorting] = useState<SortingState>([{id: 'balance', desc: true}])
   const [grouping, setGrouping] = React.useState<GroupingState>([])
 
@@ -377,7 +391,7 @@ const [krakenBalances, setKrakenBalances] = useState<YieldPosition[]>([])
     <ComponentHeader>
       <Summary>
         <TotalWithAPY>
-          <Total>${formatUsdBalance(balancesSum, 0, 0)}</Total>
+          <Total>${formatUsdBalance(balancesSum, 0, 0)}{hideZeroApy && <GrandTotal>/${formatUsdBalance(balancesGrandTotal, 0, 0)}</GrandTotal>}</Total>
           <APY>{(hasEnoughBalance ? averageAPY*100 : 0).toFixed(2)}% APY</APY>
         </TotalWithAPY>
         {hasEnoughBalance && <Details>

@@ -8,22 +8,25 @@ const platformIcons = {
   aave: "https://cryptologos.cc/logos/aave-aave-logo.png",
   morpho: "https://assets.coingecko.com/coins/images/29837/standard/Morpho-token-icon.png",
   beefy: "https://assets.coingecko.com/coins/images/12704/standard/bifi.png",
-  dsr: "https://pbs.twimg.com/profile_images/1828469202753122304/i8YRkB4A_400x400.jpg"
+  dsr: "https://pbs.twimg.com/profile_images/1828469202753122304/i8YRkB4A_400x400.jpg",
+  ssr: "https://pbs.twimg.com/profile_images/1828469202753122304/i8YRkB4A_400x400.jpg"
 }
 
 const tokenIcons = {
   USDC: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png",
   USDT: "https://cryptologos.cc/logos/tether-usdt-logo.png",
   DAI: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png",
-  xDAI: "https://cryptologos.cc/logos/xdai-stake-xdai-logo.png",
-  EURC: "https://assets.coingecko.com/coins/images/26045/standard/euro.png?1696525125"
+  xDAI: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png",
+  WXDAI: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png",
+  EURC: "https://assets.coingecko.com/coins/images/26045/standard/euro.png?1696525125",
+  USDS: "https://img.cryptorank.io/coins/usds1724768606452.png"
 }
 
 const chainIcons = {
   1: "https://svgmix.com/uploads/3287b3-ethereum-eth.svg",
   56: "https://cryptologos.cc/logos/binance-coin-bnb-logo.png",
   137: "https://cryptologos.cc/logos/polygon-matic-logo.png",
-  100: "https://cryptologos.cc/logos/gnosis-gno-gno-logo.png",
+  100: "https://s1.coincarp.com/logo/1/gnosis-gno.png?style=200&v=1630481838",
   10: "https://cryptologos.cc/logos/optimism-ethereum-op-logo.png",
   42161: "https://cryptologos.cc/logos/arbitrum-arb-logo.png",
   324: "https://s2.coinmarketcap.com/static/img/coins/200x200/24091.png",
@@ -38,7 +41,8 @@ const platformNames = {
   aave: "Aave",
   morpho: "Morpho",
   beefy: "Beefy",
-  dsr: "DAI Savings"
+  dsr: "DAI Savings",
+  ssr: "Sky Savings"
 }
 
 const PlatformWrapper = styled.div`

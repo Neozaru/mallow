@@ -7,7 +7,9 @@ const stablecoins = [
   'arbUSDCe',
   'GHO',
   'EURC',
-  'stkGHO'
+  'stkGHO',
+  'WXDAI',
+  'USDS'
 ]
 
 export default stablecoins

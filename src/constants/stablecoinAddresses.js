@@ -37,6 +37,13 @@ const stablecoinAddresses = [
       8453: '0x50c5725949a6f0c72e6c4a641f24049a917db0cb',  // Base (DAI address unavailable)
       137: '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1', // Polygon
     }
+  },
+  {
+    symbol: 'USDS',
+    addresses: {
+      1: '0xdc035d45d973e3ec169d2276ddab16f1e407384f',
+      8453: '0x820c137fa70c8691f0e44dc420a5e53c168921dc'
+    }
   }
 ]
 
