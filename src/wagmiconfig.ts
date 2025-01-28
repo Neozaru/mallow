@@ -2,9 +2,25 @@
 
 import { http, createConfig } from 'wagmi'
 import { arbitrum, base, gnosis, mainnet, optimism, scroll, zksync, polygon } from 'wagmi/chains'
+import { injected, walletConnect } from 'wagmi/connectors'
 
 export const wagmiconfig = createConfig({
   chains: [mainnet, optimism, arbitrum, scroll, base, zksync, gnosis, polygon],
+  connectors: [
+    injected(),
+    walletConnect({
+      disableProviderPing: true,
+      customStoragePrefix: 'wagmiWC',
+      projectId: `${process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID}`,
+      showQrModal: false,
+      metadata: { 
+        name: 'Mallow', 
+        description: 'Do (s)more with your stablecoins', 
+        url: 'https://mallow.money/',
+        icons: ['https://mallow.money/mallowLogoRound.svg'],
+      }, 
+    }),
+  ],
   transports: {
     [mainnet.id]: http(process.env.NEXT_PUBLIC_MAINNET_URL),
     [optimism.id]: http(process.env.NEXT_PUBLIC_OPTIMISM_URL),

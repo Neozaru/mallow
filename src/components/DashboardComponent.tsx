@@ -13,6 +13,7 @@ import styled from 'styled-components';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import EthereumAddress from './EthereumAddress';
 import dynamic from 'next/dynamic';
+import { ConnectKitButton } from 'connectkit';
 
 const WelcomeActionsWrapper = styled.div`
   font-size: 36px;
@@ -47,12 +48,12 @@ const Input = styled.input`
 `;
 
 const Button = styled.button`
-  padding: 5px 20px;
+  padding: 5px 10px;
   background-color: #703e91;
   color: white;
-  border: none;
+  // border: none;
   border-radius: 5px;
-  font-size: 20px;
+  // font-size: 20px;
   cursor: pointer;
 
   &:hover {
@@ -84,6 +85,21 @@ const Logo = styled.img`
   padding-bottom: 40px;
 `
 
+const ConnectButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  div:first-child {
+    background-color: #703e91;
+    border-radius: 5px;
+
+    &:hover {
+      background-color: #8d54b2;
+    }
+  }
+`
+
 
 function DashboardComponent() {
   const params = useParams<{ address: string }>()
@@ -94,7 +110,6 @@ function DashboardComponent() {
 
   const isAdvanced = SettingsService.getSettings().onChainAccounts.length > 0 || manualPositions.length > 0
 
-  const { connectors, connect } = useConnect()
   const { address } = useAccount()
   const { disconnect } = useDisconnect()
 
@@ -140,9 +155,9 @@ function DashboardComponent() {
     setOnChainAccounts([])
   }
 
-  const metamaskConnector = useMemo(() => {
-    return connectors.find(connector => connector.id === 'io.metamask')
-  }, [connectors])
+  // const metamaskConnector = useMemo(() => {
+  //   return connectors.find(connector => connector.id === 'io.metamask')
+  // }, [connectors])
 
   return (
     <Layout>
@@ -155,10 +170,10 @@ function DashboardComponent() {
           <LogoWrapper>
             <Logo src='/mallowLogoWhiteTransparentBackground.svg' alt=''></Logo>
           </LogoWrapper>
-          {metamaskConnector && <div>
-            <Button onClick={() => connect({ connector: metamaskConnector })}>🦊 Connect Metamask</Button>
-            <OrText>or</OrText>
-          </div>}
+          <ConnectButtonWrapper>
+            <ConnectKitButton/>
+          </ConnectButtonWrapper>
+          <OrText>or</OrText>
           <Label htmlFor="watchAddress">watch any address</Label>
             <Input
               placeholder='0xabd...'
@@ -168,7 +183,7 @@ function DashboardComponent() {
             />
           </ConnectOrWatchWrapper>}
           {/* Watching Connected Wallet */}
-          {onChainAccounts.length === 1 && !isAdvanced && address && <WatchingStatus><div>🦊 Currently watching connected wallet <EthereumAddress address={onChainAccounts[0].address}/></div><Button onClick={() => disconnectAndStopWatching()}>Disconnect</Button></WatchingStatus>}
+          {onChainAccounts.length === 1 && !params?.address && !isAdvanced && address && <WatchingStatus><div>🦊 Currently watching connected wallet <EthereumAddress address={onChainAccounts[0].address}/></div><Button onClick={() => disconnectAndStopWatching()}>Disconnect</Button></WatchingStatus>}
           {/* Watching Query Address */}
           {onChainAccounts.length === 1 && params?.address && <WatchingStatus><div>👀 Currently watching <EthereumAddress address={onChainAccounts[0].address}/></div><Button onClick={() => stopWatchingAddress()}>Stop watching</Button></WatchingStatus>}
           {/* Watching Address(es) as Set in Settings */}
