@@ -100,7 +100,6 @@ const ConnectButtonWrapper = styled.div`
   }
 `
 
-
 function DashboardComponent() {
   const params = useParams<{ address: string }>()
   const router = useRouter()
@@ -130,7 +129,7 @@ function DashboardComponent() {
       return
     } 
     if (params.address.startsWith('0x') && params.address.length === 42) {
-      setOnChainAccounts([{ address: params.address, chainType: 'evm'}])
+      setOnChainAccounts([{ address: params.address, chainType: 'evm' }])
     } else {
       router.push(`/dashboard`)
     }
@@ -149,15 +148,11 @@ function DashboardComponent() {
   const stopWatchingAddress = () => {
     router.push('/dashboard')
   }
-  
+
   const disconnectAndStopWatching = () => {
     disconnect()
     setOnChainAccounts([])
   }
-
-  // const metamaskConnector = useMemo(() => {
-  //   return connectors.find(connector => connector.id === 'io.metamask')
-  // }, [connectors])
 
   return (
     <Layout>

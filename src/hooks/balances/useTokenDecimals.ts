@@ -1,5 +1,3 @@
-
-
 export function useTokenDecimals() {
   return {
     'USDT': 6,

@@ -1,17 +1,20 @@
 "use client";
 
-import { useOnChainBalances } from '@/hooks/useOnChainBalances';
+import { useOnChainBalances } from '@/hooks/balances/useOnChainBalances';
 import { getBinanceBalance } from '@/lib/getBinanceBalance';
 import { getCoinbaseBalance } from '@/lib/getCoinbaseBalance';
 import { getKrakenBalances } from '@/lib/getKrakenBalances';
 import { isNumber, isString, pick, sumBy } from 'lodash'
 import React, { useEffect, useMemo, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { createColumnHelper, flexRender, getCoreRowModel, getExpandedRowModel, getGroupedRowModel, getSortedRowModel, GroupingState, SortingState, useReactTable } from '@tanstack/react-table';
+import { createColumnHelper, getCoreRowModel, getExpandedRowModel, getGroupedRowModel, getSortedRowModel, GroupingState, SortingState, useReactTable } from '@tanstack/react-table';
 import PlatformDisplay from './PlatformDisplay';
 import EthereumAddress from './EthereumAddress';
 import getChainName from '@/utils/getChainName';
 import SettingsService from '@/lib/settingsService';
+import MallowTable from './MallowTable';
+import ApyCell from './ApyCell';
+import LoadingSpinner from './LoadingSpinner';
 
 type AllBalancesProps = {
   accountAddresses: Array<string> | [];
@@ -24,67 +27,6 @@ const formatUsdBalance = (balance: number, minimumFractionDigits = 0, maximumFra
     maximumFractionDigits,
   }).format(balance);
 };
-
-// GPT
-const TableWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  border: 1px solid rgb(50, 15, 105);
-  border-radius: 8px;
-  background-color: #1e093f;
-`;
-
-const TableHeader = styled.div`
-  display: flex;
-  background-color: #1e093f;
-  color: white;
-  font-weight: bold;
-  text-align: left;
-
-  & > div {
-    flex: 1;
-    cursor: pointer;
-  }
-
-  // Last th
-  div > div:last-child {
-   text-align: right;
-  }
-`;
-
-const TableRow = styled.div`
-  display: flex;
-  padding: 10px;
-  border-bottom: 1px solid rgb(50, 15, 105);
-
-  &:nth-child(even) {
-    background-color: #1e093f;
-  }
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  &:hover {
-    background-color: #1e093f;
-  }
-`;
-
-interface CustomAlignProp {
-  align?: 'left' | 'center' | 'right';  // Define the possible values for `align`
-}
-
-const TableCell = styled.div<CustomAlignProp>`
-  flex: 1;
-  padding: 5px 5px;
-  text-align: ${({ align }) => align || 'left'};
-  white-space: nowrap;
-  
-  &:first-child {
-    flex: 2;
-  }
-`;
-///
 
 const ComponentWrapper = styled.div`
   background-color: #1e093f;
@@ -166,41 +108,10 @@ const Balance = styled.span`
   font-size: 13px;
 `
 
-const ApyCell = styled.div`
-  font-weight: bold;
-  text-align: right;
-`;
-
 const BalancesWrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
-
-const LoadingWrapper = styled.div`
-  font-size: 24px;
-  text-align: center;
-  padding-top: 40px;
-`;
-
-const wobbleSquish = keyframes`
-  0%, 100% {
-    transform: scale(1) rotate(0deg);
-  }
-  25% {
-    transform: scale(1.1, 0.9) rotate(-10deg);
-  }
-  50% {
-    transform: scale(0.9, 1.1) rotate(10deg);
-  }
-  75% {
-    transform: scale(1.05, 0.95) rotate(-5deg);
-  }
-`;
-
-const LoadingLogo = styled.img`
-  margin: auto;
-  animation: ${wobbleSquish} 1.5s infinite ease-in-out;
-`
 
 const GrandTotal = styled.div`
   font-size: 13px;
@@ -238,7 +149,7 @@ const columns = [
   }),
   columnHelper.accessor('apy', {
     header: () => 'Apy',
-    cell: info => <ApyCell>{((info.renderValue() || 0) * 100).toFixed(2)}%</ApyCell>,
+    cell: info => <ApyCell apy={info.renderValue()}/>,
     sortingFn: 'basic',
     aggregationFn: 'mean',
     enableGrouping: false,
@@ -404,57 +315,8 @@ const [krakenBalances, setKrakenBalances] = useState<YieldPosition[]>([])
       </Summary>
     </ComponentHeader>
     {isLoading 
-    ? <LoadingWrapper>
-        <LoadingLogo src='/mallowLogoWhiteTransparentBackground.svg' alt=''/>
-        <div>Loading...</div>
-      </LoadingWrapper>
-    : hasEnoughBalance ? <TableWrapper>
-      <TableHeader>
-        {table.getHeaderGroups().map(headerGroup => (
-          <TableRow key={headerGroup.id}>
-            {headerGroup.headers.map(header => (
-              <TableCell
-                key={header.id}
-                onClick={header.column.getToggleSortingHandler()}
-                style={{ cursor: 'pointer' }}
-              >
-                {flexRender(
-                  header.column.columnDef.header,
-                  header.getContext()
-                )}
-                {{
-                  asc: ' ▲',
-                  desc: ' ▼',
-                }[header.column.getIsSorted() as string] || null}
-                {header.column.getCanGroup() ? (
-                  <button
-                    {...{
-                      onClick: header.column.getToggleGroupingHandler(),
-                      style: {
-                        cursor: 'pointer',
-                      },
-                    }}
-                  >
-                    {header.column.getIsGrouped()
-                      ? `🛑(${header.column.getGroupedIndex()}) `
-                      : `👊 `}
-                  </button>
-                ) : null}{' '}
-              </TableCell>
-            ))}
-          </TableRow>
-        ))}
-      </TableHeader>
-      {table.getRowModel().rows.map(row => (
-        <TableRow key={row.id}>
-          {row.getVisibleCells().map(cell => (
-            <TableCell key={cell.id} className={cell.id === 'apy' ? 'apyCell' : ''}>
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-            </TableCell>
-          ))}
-        </TableRow>
-      ))}
-    </TableWrapper>
+    ? <LoadingSpinner/>
+    : hasEnoughBalance ? <MallowTable table={table}/>
     : (!isLoading && <NothingToShowWrapper>
         <NothingToShow>Nothing to show 🤷</NothingToShow>
         <div>Supported protocols are Aave, Morpho, Beefy and DSR (more to come soon).</div>

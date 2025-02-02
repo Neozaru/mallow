@@ -19,7 +19,7 @@ function filterAndProcessBeefyData(data: {assets: string[], token: string, chain
 } 
 
 export function useBeefyData() {
-  const [beefyData, setBeefyData] = useState({})
+  const [beefyData, setBeefyData] = useState({ isLoading: true })
   useEffect(() => {
     async function fetchData() {
       const { data: vaultsData } = await axiosGetCached('https://api.beefy.finance/vaults')
@@ -29,7 +29,7 @@ export function useBeefyData() {
       const vaults = filterAndProcessBeefyData(vaultsData)
       const boosts = filterAndProcessBeefyData(boostsData)
 
-      setBeefyData({ vaults, boosts, apys })
+      setBeefyData({ vaults, boosts, apys, isLoading: false })
     }
     fetchData()
   }, [])

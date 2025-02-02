@@ -3,6 +3,11 @@
 import styled from 'styled-components';
 import React from 'react';
 import Layout from '@/components/Layout';
+import ExploreComponent from '@/components/ExploreComponent';
+import { WagmiProvider } from 'wagmi';
+import { wagmiconfig } from '@/wagmiconfig';
+import { QueryClientProvider } from '@tanstack/react-query';
+import getQueryClient from '@/lib/getQueryClient';
 
 const Container = styled.div`
   background-color: rgb(30, 9, 63);
@@ -11,28 +16,19 @@ const Container = styled.div`
   margin: 0 auto;
 `;
 
-const Heading = styled.h1`
-  text-align: center;
-  margin-bottom: 20px;
-`;
-
-const ComingSoonWrapper = styled.div`
-  font-size: 36px;
-  margin: auto;
-  text-align: center;
-`
+const queryClient = getQueryClient()
 
 const Explore = () => {
   return (
-    <Layout>
-      <Container>
-        <Heading>Explore</Heading>
-        <ComingSoonWrapper>
-          Coming Soon™
-        </ComingSoonWrapper>
-
-      </Container>
-    </Layout>
+    <WagmiProvider config={wagmiconfig}>
+      <QueryClientProvider client={queryClient}>
+        <Layout>
+          <Container>
+            <ExploreComponent />
+          </Container>
+        </Layout>
+      </QueryClientProvider>
+    </WagmiProvider>
   )
 }
 

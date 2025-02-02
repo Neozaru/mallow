@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useTokenBalances } from './useTokenBalances';
-import { formatBalanceWithSymbol } from '../lib/formatBalanceWithSymbol';
+import { formatBalanceWithSymbol } from '../../lib/formatBalanceWithSymbol';
 import stablecoinAddresses from '@/constants/stablecoinAddresses'
 
 const stablecoinAddressesAndChainArray = stablecoinAddresses.flatMap(({symbol, addresses}) => {

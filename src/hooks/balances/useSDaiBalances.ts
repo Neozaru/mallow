@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useSDaiData } from './useDsrData'
+import { useSDaiData } from '../useDsrData'
 import { useTokenBalances } from './useTokenBalances'
 import { gnosis, mainnet } from 'viem/chains'
 import { formatUnits } from 'viem'

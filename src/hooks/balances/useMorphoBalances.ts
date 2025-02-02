@@ -2,7 +2,7 @@ import { GET_USER_VAULT_POSITIONS } from '@/lib/graphqlMorpho/GET_USER_VAULT_POS
 import { useEffect, useMemo, useRef, useState } from 'react';
 import request from 'graphql-request'
 import { replaceEqualDeep, useQueries } from '@tanstack/react-query'
-import { formatBalanceWithSymbol } from '../lib/formatBalanceWithSymbol';
+import { formatBalanceWithSymbol } from '../../lib/formatBalanceWithSymbol';
 
 function useStable<T>(value: T) {
   const ref = useRef(value);
@@ -44,7 +44,7 @@ export function useMorphoBalances(accountAddresses: string[]) {
     if (!queriesResultStable) {
       return { isLoading: true, balances: [] }
     }
-    const balances = queriesResultStable.flatMap(({data}) => {
+    const balances = queriesResultStable.flatMap(({ data }) => {
       if (!data?.userByAddress) {
         return []
       }

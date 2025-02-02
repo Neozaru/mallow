@@ -1,10 +1,8 @@
-
-
 import { useMemo } from 'react';
 import { formatUnits } from 'viem';
 import { base, mainnet } from 'viem/chains';
 import { useTokenBalances } from './useTokenBalances';
-import { useSSRData } from './useSSRData';
+import { useSSRData } from '../useSSRData';
 
 const sUSDSTokenConfig = [{
   address: '0xa3931d71877c0e7a3148cb7eb4463524fec27fbd',

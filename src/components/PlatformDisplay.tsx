@@ -19,7 +19,8 @@ const tokenIcons = {
   xDAI: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png",
   WXDAI: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png",
   EURC: "https://assets.coingecko.com/coins/images/26045/standard/euro.png?1696525125",
-  USDS: "https://img.cryptorank.io/coins/usds1724768606452.png"
+  USDS: "https://img.cryptorank.io/coins/usds1724768606452.png",
+  GHO: "https://app.aave.com/icons/tokens/gho.svg",
 }
 
 const chainIcons = {
@@ -131,7 +132,7 @@ const PlatformDisplay = (params: PlatformParameters) => {
   const { platform, symbol, pool, chainId, type } = params
   const isSpot = type === 'spot' 
   const platformIconUrl = platformIcons[platform] || `https://placehold.co/32x32?text=${platform}`;
-  const tokenIconUrl = tokenIcons[symbol] || `https://placehold.co/32x32?text=${symbol}`;
+  const tokenIconUrl = tokenIcons[symbol.split('.')[0]] || `https://placehold.co/32x32?text=${symbol}`;
   const platformName = platformNames[platform] || platform || 'Unknown Platform';
   const chainName = chainId ? getChainName(chainId) : ''
   const chainIconUrl = chainId

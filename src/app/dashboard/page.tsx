@@ -1,12 +1,13 @@
 "use client";
 
 import DashboardComponent from '@/components/DashboardComponent';
+import getQueryClient from '@/lib/getQueryClient';
 import { wagmiconfig } from '@/wagmiconfig';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { ConnectKitProvider } from 'connectkit';
 import { WagmiProvider } from 'wagmi';
 
-const queryClient = new QueryClient()
+const queryClient = getQueryClient()
 
 export default function DashboardPageWithoutAddress() {
   return (<WagmiProvider config={wagmiconfig}>
