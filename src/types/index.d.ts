@@ -18,6 +18,9 @@ type YieldOpportunity = {
   poolName: string;
   chainId: number;
   apy: number;
-  type: 'dapp' | 'exchange'; // TODO: Change name of property
+  type: 'dapp' | 'exchange'; // TODO: Change name of property,
+  metadata?: {
+    link: string;
+  }
 }
 

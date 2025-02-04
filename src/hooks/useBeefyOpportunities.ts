@@ -27,6 +27,9 @@ const useBeefyOpportunities = () => {
         protocol: 'beefy',
         poolName: id.split('-').map(capitalize).join(' '),
         chainId,
+        metadata: {
+          link: `https://app.beefy.com/vault/${id}`
+        }
       }))
     
     const boostOpportunities = boosts.map(({ id, chainId, earnContractAddress, poolId }) => {
@@ -42,6 +45,9 @@ const useBeefyOpportunities = () => {
         protocol: 'beefy',
         poolName: 'Boosted ' + vault.id.split('-').map(capitalize).join(' '),
         chainId,
+        metadata: {
+          link: `https://app.beefy.com/vault/${poolId}`
+        }
       }
     }).filter(o => !!o)
 

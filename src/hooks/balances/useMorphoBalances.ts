@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import request from 'graphql-request'
 import { replaceEqualDeep, useQueries } from '@tanstack/react-query'
 import { formatBalanceWithSymbol } from '../../lib/formatBalanceWithSymbol';
+import getMorphoVaultLink from '@/utils/getMorphoVaultLink';
 
 function useStable<T>(value: T) {
   const ref = useRef(value);
@@ -65,6 +66,9 @@ export function useMorphoBalances(accountAddresses: string[]) {
           poolName: position.vault.name,
           chainId: position.vault.chain.id,
           apy,
+          metadata: {
+            link: getMorphoVaultLink(position.vault)
+          }
         }
       })
     })

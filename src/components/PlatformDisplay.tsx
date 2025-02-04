@@ -1,4 +1,6 @@
 import getChainName from '@/utils/getChainName';
+import Link from 'next/link';
+import { platform } from 'os';
 import styled from 'styled-components';
 
 const platformIcons = {
@@ -100,27 +102,42 @@ const PlatformName = styled.div`
 const PoolName = styled.div`
   font-size: 13px;
   color: #b4b0c4;
+  display: flex;
+  align-items: center;
+
+`;
+
+const PoolNameText = styled.span`
   overflow: hidden;
   white-space: nowrap;
-  @media (max-width: 400px) {
-    width: 15ch;
+  text-overflow: ellipsis;
+
+  @media (max-width: 431px) {
+    display: inline-block;
+    max-width: 15ch;
   }
 
-  @media (max-width: 429px) {
+  @media (max-width: 400px) {
     display: inline-block;
-    width: 18ch;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    max-width: 13ch;
   }
-`;
+
+  min-width: 0;
+  flex: 0 1 auto;
+  margin-right: 5px;
+`
 
 const PlatformNameWrapper = styled.div`
   display: flex;
   flex-direction: row;
 `;
 
+const ExternalLinkWrapper = styled.span`
+  flex: none;
+`
+
 interface PlatformParameters {
+  link?: string;
   platform: string;
   symbol: string;
   pool: string;
@@ -128,8 +145,16 @@ interface PlatformParameters {
   type: string | undefined;
 }
 
+function ExternalLink({ href }) {
+  return (
+    <Link href={href} target="_blank" rel="noopener noreferrer">
+      ↗
+    </Link>
+  );
+}
+
 const PlatformDisplay = (params: PlatformParameters) => {
-  const { platform, symbol, pool, chainId, type } = params
+  const { link, platform, symbol, pool, chainId, type } = params
   const isSpot = type === 'spot' 
   const platformIconUrl = platformIcons[platform] || `https://placehold.co/32x32?text=${platform}`;
   const tokenIconUrl = tokenIcons[symbol.split('.')[0]] || `https://placehold.co/32x32?text=${symbol}`;
@@ -141,17 +166,20 @@ const PlatformDisplay = (params: PlatformParameters) => {
 
   return (
     <PlatformWrapper>
-      <TokenWrapper>
-        <TokenIcon src={tokenIconUrl} alt={symbol} />
-        {!isSpot && <PlatformIcon src={platformIconUrl} alt={platform} />}
-      </TokenWrapper>
-      <PlatformInfo>
-        <PlatformNameWrapper>
-          <PlatformName>{platformName}</PlatformName>
-          {chainIconUrl && <ChainIcon src={chainIconUrl} alt={chainName} />}
-        </PlatformNameWrapper>
-        <PoolName>{pool || 'Spot'}</PoolName>
-      </PlatformInfo>
+        <TokenWrapper>
+          <TokenIcon src={tokenIconUrl} alt={symbol} />
+          {!isSpot && <PlatformIcon src={platformIconUrl} alt={platform} />}
+        </TokenWrapper>
+        <PlatformInfo>
+          <PlatformNameWrapper>
+            <PlatformName>{platformName}</PlatformName>
+            {chainIconUrl && <ChainIcon src={chainIconUrl} alt={chainName} />}
+          </PlatformNameWrapper>
+          <PoolName>
+            <PoolNameText>{pool || 'Spot'}</PoolNameText>
+            {link && <ExternalLinkWrapper><ExternalLink href={link}/></ExternalLinkWrapper>}
+          </PoolName>
+        </PlatformInfo>
     </PlatformWrapper>
   );
 };

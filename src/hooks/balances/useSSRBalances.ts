@@ -36,7 +36,10 @@ export function useSSRBalances(accountAddresses: string[]) {
         poolName: 'sUSDS',
         chainId,
         apy,
-        type: 'dapp'
+        type: 'dapp',
+        metadata: {
+          link: 'https://app.sky.money/?widget=savings'
+        }
       }]
     })
     return { balances, isLoading: false }

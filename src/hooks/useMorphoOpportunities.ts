@@ -1,5 +1,6 @@
 import stablecoins from '@/constants/stablecoins'
 import { GET_VAULTS } from '@/lib/graphqlMorpho/GET_VAULTS'
+import getMorphoVaultLink from '@/utils/getMorphoVaultLink'
 import getSupportedChainIds from '@/utils/getSupportedChainIds'
 import { useQuery } from '@tanstack/react-query'
 import request from 'graphql-request'
@@ -53,6 +54,9 @@ const useMorphoOpportunities = () => {
           poolName: vault.name,
           chainId: vault.chain.id,
           apy: vault.dailyApys.netApy,
+          metadata: {
+            link: getMorphoVaultLink(vault)
+          }
         }
       })
     return { data: opportunities, isLoading: false }

@@ -12,11 +12,13 @@ export const GET_USER_VAULT_POSITIONS = `
           id,
           name,
           symbol,
+          address,
           asset {
             symbol
           }
           chain {
             id
+            network
           }
           dailyApys {
             netApy

@@ -2,6 +2,7 @@ import stablecoins from '@/constants/stablecoins'
 import { axiosGetCached } from '@/lib/axiosGetCached'
 import getSupportedChainIds from '@/utils/getSupportedChainIds'
 import { useEffect, useMemo, useState } from 'react'
+import { arbitrum, base, gnosis, mainnet, optimism, polygon, scroll, zksync } from 'viem/chains'
 
 type AavePoolData = {
   id: string;
@@ -9,6 +10,17 @@ type AavePoolData = {
   apy: number;
   chainId: number;
   aTokenAddress: string;
+}
+
+const aaveChainNames = {
+  [mainnet.id]: 'mainnet',
+  [optimism.id]: 'optimism',
+  [arbitrum.id]: 'arbitrum',
+  [zksync.id]: 'zksync',
+  [base.id]: 'base',
+  [polygon.id]: 'polygon',
+  [gnosis.id]: 'gnosis',
+  [scroll.id]: 'scroll',
 }
 
 export function useAaveOpportunities() {
@@ -33,7 +45,7 @@ export function useAaveOpportunities() {
     if (isLoading || !aaveStablecoinData) {
       return []
     }
-    return aaveStablecoinData.map(({ id, symbol, apy, aTokenAddress, chainId } : AavePoolData) => {
+    return aaveStablecoinData.map(({ id, symbol, apy, aTokenAddress, underlyingAsset, chainId } : AavePoolData) => {
       const isNewAToken = symbol.startsWith('A')
       const spotTokenSymbol = isNewAToken ? symbol.slice(1) : symbol
       return {
@@ -44,7 +56,10 @@ export function useAaveOpportunities() {
         poolName: `Aave ${spotTokenSymbol}`,
         chainId,
         apy,
-        type: 'dapp'
+        type: 'dapp',
+        metadata: {
+          link: `https://app.aave.com/reserve-overview/?underlyingAsset=${underlyingAsset}&marketName=proto_${aaveChainNames[chainId] || 'mainnet'}_v3`
+        }
       }
     })
   }, [aaveStablecoinData, isLoading])

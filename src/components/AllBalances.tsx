@@ -120,15 +120,15 @@ const GrandTotal = styled.div`
 `
 
 const columns = [
-  columnHelper.accessor(row => pick(row, ['protocol', 'poolName', 'symbol', 'chainId', 'type']), {
+  columnHelper.accessor(row => pick(row, ['metadata', 'id', 'protocol', 'poolName', 'symbol', 'chainId', 'type']), {
     id: 'platform',
     header: () => <span>Position</span>,
     sortingFn: 'alphanumeric',
     aggregationFn: 'uniqueCount',
     enableGrouping: false,
     cell: info => {
-      const { protocol, poolName, symbol, chainId, type } = info.getValue()
-      return (<PlatformDisplay platform={protocol} pool={poolName} symbol={symbol} chainId={chainId} type={type}></PlatformDisplay>)
+      const { metadata, protocol, poolName, symbol, chainId, type } = info.getValue()
+      return (<PlatformDisplay link={metadata?.link} platform={protocol} pool={poolName} symbol={symbol} chainId={chainId} type={type}></PlatformDisplay>)
     }
   }),
   columnHelper.accessor(row => pick(row, ['formattedBalance', 'balanceUsd', 'symbol', 'type']), {

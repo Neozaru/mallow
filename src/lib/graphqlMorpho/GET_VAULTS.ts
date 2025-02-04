@@ -5,6 +5,7 @@ export const GET_VAULTS = `
       items {
         chain {
           id
+          network
         }
         dailyApys {
           netApy
@@ -41,6 +42,7 @@ export const GET_VAULTS = `
         }
         id
         name
+        address
         whitelisted
       }
     }

@@ -62,7 +62,10 @@ export function useSexyDaiBalances(accountAddresses: string[]) {
         poolName: 'DSR Gnosis',
         chainId: gnosis.id,
         apy,
-        type: 'dapp'
+        type: 'dapp',
+        metadata: {
+          link: 'https://agavefinance.eth.limo/sdai/'
+        }
       }]
     })
     return { balances, isLoading: false }
