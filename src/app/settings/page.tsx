@@ -6,6 +6,7 @@ import SettingsService, { OnChainAccount } from '@/lib/settingsService';
 import Layout from '@/components/Layout';
 import { uniq } from 'lodash';
 import { useRouter } from 'next/navigation';
+import { Address } from 'viem';
 
 const Container = styled.div`
   background-color: rgb(30, 9, 63);
@@ -102,24 +103,23 @@ const Settings = () => {
     e.preventDefault();
     const accountAddresses = onChainAccounts.split('\n').map(s => s.trim()).filter(s => s !== '').filter(onlyUnique)
     const uniqueAccountAddresses = uniq(accountAddresses)
-    const onChainAccountsNewSettings: OnChainAccount[] = uniqueAccountAddresses.map((address: string) => ({
+    const onChainAccountsNewSettings: OnChainAccount[] = uniqueAccountAddresses.map((address: Address) => ({
       address,
       chainType: 'evm'
     }))
 
-    const manualPositionsNewSettings = manualPositions.split('\n').map(s => s.trim()).filter(s => s !== '').map(line => {
-      const [protocol, balanceUsd, apy, chain, address] = line.split(',')
+    const manualPositionsNewSettings: YieldPositionManual[] = manualPositions.split('\n').map(s => s.trim()).filter(s => s !== '').map((line, i) => {
+      const [name, balanceUsd, apy] = line.split(',')
       return {
-        accountAddress: address, 
-        symbol: protocol, 
-        protocol,
+        id: `manual-${i}`,
+        symbol: name, 
+        protocol: 'manual' as const,
         poolName: 'Manual entry',
         balanceUsd: parseFloat(balanceUsd),
-        balance: parseFloat(balanceUsd),
-        formattedBalance: parseFloat(balanceUsd),
-        type: 'manual',
-        apy: parseFloat(apy),
-        chain
+        balance: BigInt(balanceUsd),
+        formattedBalance: `${parseFloat(balanceUsd)}`,
+        type: 'manual' as const,
+        apy: parseFloat(apy)
       }
     })
 

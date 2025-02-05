@@ -1,28 +1,24 @@
 import stablecoins from '@/constants/stablecoins';
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import SettingsService from './settingsService';
 import { createHash, createHmac } from 'crypto';
 import { stringify } from 'querystring';
 
 class RequestQueue {
-  private queue: Promise<void> = Promise.resolve()
+  private queue: Promise<void> = Promise.resolve();
 
-  /**
-   * Add a request function to the queue.
-   * @param requestFn - A function that returns a Promise for the request.
-   * @returns A Promise that resolves with the result of the request.
-   */
   add<T>(requestFn: () => Promise<T>): Promise<T> {
-    this.queue = this.queue.then(() => requestFn())
-    return this.queue as Promise<T>
+    const result = this.queue.then(() => requestFn());
+    this.queue = result.then(() => undefined);
+    return result;
   }
 }
 
 // Create a global instance of the queue
 const requestQueue = new RequestQueue()
 
-const postWithQueue = (url: string, data, extra = null) => {
-  return requestQueue.add(() => axios.post(url, data, extra))
+const postWithQueue = (url: string, data, extra: AxiosRequestConfig) => {
+  return requestQueue.add(() => axios.post<KrakenResponse>(url, data, extra))
 }
 
 function getKrakenSignature(endpoint, data, secret) {
@@ -52,7 +48,12 @@ export const getNonce = () => {
   return currentNonce
 };
 
-export async function getKrakenBalances(): Promise<YieldPosition[]> {
+type KrakenResponse = {
+  error?: any;
+  result: { [symbol: string]: string };
+}
+
+export async function getKrakenBalances(): Promise<YieldPositionExchange[]> {
   const apiKey = SettingsService.getSettings().apiKeys.krakenApiKey
   const apiSecret = SettingsService.getSettings().apiKeys.krakenApiSecret
   if (!apiKey || !apiSecret) {
@@ -77,33 +78,34 @@ export async function getKrakenBalances(): Promise<YieldPosition[]> {
       ...stablecoins,
       ...stablecoins.flatMap(symbol => [`${symbol}.F`, `${symbol}.M`])
     ]
-    const balances = []
+    const balances: { symbol: string, balance: bigint, poolName: string, apy: number }[] = []
     Object.entries(response.data.result)
       .map(([asset, balance]) => {
         if (!stablecoinsWithSuffixes.includes(asset)) {
           return
         }
         const [symbol, afterDot] = asset.split('.')
-        const balanceFloat = parseFloat(balance)
-        if (balanceFloat <= 0) {
+        const balanceBn = BigInt(parseInt(balance))
+        if (balanceBn <= 0) {
           return
         }
         balances.push({
           symbol,
-          balance: balanceFloat,
+          balance: balanceBn,
           poolName: afterDot === 'M' ? 'Kraken Savings' : `Spot ${symbol}`,
           apy: afterDot === 'M' ? 0.04 : 0,
         })
     })
-    const krakenBalances: YieldPosition[] = balances.map(({symbol, balance, poolName, apy}) => {
+    const krakenBalances: YieldPositionExchange[] = balances.map(({symbol, balance, poolName, apy}, i): YieldPositionExchange => {
       return {
-        protocol: 'kraken',
+        id: `kraken-${i}`,
+        protocol: 'kraken' as const,
         symbol,
         balance,
         poolName,
-        formattedBalance: balance,
-        balanceUsd: balance,
-        type: 'exchange',
+        formattedBalance: `${balance}`,
+        balanceUsd: Number(balance),
+        type: 'exchange' as const,
         apy
       }
     })

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { some } from 'lodash'
 import { useAaveOpportunities } from './useAaveOpportunities'
 import useBeefyOpportunities from './useBeefyOpportunities'

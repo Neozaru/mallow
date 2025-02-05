@@ -1,13 +1,23 @@
 import { axiosGetCached } from '@/lib/axiosGetCached'
 import { useEffect, useState } from 'react'
 
-export function useSSRData() {
+type SkyUnofficialApiResponse = {
+  sky_savings_rate_apy: string;
+  susds_price_usd: string;
+}
+
+type SSRData = {
+  apy: number;
+  sUSDSPriceUsd: number;
+}
+
+export function useSSRData(): LoadableData<SSRData> {
   const [isLoading, setIsLoading] = useState(true)
-  const [SSRData, setSSRData] = useState({})
+  const [sSRData, setSSRData] = useState<SSRData>()
 
   useEffect(() => {
     async function fetchData() {
-      const { data } = await axiosGetCached(
+      const { data } = await axiosGetCached<SkyUnofficialApiResponse>(
         `/api/defi/sky/overall`,
         60000
       )
@@ -21,5 +31,5 @@ export function useSSRData() {
     setIsLoading(true)
     fetchData()
   }, [])
-  return { data: SSRData, isLoading }
+  return { data: sSRData, isLoading }
 }

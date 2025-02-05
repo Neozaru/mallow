@@ -1,6 +1,5 @@
 import getChainName from '@/utils/getChainName';
 import Link from 'next/link';
-import { platform } from 'os';
 import styled from 'styled-components';
 
 const platformIcons = {
@@ -141,7 +140,7 @@ interface PlatformParameters {
   platform: string;
   symbol: string;
   pool: string;
-  chainId: number | undefined;
+  chainId?: number;
   type: string | undefined;
 }
 
@@ -172,7 +171,7 @@ const PlatformDisplay = (params: PlatformParameters) => {
         </TokenWrapper>
         <PlatformInfo>
           <PlatformNameWrapper>
-            <PlatformName>{platformName}</PlatformName>
+            <PlatformName>{isSpot ? symbol : platformName}</PlatformName>
             {chainIconUrl && <ChainIcon src={chainIconUrl} alt={chainName} />}
           </PlatformNameWrapper>
           <PoolName>

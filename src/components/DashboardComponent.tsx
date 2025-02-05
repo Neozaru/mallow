@@ -2,7 +2,7 @@
 
 import AllBalances from '@/components/AllBalances';
 import Layout from '@/components/Layout';
-import SettingsService from '@/lib/settingsService';
+import SettingsService, { OnChainAccount } from '@/lib/settingsService';
 import { map } from 'lodash';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -10,10 +10,11 @@ import { useRouter } from 'next/navigation';
 
 import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { useAccount, useConnect, useDisconnect } from 'wagmi';
+import { useAccount, useDisconnect } from 'wagmi';
 import EthereumAddress from './EthereumAddress';
 import dynamic from 'next/dynamic';
 import { ConnectKitButton } from 'connectkit';
+import { Address } from 'viem';
 
 const WelcomeActionsWrapper = styled.div`
   font-size: 36px;
@@ -102,7 +103,7 @@ function DashboardComponent() {
   const params = useParams<{ address: string }>()
   const router = useRouter()
 
-  const [onChainAccounts, setOnChainAccounts] = useState([])
+  const [onChainAccounts, setOnChainAccounts] = useState<OnChainAccount[]>([])
   const manualPositions = SettingsService.getSettings().manualPositions
 
   const isAdvanced = SettingsService.getSettings().onChainAccounts.length > 0 || manualPositions.length > 0
@@ -127,7 +128,7 @@ function DashboardComponent() {
       return
     } 
     if (params.address.startsWith('0x') && params.address.length === 42) {
-      setOnChainAccounts([{ address: params.address, chainType: 'evm' }])
+      setOnChainAccounts([{ address: params.address as Address, chainType: 'evm' }])
     } else {
       router.push(`/dashboard`)
     }

@@ -1,34 +1,36 @@
-import stablecoins from '@/constants/stablecoins'
 import { axiosGetCached } from '@/lib/axiosGetCached'
-import getChainIdFromBeefyName from '@/utils/getChainIdFromBeefyName'
 import { useEffect, useState } from 'react'
+import { Address } from 'viem';
 
-function filterAndProcessBeefyData(data: {assets: string[], token: string, chain: number}[]) {
-  // Only select vaults for whitelisted chains
-  return data.filter(d =>
-    !!getChainIdFromBeefyName(d.chain) &&
-    d.assets.every(asset => stablecoins.includes(asset))
-    || stablecoins.includes(d.token)
-  // Add chainId for each entry
-  ).map(d =>
-    ({
-      ...d,
-      chainId: getChainIdFromBeefyName(d.chain)
-    })
-  )
-} 
+type BeefyVault = {
+  id: string;
+  assets: string[];
+  token: string;
+  chain: number;
+  earnContractAddress: Address;
+  pricePerFullShare: bigint;
+}
+
+type BeefyBoost = BeefyVault & {
+  poolId: string;
+}
+
+type BeefyApys = { [poolId: string]: number };
+
+type BeefyData = {
+  vaults: BeefyVault[];
+  boosts: BeefyBoost[];
+  apys: BeefyApys;
+  isLoading: boolean;
+}
 
 export function useBeefyData() {
-  const [beefyData, setBeefyData] = useState({ isLoading: true })
+  const [beefyData, setBeefyData] = useState<BeefyData>({ isLoading: true, vaults: [], boosts: [], apys: {} })
   useEffect(() => {
     async function fetchData() {
-      const { data: vaultsData } = await axiosGetCached('https://api.beefy.finance/vaults')
-      const { data: boostsData } = await axiosGetCached('https://api.beefy.finance/boosts')
-      const { data: apys } = await axiosGetCached('https://api.beefy.finance/apy')
-
-      const vaults = filterAndProcessBeefyData(vaultsData)
-      const boosts = filterAndProcessBeefyData(boostsData)
-
+      const { data: vaults } = await axiosGetCached<BeefyVault[]>('https://api.beefy.finance/vaults')
+      const { data: boosts } = await axiosGetCached<BeefyBoost[]>('https://api.beefy.finance/boosts')
+      const { data: apys } = await axiosGetCached<BeefyApys>('https://api.beefy.finance/apy')
       setBeefyData({ vaults, boosts, apys, isLoading: false })
     }
     fetchData()

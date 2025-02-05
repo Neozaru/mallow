@@ -1,5 +1,6 @@
+import { gql } from 'graphql-request';
 
-export const GET_VAULTS = `
+export const GET_VAULTS = gql`
   query GetVaults($where: VaultFilters) {
     vaults(where: $where) {
       items {

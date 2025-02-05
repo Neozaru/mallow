@@ -6,8 +6,9 @@ import { useSexyDaiBalances } from './useSexyDaiBalances'
 import { some } from 'lodash'
 import { useSpotBalances } from './useSpotBalances'
 import { useSSRBalances } from './useSSRBalances'
+import { Address } from 'viem'
 
-export function useOnChainBalances(accountAddresses: string[]) {
+export function useOnChainBalances(accountAddresses: Address[]) {
   const { balances: spotBalances, isLoading: isLoadingSpot } = useSpotBalances(accountAddresses)
   const { balances: aaveBalances, isLoading: isLoadingAave } = useAaveBalances(accountAddresses)
   const { balances: morphoBalances, isLoading: isLoadingMorpho } = useMorphoBalances(accountAddresses)

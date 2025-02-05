@@ -7,7 +7,7 @@ import { useState } from 'react'
 import LoadingSpinner from './LoadingSpinner'
 import { useOpportunities } from '@/hooks/useOpportunities'
 
-const columnHelper = createColumnHelper()
+const columnHelper = createColumnHelper<YieldOpportunityOnChain>()
 
 const columns = [
   columnHelper.accessor(row => pick(row, ['metadata', 'protocol', 'poolName', 'symbol', 'chainId', 'type']), {

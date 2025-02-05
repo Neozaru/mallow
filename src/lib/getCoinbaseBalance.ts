@@ -39,7 +39,7 @@ async function coinbaseApiGet(endpoint: string) {
   return axios.get(requestPath, { headers })
 }
 
-export async function getCoinbaseBalance(): Promise<YieldPosition[]> {
+export async function getCoinbaseBalance(): Promise<YieldPositionExchange[]> {
   try {
     const responsePortfolios = await coinbaseApiGet('portfolios')
     const portfolioUuid = responsePortfolios.data.portfolios[0].uuid
@@ -49,12 +49,12 @@ export async function getCoinbaseBalance(): Promise<YieldPosition[]> {
     .map(pos => {
       const symbol = pos.asset
       return {
-        protocol: 'coinbase',
+        protocol: 'coinbase' as const,
         formattedBalance: pos.total_balance_crypto,
-        balanceUsd: pos.total_balance_fiat,
+        balanceUsd: Number(pos.total_balance_fiat),
         symbol,
         poolName: `Spot ${symbol}`,
-        type: 'exchange',
+        type: 'exchange' as const,
         apy: 0
       }
     })

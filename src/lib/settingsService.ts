@@ -11,20 +11,14 @@ interface ApiKeys {
 }
 
 export interface OnChainAccount {
-  address: string;
+  address: EvmAddressInternal;
   chainType: 'evm';
-}
-
-export interface ManualPosition {
-  balanceUsd: number;
-  apy: number;
-  protocol: string;
 }
 
 interface Settings {
   apiKeys: ApiKeys;
   onChainAccounts: OnChainAccount[];
-  manualPositions: ManualPosition[];
+  manualPositions: YieldPositionManual[];
 }
 
 // Define the key name for localStorage

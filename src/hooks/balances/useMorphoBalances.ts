@@ -1,9 +1,10 @@
 import { GET_USER_VAULT_POSITIONS } from '@/lib/graphqlMorpho/GET_USER_VAULT_POSITIONS';
-import { useEffect, useMemo, useRef, useState } from 'react';
 import request from 'graphql-request'
-import { replaceEqualDeep, useQueries } from '@tanstack/react-query'
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { QueriesOptions, replaceEqualDeep, useQueries, UseQueryResult } from '@tanstack/react-query'
 import { formatBalanceWithSymbol } from '../../lib/formatBalanceWithSymbol';
 import getMorphoVaultLink from '@/utils/getMorphoVaultLink';
+import { Address } from 'viem';
 
 function useStable<T>(value: T) {
   const ref = useRef(value);
@@ -14,10 +15,44 @@ function useStable<T>(value: T) {
   return stable;
 }
 
+export type UserVaultPosition = {
+  assets: number;
+  assetsUsd: number;
+  id: string;
+  shares: string;
+  vault: {
+    id: string;
+    name: string;
+    symbol: string;
+    address: Address;
+    asset: {
+      symbol: string;
+    };
+    chain: {
+      id: number;
+      network: string;
+    };
+    dailyApys: {
+      netApy: string;
+    };
+  };
+};
+
+export type GetUserVaultPositionsResponse = {
+  userByAddress: {
+    address: Address;
+    vaultPositions: UserVaultPosition[];
+  };
+};
+
+type QueryOptionState = {
+  queries: QueriesOptions<any>[]; // Unsure why any required here
+};
+
 const initialQueriesState = { queries: [] }
 
-export function useMorphoBalances(accountAddresses: string[]) {
-  const [queries, setQueries] = useState(initialQueriesState)
+export function useMorphoBalances(accountAddresses: Address[]) {
+  const [queries, setQueries] = useState<QueryOptionState>(initialQueriesState)
   const queriesResult = useQueries(queries)
   const queriesResultStable = useStable(queriesResult)
 
@@ -29,7 +64,7 @@ export function useMorphoBalances(accountAddresses: string[]) {
       return {
         queryKey: ['vaultPositions', accountAddress],
         queryFn: () =>
-          request(
+          request<GetUserVaultPositionsResponse>(
             'https://blue-api.morpho.org/graphql',
             GET_USER_VAULT_POSITIONS,
             { userAddress: accountAddress }
@@ -46,26 +81,29 @@ export function useMorphoBalances(accountAddresses: string[]) {
       return { isLoading: true, balances: [] }
     }
     const balances = queriesResultStable.flatMap(({ data }) => {
-      if (!data?.userByAddress) {
+      if (!data) {
         return []
       }
-      const { address: accountAddress } = data.userByAddress 
-      return data.userByAddress.vaultPositions.map(position => {
+      const typedData = data as GetUserVaultPositionsResponse // Failed to infer types with graphql-request
+      const { address: accountAddress } = typedData.userByAddress 
+      return typedData.userByAddress.vaultPositions.map(position => {
         const symbol = position.vault.asset.symbol
-        const balance = position.assets
+        const balance = BigInt(position.assets)
         const formattedBalance = formatBalanceWithSymbol(balance, symbol)
-        const apy = position.vault.dailyApys.netApy
+        const apy = Number(position.vault.dailyApys.netApy)
         return {
           id: position.id,
           accountAddress,
+          poolTokenAddress: position.vault.address,
           symbol,
           balance,
           balanceUsd: position.assetsUsd,
           formattedBalance,
-          protocol: 'morpho',
+          protocol: 'morpho' as const,
           poolName: position.vault.name,
           chainId: position.vault.chain.id,
           apy,
+          type: 'dapp' as const,
           metadata: {
             link: getMorphoVaultLink(position.vault)
           }

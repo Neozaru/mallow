@@ -4,21 +4,21 @@ import { useOnChainBalances } from '@/hooks/balances/useOnChainBalances';
 import { getBinanceBalance } from '@/lib/getBinanceBalance';
 import { getCoinbaseBalance } from '@/lib/getCoinbaseBalance';
 import { getKrakenBalances } from '@/lib/getKrakenBalances';
-import { isNumber, isString, pick, sumBy } from 'lodash'
+import { pick, sumBy } from 'lodash'
 import React, { useEffect, useMemo, useState } from 'react';
-import styled, { keyframes } from 'styled-components';
-import { createColumnHelper, getCoreRowModel, getExpandedRowModel, getGroupedRowModel, getSortedRowModel, GroupingState, SortingState, useReactTable } from '@tanstack/react-table';
+import styled from 'styled-components';
+import { createColumnHelper, getCoreRowModel, getExpandedRowModel, getGroupedRowModel, getSortedRowModel, GroupingState, Row, SortingState, useReactTable } from '@tanstack/react-table';
 import PlatformDisplay from './PlatformDisplay';
-import EthereumAddress from './EthereumAddress';
 import getChainName from '@/utils/getChainName';
 import SettingsService from '@/lib/settingsService';
 import MallowTable from './MallowTable';
 import ApyCell from './ApyCell';
 import LoadingSpinner from './LoadingSpinner';
+import { Address } from 'viem';
 
 type AllBalancesProps = {
-  accountAddresses: Array<string> | [];
-  manualPositions: Array<object> | [];
+  accountAddresses: Array<Address> | [];
+  manualPositions: Array<YieldPositionManual> | [];
 };
 
 const formatUsdBalance = (balance: number, minimumFractionDigits = 0, maximumFractionDigits = 0)  => {
@@ -95,12 +95,21 @@ const NothingToShow = styled.div`
   text-align: center;
 `
 
-const columnHelper = createColumnHelper()
+type YieldPositionAny = YieldPositionExchange | YieldPositionOnChain | YieldPositionManual
+
+const columnHelper = createColumnHelper<YieldPositionExchange | YieldPositionOnChain | YieldPositionManual>()
 
 const balanceSortingFn = (rowA, rowB) => {
   return rowA.original.balanceUsd > rowB.original.balanceUsd
   ? 1
   : -1
+}
+
+const balanceAggregationFn = (columnId, leafRows: Row<YieldPositionAny>[], childRows) => {
+  const res = sumBy(leafRows, leafRow => (leafRow.getUniqueValues('balance')[0] as YieldPositionAny).balanceUsd)
+  return {
+    balanceUsd: res
+  }
 }
 
 const Balance = styled.span`
@@ -120,14 +129,16 @@ const GrandTotal = styled.div`
 `
 
 const columns = [
-  columnHelper.accessor(row => pick(row, ['metadata', 'id', 'protocol', 'poolName', 'symbol', 'chainId', 'type']), {
+  columnHelper.accessor(row => row, {
     id: 'platform',
     header: () => <span>Position</span>,
     sortingFn: 'alphanumeric',
     aggregationFn: 'uniqueCount',
     enableGrouping: false,
     cell: info => {
-      const { metadata, protocol, poolName, symbol, chainId, type } = info.getValue()
+      const value = info.getValue()
+      const { metadata, protocol, poolName, symbol, type } = value
+      const chainId = value.type !== 'exchange' ? value['chainId'] : undefined // I am actually not sure how to make this cleaner
       return (<PlatformDisplay link={metadata?.link} platform={protocol} pool={poolName} symbol={symbol} chainId={chainId} type={type}></PlatformDisplay>)
     }
   }),
@@ -135,16 +146,16 @@ const columns = [
     id: 'balance',
     header: () => <span>Balance</span>,
     cell: info => {
-      const { balanceUsd, formattedBalance, symbol, type } = info.getValue()
+      const { balanceUsd, formattedBalance, symbol, type } = info.getValue() as YieldPositionAny
       return (
       <BalancesWrapper>
         {balanceUsd >= 0 && <span>${formatUsdBalance(balanceUsd)}<br/></span>}
-        {type !== 'manual' && formattedBalance >= 0 && <Balance>{formatUsdBalance(formattedBalance)} {symbol}</Balance>}
+        {type !== 'manual' && Number(formattedBalance) >= 0 && <Balance>{formatUsdBalance(Number(formattedBalance))} {symbol}</Balance>}
       </BalancesWrapper>)
     },
     footer: info => info.column.id,
-    sortingFn: 'balanceSortingFn',
-    aggregationFn: 'balanceAggregation',
+    sortingFn: balanceSortingFn,
+    aggregationFn: balanceAggregationFn,
     enableGrouping: false,
   }),
   columnHelper.accessor('apy', {
@@ -154,29 +165,29 @@ const columns = [
     aggregationFn: 'mean',
     enableGrouping: false,
   }),
-  columnHelper.accessor('accountAddress', {
-    id: 'accountAddress',
-    header: 'Address',
-    cell: info => {
-      const value: string = info.getValue()
-      if (!value) {
-        return ''
-      }
-      if (isNumber(value)) {
-        return value
-      }
-      if (!isString(value)) {
-        return ''
-      }
-      if (!value.startsWith('0x')) {
-        return value
-      }
-      return <EthereumAddress address={value}></EthereumAddress>
-    },
-    sortingFn: 'alphanumeric',
-    aggregationFn: 'uniqueCount',
-    enableGrouping: false,
-  }),
+  // columnHelper.accessor('accountAddress', {
+  //   id: 'accountAddress',
+  //   header: 'Address',
+  //   cell: info => {
+  //     const value: string = info.getValue()
+  //     if (!value) {
+  //       return ''
+  //     }
+  //     if (isNumber(value)) {
+  //       return value
+  //     }
+  //     if (!isString(value)) {
+  //       return ''
+  //     }
+  //     if (!value.startsWith('0x')) {
+  //       return value
+  //     }
+  //     return <EthereumAddress address={value}></EthereumAddress>
+  //   },
+  //   sortingFn: 'alphanumeric',
+  //   aggregationFn: 'uniqueCount',
+  //   enableGrouping: false,
+  // }),
   columnHelper.accessor('chainId', {
     header: 'Chain',
     cell: info => info.getValue() ? getChainName(info.getValue()) : '',
@@ -188,21 +199,21 @@ const columns = [
 ]
 
 const AllBalances: React.FC<AllBalancesProps> = ({accountAddresses, manualPositions}) => {
-  const [coinbaseBalances, setCoinbaseBalances] = useState<YieldPosition[]>([])
+  const [coinbaseBalances, setCoinbaseBalances] = useState<YieldPositionExchange[]>([])
   useEffect(() => {
     if (SettingsService.getSettings().apiKeys.coinbaseKeyName && SettingsService.getSettings().apiKeys.coinbaseApiSecret) {
       getCoinbaseBalance().then(setCoinbaseBalances)
     }
   }, [])
 
-  const [binanceBalances, setBinanceBalances] = useState<YieldPosition[]>([])
+  const [binanceBalances, setBinanceBalances] = useState<YieldPositionExchange[]>([])
   useEffect(() => {
     if (SettingsService.getSettings().apiKeys.binanceApiKey && SettingsService.getSettings().apiKeys.binanceApiSecret) {
       getBinanceBalance().then(setBinanceBalances)
     }
   }, [])
 
-const [krakenBalances, setKrakenBalances] = useState<YieldPosition[]>([])
+const [krakenBalances, setKrakenBalances] = useState<YieldPositionExchange[]>([])
   useEffect(() => {
     if (SettingsService.getSettings().apiKeys.krakenApiKey && SettingsService.getSettings().apiKeys.krakenApiSecret) {
       getKrakenBalances().then(setKrakenBalances)
@@ -210,7 +221,7 @@ const [krakenBalances, setKrakenBalances] = useState<YieldPosition[]>([])
   }, [])
 
   const { balances: onChainBalances, isLoading } = useOnChainBalances(accountAddresses)
-  const allBalances: YieldPosition[] = useMemo<YieldPosition[]>(() => {
+  const allBalances: YieldPositionAny[] = useMemo<YieldPositionAny[]>(() => {
     return [
       ...onChainBalances,
       ...krakenBalances,
@@ -286,12 +297,7 @@ const [krakenBalances, setKrakenBalances] = useState<YieldPosition[]>([])
       balanceSortingFn
     },
     aggregationFns: {
-      balanceAggregation: (columnId, leafRows, childRows) => {
-        const res = sumBy(leafRows, leafRow => leafRow.getUniqueValues('balance')[0].balanceUsd)
-        return {
-          balanceUsd: res
-        }
-      },
+      balanceAggregationFn
     },
     // debugTable: true,
     debugHeaders: true,

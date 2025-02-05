@@ -1,6 +1,7 @@
+import { gql } from 'graphql-request';
 
-export const GET_USER_VAULT_POSITIONS = `
-  query ExampleQuery($userAddress: String!) {
+export const GET_USER_VAULT_POSITIONS = gql`
+  query GetUserVaultPositions($userAddress: String!) {
     userByAddress(address: $userAddress, chainId: null) {
       address
       vaultPositions {

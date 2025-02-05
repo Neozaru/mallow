@@ -6,6 +6,30 @@ import { useQuery } from '@tanstack/react-query'
 import request from 'graphql-request'
 import { every } from 'lodash'
 import { useMemo } from 'react'
+import { Address } from 'viem'
+
+type MorphoVault = {
+  id: string;
+  name: string;
+  address: Address;
+  chain: {
+    id: number;
+    network: string;
+  };
+  asset: {
+    symbol: string;
+  };
+  dailyApys: {
+    netApy: number;
+    apy: number;
+  }
+}
+
+type MorphoVaultsResult = {
+  vaults: {
+    items: MorphoVault[];
+  }
+}
 
 // Subjective whitelist of collateral.
 const collateralWhitelist = [
@@ -24,7 +48,7 @@ const isVaultCollateralInWhitelist = vault => {
 
 const useMorphoOpportunities = () => {
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<MorphoVaultsResult>({
     queryKey: ['vaults'],
     queryFn: () =>
       request(
@@ -44,16 +68,18 @@ const useMorphoOpportunities = () => {
     if (isLoading || !data) {
       return { data: [], isLoading: true }
     }
-    const opportunities: YieldOpportunity[] = data.vaults.items
+    const opportunities: YieldOpportunityOnChain[] = data.vaults.items
       .filter(isVaultCollateralInWhitelist)
       .map(vault => {
         return {
           id: vault.id,
           symbol: vault.asset.symbol,
-          protocol: 'morpho',
+          protocol: 'morpho' as const,
           poolName: vault.name,
+          poolTokenAddress: vault.address,
           chainId: vault.chain.id,
           apy: vault.dailyApys.netApy,
+          type: 'dapp' as const,
           metadata: {
             link: getMorphoVaultLink(vault)
           }

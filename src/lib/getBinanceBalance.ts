@@ -3,7 +3,7 @@ import SettingsService from './settingsService';
 import axios from 'axios';
 import { createHmac } from 'crypto';
 
-export async function getBinanceBalance(): Promise<YieldPosition[]> {
+export async function getBinanceBalance(): Promise<YieldPositionExchange[]> {
   const apiKey = SettingsService.getSettings().apiKeys.binanceApiKey
   const secretKey = SettingsService.getSettings().apiKeys.binanceApiSecret
   if (!apiKey || !secretKey) {
@@ -34,12 +34,12 @@ export async function getBinanceBalance(): Promise<YieldPosition[]> {
       const formattedBalance = parseFloat(b.free) + parseFloat(b.locked)
       const symbol = b.coin
       return {
-        protocol: 'binance',
+        protocol: 'binance' as const,
         formattedBalance,
         balanceUsd: formattedBalance,
         symbol,
         poolName: `Spot ${symbol}`,
-        type: 'exchange',
+        type: 'exchange' as const,
         apy: 0
       }
     })

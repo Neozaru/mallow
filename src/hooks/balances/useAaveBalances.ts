@@ -2,10 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTokenBalances } from './useTokenBalances';
 import { useAaveOpportunities } from '../useAaveOpportunities';
 import { formatBalanceWithSymbol } from '../../lib/formatBalanceWithSymbol';
+import { Address } from 'viem';
 
-export function useAaveBalances(accountAddresses: string[]) {
-  const [aaveTokenConfigs, setAaveTokenConfigs] = useState([]);
-  const { balances: aTokenBalances, isLoading: isLoadingBalances } = useTokenBalances(accountAddresses, aaveTokenConfigs);
+export function useAaveBalances(accountAddresses: Address[]) {
+  const [aaveTokenConfigs, setAaveTokenConfigs] = useState<TokenConfig[]>([]);
+  const { data: aTokenBalances, isLoading: isLoadingBalances } = useTokenBalances(accountAddresses, aaveTokenConfigs);
   const { data: aaveOpportunities, isLoading: isLoadingStablecoinData } = useAaveOpportunities()
 
   useEffect(() => {
@@ -28,7 +29,7 @@ export function useAaveBalances(accountAddresses: string[]) {
     }
     const balances = aTokenBalances?.map(bal => {
       const { balance, chainId, accountAddress, tokenAddress } = bal
-      const opportunity: YieldOpportunity | undefined = aaveOpportunities.find(
+      const opportunity: YieldOpportunityOnChain | undefined = aaveOpportunities.find(
         d => d.poolTokenAddress === tokenAddress && d.chainId === chainId
       )
       if (!opportunity) {
