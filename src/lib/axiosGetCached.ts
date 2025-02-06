@@ -9,7 +9,7 @@ const axiosGetCache = {};
 export const axiosGetCached = async <T>(
   url: string,
   cacheExpiry?: number,
-  maxRetries = 5
+  maxRetries = 0
 ): Promise<AxiosResponse<T>> => {
   const currentTime = Date.now();
 

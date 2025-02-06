@@ -1,7 +1,8 @@
 import stablecoins from '@/constants/stablecoins'
-import { axiosGetCached } from '@/lib/axiosGetCached'
 import getSupportedChainIds from '@/utils/getSupportedChainIds'
-import { useEffect, useMemo, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import axios, { isAxiosError } from 'axios'
+import { useMemo } from 'react'
 import { Address } from 'viem'
 import { arbitrum, base, gnosis, mainnet, optimism, polygon, scroll, zksync } from 'viem/chains'
 
@@ -25,23 +26,29 @@ const aaveChainNames = {
   [scroll.id]: 'scroll',
 }
 
+const supportedChainIds = getSupportedChainIds()
+const stablecoinsAaveSymbols = stablecoins.flatMap(symbol => [symbol, `${symbol}.E`, `A${symbol}`])
+
 export function useAaveOpportunities() {
-  const [isLoading, setIsLoading] = useState(true)
-  const [aaveStablecoinData, setAaveStablecoinData] = useState<AavePoolData[]>([])
-  useEffect(() => {
-    async function fetchData() {
-      const supportedChainIds = getSupportedChainIds()
-      const stablecoinsAaveSymbols = stablecoins.flatMap(symbol => [symbol, `${symbol}.E`, `A${symbol}`])
-      const { data } = await axiosGetCached(
-        `/api/defi/aave/poolsdata?symbols=${stablecoinsAaveSymbols}&chainIds=${supportedChainIds}`,
-        600000
-      ) as { data: AavePoolData[] }
-      setAaveStablecoinData(data.filter(({ apy }) => apy > 0)) // Filters legacy pools
-      setIsLoading(false)
-    }
-    setIsLoading(true)
-    fetchData()
-  }, [])
+  const { isLoading, data: aaveStablecoinData } = useQuery<AavePoolData[]>({
+    queryKey: ['aavedata'],
+    queryFn: async () => {
+      const { data } = await axios.get(
+        `/api/defi/aave/poolsdata?symbols=${stablecoinsAaveSymbols}&chainIds=${supportedChainIds}`
+      )
+      return data.filter(({ apy }) => apy > 0)
+    },
+    retry: (failureCount, error) => {
+      // API usage limit
+      if (isAxiosError(error) && error.status === 429 && failureCount < 5) {
+        console.warn(`Rate limit reached for Aave API. Retrying (retry ${failureCount + 1}/5)`)
+        return true
+      }
+      return false
+    },
+    retryDelay: attemptIndex => Math.min(2000 * 2 ** attemptIndex, 30000),
+    staleTime: 600000
+  })
 
   const aaveOpportunities: YieldOpportunityOnChain[] = useMemo(() => {
     if (isLoading || !aaveStablecoinData) {

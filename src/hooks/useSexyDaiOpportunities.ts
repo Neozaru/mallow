@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
 import { useSDaiData } from './useDsrData'
 import { gnosis } from 'viem/chains'
-import { Address } from 'viem'
 
 const useSexyDaiOpportunities = () => {
   const { apy } = useSDaiData()

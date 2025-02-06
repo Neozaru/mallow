@@ -2,18 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useReadContracts, UseReadContractsParameters } from 'wagmi';
 import { Address, ContractFunctionParameters, erc20Abi } from 'viem';
 
-// type BalanceOfResultOk = {
-//   result: bigint;
-//   status: 'success';
-// }
-
-// type BalanceOfResultError = {
-//   status: 'failure';
-//   error: any;
-// }
-
-// type BalanceOfResult = BalanceOfResultOk | BalanceOfResultError
-
 type TokenBalance = {
   tokenAddress: Address;
   chainId: number;

@@ -153,10 +153,12 @@ function DashboardComponent() {
     setOnChainAccounts([])
   }
 
+  const isAddressWatchOrConnected = !!(params?.address || address)
+
   return (
     <Layout>
       {!false && <span>
-      {(accountAddresses.length > 0 || manualPositions.length > 0) && <AllBalances accountAddresses={accountAddresses} manualPositions={manualPositions}/>}
+      {(accountAddresses.length > 0 || manualPositions.length > 0) && <AllBalances accountAddresses={accountAddresses} manualPositions={isAddressWatchOrConnected ? [] : manualPositions} enableExchanges={!isAddressWatchOrConnected}/>}
       <WelcomeActionsWrapper>
         {accountAddresses.length === 0 &&
         <ConnectOrWatchWrapper>

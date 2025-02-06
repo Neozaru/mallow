@@ -5,7 +5,7 @@ import { getBinanceBalance } from '@/lib/getBinanceBalance';
 import { getCoinbaseBalance } from '@/lib/getCoinbaseBalance';
 import { getKrakenBalances } from '@/lib/getKrakenBalances';
 import { pick, sumBy } from 'lodash'
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { createColumnHelper, getCoreRowModel, getExpandedRowModel, getGroupedRowModel, getSortedRowModel, GroupingState, Row, SortingState, useReactTable } from '@tanstack/react-table';
 import PlatformDisplay from './PlatformDisplay';
@@ -15,10 +15,12 @@ import MallowTable from './MallowTable';
 import ApyCell from './ApyCell';
 import LoadingSpinner from './LoadingSpinner';
 import { Address } from 'viem';
+import { useQuery } from '@tanstack/react-query';
 
 type AllBalancesProps = {
   accountAddresses: Array<Address> | [];
   manualPositions: Array<YieldPositionManual> | [];
+  enableExchanges: boolean;
 };
 
 const formatUsdBalance = (balance: number, minimumFractionDigits = 0, maximumFractionDigits = 0)  => {
@@ -174,27 +176,24 @@ const columns = [
   }),
 ]
 
-const AllBalances: React.FC<AllBalancesProps> = ({accountAddresses, manualPositions}) => {
-  const [coinbaseBalances, setCoinbaseBalances] = useState<YieldPositionExchange[]>([])
-  useEffect(() => {
-    if (SettingsService.getSettings().apiKeys.coinbaseKeyName && SettingsService.getSettings().apiKeys.coinbaseApiSecret) {
-      getCoinbaseBalance().then(setCoinbaseBalances)
-    }
-  }, [])
+const AllBalances: React.FC<AllBalancesProps> = ({accountAddresses, manualPositions, enableExchanges = false}) => {
+  const { data: coinbaseBalances } = useQuery({
+    queryKey: ['coinbase'],
+    queryFn: getCoinbaseBalance,
+    enabled: enableExchanges && !!SettingsService.getSettings().apiKeys.coinbaseKeyName && !!SettingsService.getSettings().apiKeys.coinbaseApiSecret
+  })
 
-  const [binanceBalances, setBinanceBalances] = useState<YieldPositionExchange[]>([])
-  useEffect(() => {
-    if (SettingsService.getSettings().apiKeys.binanceApiKey && SettingsService.getSettings().apiKeys.binanceApiSecret) {
-      getBinanceBalance().then(setBinanceBalances)
-    }
-  }, [])
+  const { data: binanceBalances } = useQuery({
+    queryKey: ['binance'],
+    queryFn: getBinanceBalance,
+    enabled: enableExchanges && !!SettingsService.getSettings().apiKeys.binanceApiKey && !!SettingsService.getSettings().apiKeys.binanceApiSecret
+  })
 
-const [krakenBalances, setKrakenBalances] = useState<YieldPositionExchange[]>([])
-  useEffect(() => {
-    if (SettingsService.getSettings().apiKeys.krakenApiKey && SettingsService.getSettings().apiKeys.krakenApiSecret) {
-      getKrakenBalances().then(setKrakenBalances)
-    }
-  }, [])
+  const { data: krakenBalances } = useQuery({
+    queryKey: ['kraken'],
+    queryFn: getKrakenBalances,
+    enabled: enableExchanges && !!SettingsService.getSettings().apiKeys.krakenApiKey && !!SettingsService.getSettings().apiKeys.krakenApiSecret
+  })
 
   const { data: onChainBalances, isLoading } = useOnChainBalances(accountAddresses)
   const allBalances: YieldPositionAny[] = useMemo<YieldPositionAny[]>(() => {

@@ -1,5 +1,5 @@
-import { axiosGetCached } from '@/lib/axiosGetCached'
-import { useEffect, useState } from 'react'
+import { useQueries } from '@tanstack/react-query';
+import axios from 'axios';
 import { Address } from 'viem';
 
 type BeefyVault = {
@@ -24,17 +24,33 @@ type BeefyData = {
   isLoading: boolean;
 }
 
-export function useBeefyData() {
-  const [beefyData, setBeefyData] = useState<BeefyData>({ isLoading: true, vaults: [], boosts: [], apys: {} })
-  useEffect(() => {
-    async function fetchData() {
-      const { data: vaults } = await axiosGetCached<BeefyVault[]>('https://api.beefy.finance/vaults')
-      const { data: boosts } = await axiosGetCached<BeefyBoost[]>('https://api.beefy.finance/boosts')
-      const { data: apys } = await axiosGetCached<BeefyApys>('https://api.beefy.finance/apy')
-      setBeefyData({ vaults, boosts, apys, isLoading: false })
-    }
-    fetchData()
-  }, [])
+async function fetchWithAxios(url) {
+  const { data } = await axios.get(url)
+  return data
+}
 
-  return beefyData
+export function useBeefyData(): BeefyData {
+  const [vaultsQuery, boostsQuery, apysQuery] = useQueries({
+    queries: [
+      {
+        queryKey: ['beefyVaults'],
+        queryFn: () => fetchWithAxios('https://api.beefy.finance/vaults')
+      },
+      {
+        queryKey: ['beefyBoosts'],
+        queryFn: () => fetchWithAxios('https://api.beefy.finance/boosts')
+      },
+      {
+        queryKey: ['beefyApys'],
+        queryFn: () => fetchWithAxios('https://api.beefy.finance/apy')
+      }
+    ]
+  })
+  const isLoading = vaultsQuery.isLoading || boostsQuery.isLoading || apysQuery.isLoading
+  return {
+    vaults: vaultsQuery.data,
+    boosts: boostsQuery.data,
+    apys: apysQuery.data,
+    isLoading
+  }
 }
