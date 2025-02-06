@@ -6,7 +6,7 @@ import { Address, formatUnits } from 'viem';
 import useBeefyOpportunities from '../useBeefyOpportunities';
 import { find } from 'lodash';
 
-export function useBeefyBalances(accountAddresses: Address[]) {
+export function useBeefyBalances(accountAddresses: Address[]): LoadableData<YieldPositionOnChain[]> {
   const [beefyTokenConfigs, setBeefyTokenConfigs] = useState<TokenConfig[]>([])
   const { data: balancesOpportunities } = useTokenBalances(accountAddresses, beefyTokenConfigs)
 
@@ -50,6 +50,6 @@ export function useBeefyBalances(accountAddresses: Address[]) {
         ...opportunity
       }
     })
-    return { balances, isLoading: false }
+    return { data: balances, isLoading: false }
   }, [vaults, boosts, opportunities, balancesOpportunities])
 }

@@ -54,11 +54,11 @@ export function useAaveOpportunities() {
         id,
         symbol: spotTokenSymbol,
         poolTokenAddress: aTokenAddress,
-        protocol: 'aave' as const,
+        platform: 'aave' as const,
         poolName: `Aave ${spotTokenSymbol}`,
         chainId,
         apy,
-        type: 'dapp' as const,
+        type: 'onchain' as const,
         metadata: {
           link: `https://app.aave.com/reserve-overview/?underlyingAsset=${underlyingAsset}&marketName=proto_${aaveChainNames[chainId] || 'mainnet'}_v3`
         }

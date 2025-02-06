@@ -10,15 +10,15 @@ import { useOpportunities } from '@/hooks/useOpportunities'
 const columnHelper = createColumnHelper<YieldOpportunityOnChain>()
 
 const columns = [
-  columnHelper.accessor(row => pick(row, ['metadata', 'protocol', 'poolName', 'symbol', 'chainId', 'type']), {
+  columnHelper.accessor(row => pick(row, ['metadata', 'platform', 'poolName', 'symbol', 'chainId', 'type']), {
     id: 'platform',
     header: () => <span>Position</span>,
     sortingFn: 'alphanumeric',
     aggregationFn: 'uniqueCount',
     enableGrouping: false,
     cell: info => {
-      const { metadata, protocol, poolName, symbol, chainId, type } = info.getValue()
-      return (<PlatformDisplay link={metadata?.link} platform={protocol} pool={poolName} symbol={symbol} chainId={chainId} type={type}></PlatformDisplay>)
+      const { metadata, platform, poolName, symbol, chainId, type } = info.getValue()
+      return (<PlatformDisplay link={metadata?.link} platform={platform} pool={poolName} symbol={symbol} chainId={chainId} type={type}></PlatformDisplay>)
     }
   }),
   columnHelper.accessor('apy', {

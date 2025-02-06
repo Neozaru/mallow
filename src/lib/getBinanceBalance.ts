@@ -1,6 +1,6 @@
 import stablecoins from '@/constants/stablecoins';
 import SettingsService from './settingsService';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 import { createHmac } from 'crypto';
 
 export async function getBinanceBalance(): Promise<YieldPositionExchange[]> {
@@ -34,7 +34,7 @@ export async function getBinanceBalance(): Promise<YieldPositionExchange[]> {
       const formattedBalance = parseFloat(b.free) + parseFloat(b.locked)
       const symbol = b.coin
       return {
-        protocol: 'binance' as const,
+        platform: 'binance' as const,
         formattedBalance,
         balanceUsd: formattedBalance,
         symbol,
@@ -44,7 +44,7 @@ export async function getBinanceBalance(): Promise<YieldPositionExchange[]> {
       }
     })
   } catch (error) {
-    console.error('Error fetching balances:', error.response?.data || error.message)
+    console.error('Error fetching balances:', isAxiosError(error) && error.response?.data || error)
     return []
   }
 }

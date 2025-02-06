@@ -74,12 +74,12 @@ const useMorphoOpportunities = () => {
         return {
           id: vault.id,
           symbol: vault.asset.symbol,
-          protocol: 'morpho' as const,
+          platform: 'morpho' as const,
           poolName: vault.name,
           poolTokenAddress: vault.address,
           chainId: vault.chain.id,
           apy: vault.dailyApys.netApy,
-          type: 'dapp' as const,
+          type: 'onchain' as const,
           metadata: {
             link: getMorphoVaultLink(vault)
           }

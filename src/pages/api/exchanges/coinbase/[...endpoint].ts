@@ -1,3 +1,4 @@
+import forwardAxiosError from '@/utils/forwardAxiosError';
 import axios from 'axios'
 import { Agent } from 'https';
 import _ from 'lodash';
@@ -29,7 +30,6 @@ export default async function handler(req, res) {
     res.status(200).json(apiRes.data)
   } catch (error) {
     console.error('ERROR CB', error)
-    console.error('AR response body', error.response.data)
-    res.status(error.status || 500).end(error.message)
+    return forwardAxiosError(res, error)
   }
 }

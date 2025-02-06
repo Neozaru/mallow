@@ -23,10 +23,10 @@ const useBeefyOpportunities = (): LoadableData<YieldOpportunityOnChain[]> => {
         symbol: token,
         poolTokenAddress: earnContractAddress,
         apy: apys[id],
-        protocol: 'beefy' as const,
+        platform: 'beefy' as const,
         poolName: id.split('-').map(capitalize).join(' '),
         chainId: getChainIdFromBeefyName(chain),
-        type: 'dapp' as const,
+        type: 'onchain' as const,
         metadata: {
           link: `https://app.beefy.com/vault/${id}`
         }
@@ -42,10 +42,10 @@ const useBeefyOpportunities = (): LoadableData<YieldOpportunityOnChain[]> => {
         symbol: vault.token,
         poolTokenAddress: earnContractAddress,
         apy: apys[vault.id],
-        protocol: 'beefy' as const,
+        platform: 'beefy' as const,
         poolName: 'Boosted ' + vault.id.split('-').map(capitalize).join(' '),
         chainId: getChainIdFromBeefyName(chain),
-        type: 'dapp' as const,
+        type: 'onchain' as const,
         metadata: {
           link: `https://app.beefy.com/vault/${poolId}`
         }

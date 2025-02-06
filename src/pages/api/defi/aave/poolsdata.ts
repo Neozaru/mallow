@@ -1,4 +1,5 @@
 import { getAaveStablecoinData } from '@/lib/getAaveStablecoinData'
+import forwardAxiosError from '@/utils/forwardAxiosError'
 
 export default async function handler(req, res) {
   const { query } = req
@@ -7,6 +8,6 @@ export default async function handler(req, res) {
     res.status(200).json(apiRes)
   } catch (error) {
     console.error('AAVE poolsdata error', error)
-    return res.status(error.status || 500).end(error.message)
+    return forwardAxiosError(res, error)
   }
 }

@@ -4,7 +4,7 @@ import { useAaveOpportunities } from '../useAaveOpportunities';
 import { formatBalanceWithSymbol } from '../../lib/formatBalanceWithSymbol';
 import { Address } from 'viem';
 
-export function useAaveBalances(accountAddresses: Address[]) {
+export function useAaveBalances(accountAddresses: Address[]): LoadableData<YieldPositionOnChain[]> {
   const [aaveTokenConfigs, setAaveTokenConfigs] = useState<TokenConfig[]>([]);
   const { data: aTokenBalances, isLoading: isLoadingBalances } = useTokenBalances(accountAddresses, aaveTokenConfigs);
   const { data: aaveOpportunities, isLoading: isLoadingStablecoinData } = useAaveOpportunities()
@@ -45,6 +45,6 @@ export function useAaveBalances(accountAddresses: Address[]) {
         formattedBalance,
       }
     })
-    return { balances, isLoading: false }
+    return { data: balances, isLoading: false }
   }, [aTokenBalances, aaveOpportunities, aaveTokenConfigs, isLoadingBalances, isLoadingStablecoinData])
 }

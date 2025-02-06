@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse, isAxiosError } from 'axios';
 
 // Courtesy of ChatGPT
 
@@ -33,7 +33,7 @@ export const axiosGetCached = async <T>(
       axiosGetCache[url] = { data: response, timestamp: currentTime };
       return response; // Return successful response
     } catch (error) {
-      if (error.response?.status === 429 && attempt < maxRetries) {
+      if (isAxiosError(error) && error.response?.status === 429 && attempt < maxRetries) {
         attempt++;
         console.warn(`Attempt ${attempt} failed. Retrying in ${waitTime} ms...`);
         await new Promise(resolve => setTimeout(resolve, waitTime)); // Wait before retrying

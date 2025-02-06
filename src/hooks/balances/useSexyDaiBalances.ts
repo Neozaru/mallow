@@ -14,13 +14,13 @@ const sexyDaiTokenConfig: TokenConfig[] = [{
   chainId: gnosis.id
 }]
 
-export function useSexyDaiBalances(accountAddresses: Address[]) {
+export function useSexyDaiBalances(accountAddresses: Address[]): LoadableData<YieldPositionOnChain[]> {
   const { data: sexyDaiShareBalances, isLoading: isLoadingBalances } = useTokenBalances(accountAddresses, sexyDaiTokenConfig)
 
   const { apy } = useSDaiData()
 
   const [assetConvertcontractReadCalls, setAssetConvertContractReadCalls] = useState<UseReadContractsParameters>({ contracts: [] })
-  const { data: assetBalanceData, isLoading: isLoadingReadContracts } = useReadContracts(assetConvertcontractReadCalls);
+  const { data: assetBalanceData, isLoading: isLoadingReadContracts } = useReadContracts<ContractCallBigIntResult>(assetConvertcontractReadCalls);
 
   useEffect(() => {
     if (isLoadingBalances) {
@@ -41,35 +41,35 @@ export function useSexyDaiBalances(accountAddresses: Address[]) {
   }, [sexyDaiShareBalances, isLoadingBalances])
 
   return useMemo(() => {
-    if (isLoadingBalances || isLoadingReadContracts || !assetBalanceData) {
-      return { isLoading: true, balances: [] }
+    if (isLoadingBalances || isLoadingReadContracts || !assetBalanceData || !sexyDaiShareBalances) {
+      return { isLoading: true, data: [] }
     }
-    const balances = sexyDaiShareBalances?.map((shareBalanceData, i) => {
+    const balances = sexyDaiShareBalances.flatMap((shareBalanceData, i) => {
       const { accountAddress, balance } = shareBalanceData
       const formattedBalance = formatUnits(balance, 18)
       if (assetBalanceData[i]?.status !== 'success') {
         console.error('Sexy DAI error: Undefined result', {i, assetBalanceData, error: assetBalanceData[i]?.error})
         return []
       }
-      const result = assetBalanceData[i].result
-      const balanceUsd = parseFloat(formatUnits(result as bigint, 18))
+      const balanceUsd = parseFloat(formatUnits(assetBalanceData[i].result, 18))
       return [{
         id: `sexy-dai`,
         accountAddress,
+        poolTokenAddress: sexyDaiGnosisAddress,
         symbol: 'DAI',
         balance,
         balanceUsd,
         formattedBalance,
-        protocol: 'dsr' as const,
+        platform: 'dsr' as const,
         poolName: 'DSR Gnosis',
         chainId: gnosis.id,
         apy,
-        type: 'dapp' as const,
+        type: 'onchain' as const,
         metadata: {
           link: 'https://agavefinance.eth.limo/sdai/'
         }
       }]
     })
-    return { balances, isLoading: false }
+    return { data: balances, isLoading: false }
   }, [assetBalanceData, sexyDaiShareBalances, isLoadingReadContracts, isLoadingBalances, apy])
 }

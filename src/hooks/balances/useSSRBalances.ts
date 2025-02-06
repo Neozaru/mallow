@@ -12,17 +12,17 @@ const sUSDSTokenConfig: TokenConfig[] = [{
   chainId: base.id
 }]
 
-export function useSSRBalances(accountAddresses: Address[]) {
+export function useSSRBalances(accountAddresses: Address[]): LoadableData<YieldPositionOnChain[]> {
   const { data: sUSDSBalances, isLoading: isLoadingBalances } = useTokenBalances(accountAddresses, sUSDSTokenConfig)
 
   const { data: ssrData, isLoading: isLoadingSSRData } = useSSRData()
 
   return useMemo(() => {
-    if (isLoadingBalances || isLoadingSSRData || !ssrData) {
-      return { isLoading: true, balances: [] }
+    if (isLoadingBalances || isLoadingSSRData || !ssrData || !sUSDSBalances) {
+      return { isLoading: true, data: [] }
     }
-    const balances = sUSDSBalances?.map(shareBalanceData => {
-      const { accountAddress, balance, chainId } = shareBalanceData
+    const balances = sUSDSBalances.flatMap(shareBalanceData => {
+      const { accountAddress, balance, chainId, tokenAddress } = shareBalanceData
       const formattedBalance = formatUnits(balance, 18)
       const { apy, sUSDSPriceUsd } = ssrData
       const balanceUsd = sUSDSPriceUsd * parseFloat(formattedBalance)
@@ -32,17 +32,18 @@ export function useSSRBalances(accountAddresses: Address[]) {
         symbol: 'USDS',
         balance,
         balanceUsd,
+        poolTokenAddress: tokenAddress,
         formattedBalance,
-        protocol: 'ssr' as const,
+        platform: 'ssr' as const,
         poolName: 'sUSDS',
         chainId,
         apy,
-        type: 'dapp' as const,
+        type: 'onchain' as const,
         metadata: {
           link: 'https://app.sky.money/?widget=savings'
         }
       }]
     })
-    return { balances, isLoading: false }
+    return { data: balances, isLoading: false }
   }, [isLoadingBalances, isLoadingSSRData, ssrData, sUSDSBalances])
 }

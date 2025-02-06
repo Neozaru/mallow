@@ -14,7 +14,7 @@ const stablecoinAddressesAndChainArray: TokenConfigAndSymbol[] = stablecoinAddre
   }))
 })
 
-export function useSpotBalances(accountAddresses: Address[]) {
+export function useSpotBalances(accountAddresses: Address[]): LoadableData<YieldPositionOnChain[]> {
   const { data: spotTokenBalances, isLoading, error } = useTokenBalances(accountAddresses, stablecoinAddressesAndChainArray)
   return useMemo(() => {
     if (error) {
@@ -32,16 +32,17 @@ export function useSpotBalances(accountAddresses: Address[]) {
         id: `spot-${symbol}-${chainId}`,
         accountAddress,
         symbol,
+        poolTokenAddress: tokenAddress,
         balance,
         balanceUsd: parseFloat(formattedBalance),
         formattedBalance,
-        protocol: 'spot' as const,
+        platform: 'spot' as const,
         poolName: `Spot ${symbol}`,
         chainId,
         apy: 0,
-        type: 'spot' as const
+        type: 'onchain' as const
       }
     })
-    return { balances, isLoading: false }
+    return { data: balances, isLoading: false }
   }, [isLoading, spotTokenBalances, error])
 }

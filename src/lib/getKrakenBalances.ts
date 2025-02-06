@@ -99,7 +99,7 @@ export async function getKrakenBalances(): Promise<YieldPositionExchange[]> {
     const krakenBalances: YieldPositionExchange[] = balances.map(({symbol, balance, poolName, apy}, i): YieldPositionExchange => {
       return {
         id: `kraken-${i}`,
-        protocol: 'kraken' as const,
+        platform: 'kraken' as const,
         symbol,
         balance,
         poolName,

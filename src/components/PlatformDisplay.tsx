@@ -136,12 +136,12 @@ const ExternalLinkWrapper = styled.span`
 `
 
 interface PlatformParameters {
-  link?: string;
-  platform: string;
   symbol: string;
+  type: string | undefined;
   pool: string;
   chainId?: number;
-  type: string | undefined;
+  link?: string;
+  platform?: string;
 }
 
 function ExternalLink({ href }) {
@@ -154,10 +154,11 @@ function ExternalLink({ href }) {
 
 const PlatformDisplay = (params: PlatformParameters) => {
   const { link, platform, symbol, pool, chainId, type } = params
-  const isSpot = type === 'spot' 
-  const platformIconUrl = platformIcons[platform] || `https://placehold.co/32x32?text=${platform}`;
+  const isSpot = platform === 'spot'
+  const isManual = type === 'manual'
+  const platformIconUrl = platform && platformIcons[platform] || `https://placehold.co/32x32?text=${platform}`;
   const tokenIconUrl = tokenIcons[symbol.split('.')[0]] || `https://placehold.co/32x32?text=${symbol}`;
-  const platformName = platformNames[platform] || platform || 'Unknown Platform';
+  const platformName = isManual ? symbol : platform && platformNames[platform] || platform || 'Unknown Platform';
   const chainName = chainId ? getChainName(chainId) : ''
   const chainIconUrl = chainId
     ? chainIcons[chainId] || `https://placehold.co/12x12?text=${chainName}`

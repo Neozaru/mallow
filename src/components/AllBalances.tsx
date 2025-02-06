@@ -95,8 +95,6 @@ const NothingToShow = styled.div`
   text-align: center;
 `
 
-type YieldPositionAny = YieldPositionExchange | YieldPositionOnChain | YieldPositionManual
-
 const columnHelper = createColumnHelper<YieldPositionExchange | YieldPositionOnChain | YieldPositionManual>()
 
 const balanceSortingFn = (rowA, rowB) => {
@@ -105,8 +103,8 @@ const balanceSortingFn = (rowA, rowB) => {
   : -1
 }
 
-const balanceAggregationFn = (columnId, leafRows: Row<YieldPositionAny>[], childRows) => {
-  const res = sumBy(leafRows, leafRow => (leafRow.getUniqueValues('balance')[0] as YieldPositionAny).balanceUsd)
+const balanceAggregationFn = (columnId, leafRows: Row<YieldPositionAny>[]) => {
+  const res = sumBy(leafRows, leafRow => (leafRow.getUniqueValues<YieldPositionAny>('balance')[0]).balanceUsd)
   return {
     balanceUsd: res
   }
@@ -137,9 +135,10 @@ const columns = [
     enableGrouping: false,
     cell: info => {
       const value = info.getValue()
-      const { metadata, protocol, poolName, symbol, type } = value
-      const chainId = value.type !== 'exchange' ? value['chainId'] : undefined // I am actually not sure how to make this cleaner
-      return (<PlatformDisplay link={metadata?.link} platform={protocol} pool={poolName} symbol={symbol} chainId={chainId} type={type}></PlatformDisplay>)
+      const { metadata, poolName, symbol, type } = value
+      const chainId = value.type === 'onchain' ? value.chainId : undefined
+      const platform = value.type !== 'manual' ? value.platform : undefined
+      return (<PlatformDisplay link={metadata?.link} platform={platform} pool={poolName} symbol={symbol} chainId={chainId} type={type}></PlatformDisplay>)
     }
   }),
   columnHelper.accessor(row => pick(row, ['formattedBalance', 'balanceUsd', 'symbol', 'type']), {
@@ -165,29 +164,6 @@ const columns = [
     aggregationFn: 'mean',
     enableGrouping: false,
   }),
-  // columnHelper.accessor('accountAddress', {
-  //   id: 'accountAddress',
-  //   header: 'Address',
-  //   cell: info => {
-  //     const value: string = info.getValue()
-  //     if (!value) {
-  //       return ''
-  //     }
-  //     if (isNumber(value)) {
-  //       return value
-  //     }
-  //     if (!isString(value)) {
-  //       return ''
-  //     }
-  //     if (!value.startsWith('0x')) {
-  //       return value
-  //     }
-  //     return <EthereumAddress address={value}></EthereumAddress>
-  //   },
-  //   sortingFn: 'alphanumeric',
-  //   aggregationFn: 'uniqueCount',
-  //   enableGrouping: false,
-  // }),
   columnHelper.accessor('chainId', {
     header: 'Chain',
     cell: info => info.getValue() ? getChainName(info.getValue()) : '',
@@ -220,21 +196,25 @@ const [krakenBalances, setKrakenBalances] = useState<YieldPositionExchange[]>([]
     }
   }, [])
 
-  const { balances: onChainBalances, isLoading } = useOnChainBalances(accountAddresses)
+  const { data: onChainBalances, isLoading } = useOnChainBalances(accountAddresses)
   const allBalances: YieldPositionAny[] = useMemo<YieldPositionAny[]>(() => {
+    if (isLoading) {
+      return []
+    }
     return [
-      ...onChainBalances,
-      ...krakenBalances,
-      ...coinbaseBalances,
-      ...binanceBalances,
-      ...manualPositions,
+      ...(onChainBalances || []),
+      ...(krakenBalances || []),
+      ...(coinbaseBalances || []),
+      ...(binanceBalances || []),
+      ...(manualPositions || []),
     ]
   }, [
     onChainBalances,
     krakenBalances,
     coinbaseBalances,
     binanceBalances,
-    manualPositions
+    manualPositions,
+    isLoading
   ])
 
   const smallBalancesHideAmount = 1
@@ -325,7 +305,7 @@ const [krakenBalances, setKrakenBalances] = useState<YieldPositionExchange[]>([]
     : hasEnoughBalance ? <MallowTable table={table}/>
     : (!isLoading && <NothingToShowWrapper>
         <NothingToShow>Nothing to show 🤷</NothingToShow>
-        <div>Supported protocols are Aave, Morpho, Beefy and DSR (more to come soon).</div>
+        <div>Supported platforms are Aave, Morpho, Beefy and DSR (more to come soon).</div>
       </NothingToShowWrapper>)}
   </ComponentWrapper>)
 }

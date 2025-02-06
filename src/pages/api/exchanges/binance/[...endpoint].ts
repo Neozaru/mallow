@@ -1,3 +1,4 @@
+import forwardAxiosError from '@/utils/forwardAxiosError'
 import axios from 'axios'
 import { Agent } from 'https'
 import _ from 'lodash'
@@ -31,7 +32,7 @@ export default async function handler(req, res) {
     )
     res.status(200).json(apiRes.data)
   } catch (error) {
-    console.error('AR', error)
-    return res.status(error.status || 500).end(error.message)
+    console.error('ERROR BINANCE', error)
+    return forwardAxiosError(res, error)
   }
 }

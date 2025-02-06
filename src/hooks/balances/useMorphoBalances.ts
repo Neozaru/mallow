@@ -1,7 +1,7 @@
 import { GET_USER_VAULT_POSITIONS } from '@/lib/graphqlMorpho/GET_USER_VAULT_POSITIONS';
 import request from 'graphql-request'
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { QueriesOptions, replaceEqualDeep, useQueries, UseQueryResult } from '@tanstack/react-query'
+import { QueriesOptions, replaceEqualDeep, useQueries } from '@tanstack/react-query'
 import { formatBalanceWithSymbol } from '../../lib/formatBalanceWithSymbol';
 import getMorphoVaultLink from '@/utils/getMorphoVaultLink';
 import { Address } from 'viem';
@@ -51,7 +51,7 @@ type QueryOptionState = {
 
 const initialQueriesState = { queries: [] }
 
-export function useMorphoBalances(accountAddresses: Address[]) {
+export function useMorphoBalances(accountAddresses: Address[]): LoadableData<YieldPositionOnChain[]> {
   const [queries, setQueries] = useState<QueryOptionState>(initialQueriesState)
   const queriesResult = useQueries(queries)
   const queriesResultStable = useStable(queriesResult)
@@ -99,17 +99,17 @@ export function useMorphoBalances(accountAddresses: Address[]) {
           balance,
           balanceUsd: position.assetsUsd,
           formattedBalance,
-          protocol: 'morpho' as const,
+          platform: 'morpho' as const,
           poolName: position.vault.name,
           chainId: position.vault.chain.id,
           apy,
-          type: 'dapp' as const,
+          type: 'onchain' as const,
           metadata: {
             link: getMorphoVaultLink(position.vault)
           }
         }
       })
     })
-    return { balances, isLoading: false }
+    return { data: balances, isLoading: false }
   }, [queriesResultStable])
 }

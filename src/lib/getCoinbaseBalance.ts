@@ -1,7 +1,7 @@
 import stablecoins from '@/constants/stablecoins';
 import { sign } from 'jsonwebtoken'
 import SettingsService from './settingsService';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 import { randomBytes } from 'crypto';
 
 async function coinbaseApiGet(endpoint: string) {
@@ -49,7 +49,7 @@ export async function getCoinbaseBalance(): Promise<YieldPositionExchange[]> {
     .map(pos => {
       const symbol = pos.asset
       return {
-        protocol: 'coinbase' as const,
+        platform: 'coinbase' as const,
         formattedBalance: pos.total_balance_crypto,
         balanceUsd: Number(pos.total_balance_fiat),
         symbol,
@@ -59,7 +59,7 @@ export async function getCoinbaseBalance(): Promise<YieldPositionExchange[]> {
       }
     })
   } catch (error) {
-    console.error('Error fetching portfolios:', error.response?.data || error.message)
+    console.error('Error fetching portfolios:', isAxiosError(error) && error.response?.data || error)
     return []
   }
 }

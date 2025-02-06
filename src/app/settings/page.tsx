@@ -91,7 +91,7 @@ const Settings = () => {
       settings.onChainAccounts.map(account => `${account.address}`).join('\n')
     )
     setManualPositions(
-      settings.manualPositions.map(({protocol, balanceUsd, apy}) => `${protocol},${balanceUsd},${apy}`).join('\n')
+      settings.manualPositions.map(({poolName, balanceUsd, apy}) => `${poolName},${balanceUsd},${apy}`).join('\n')
     )
   }, []);
 
@@ -103,18 +103,18 @@ const Settings = () => {
     e.preventDefault();
     const accountAddresses = onChainAccounts.split('\n').map(s => s.trim()).filter(s => s !== '').filter(onlyUnique)
     const uniqueAccountAddresses = uniq(accountAddresses)
-    const onChainAccountsNewSettings: OnChainAccount[] = uniqueAccountAddresses.map((address: Address) => ({
-      address,
+    const onChainAccountsNewSettings: OnChainAccount[] = uniqueAccountAddresses.map((address: string) => ({
+      address: address as Address,
       chainType: 'evm'
     }))
 
     const manualPositionsNewSettings: YieldPositionManual[] = manualPositions.split('\n').map(s => s.trim()).filter(s => s !== '').map((line, i) => {
       const [name, balanceUsd, apy] = line.split(',')
       return {
-        id: `manual-${i}`,
+        id: `manual-${name}-${i}`,
         symbol: name, 
-        protocol: 'manual' as const,
-        poolName: 'Manual entry',
+        // platform: 'manual' as const,
+        poolName: name,
         balanceUsd: parseFloat(balanceUsd),
         balance: BigInt(balanceUsd),
         formattedBalance: `${parseFloat(balanceUsd)}`,

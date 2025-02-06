@@ -2,17 +2,17 @@ import { useEffect, useMemo, useState } from 'react';
 import { useReadContracts, UseReadContractsParameters } from 'wagmi';
 import { Address, ContractFunctionParameters, erc20Abi } from 'viem';
 
-type BalanceOfResultOk = {
-  result: bigint;
-  status: 'success';
-}
+// type BalanceOfResultOk = {
+//   result: bigint;
+//   status: 'success';
+// }
 
-type BalanceOfResultError = {
-  status: 'failure';
-  error: any;
-}
+// type BalanceOfResultError = {
+//   status: 'failure';
+//   error: any;
+// }
 
-type BalanceOfResult = BalanceOfResultOk | BalanceOfResultError
+// type BalanceOfResult = BalanceOfResultOk | BalanceOfResultError
 
 type TokenBalance = {
   tokenAddress: Address;
@@ -23,7 +23,7 @@ type TokenBalance = {
 
 export function useTokenBalances(accountAddresses: Address[], tokenConfigs: TokenConfig[]): LoadableData<TokenBalance[]> {
   const [contractReadCalls, setContractReadCalls] = useState<UseReadContractsParameters>({ batchSize: 512, contracts: [] })
-  const { data, error, isLoading: isReadContractLoading } = useReadContracts<BalanceOfResult[]>(contractReadCalls);
+  const { data, error, isLoading: isReadContractLoading } = useReadContracts<ContractCallBigIntResult[]>(contractReadCalls);
 
   useEffect(() => {
     if (!accountAddresses || !tokenConfigs) {
@@ -48,7 +48,7 @@ export function useTokenBalances(accountAddresses: Address[], tokenConfigs: Toke
     if (!contractReadCalls.contracts || isReadContractLoading || !data) {
       return { isLoading: true, data: [], error }
     }
-    const typedData = data as BalanceOfResult[]
+    const typedData = data as ContractCallBigIntResult[]
     const balances = typedData.map((data, i) => {
       const { chainId, address, args } = contractReadCalls.contracts![i]
       const balance = data.status === 'success' ? data.result :  BigInt(0)

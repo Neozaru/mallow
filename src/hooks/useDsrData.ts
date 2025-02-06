@@ -32,7 +32,7 @@ const readContractsParams: UseReadContractsParameters = {
 
 export function useSDaiData() {
   const [sDaiData, setSDaiData] = useState({ apy: 0, rho: 0, chi: 0 })
-  const { data, error } = useReadContracts(readContractsParams)
+  const { data, error } = useReadContracts<ContractCallBigIntResult>(readContractsParams)
   
   useEffect(() => {
     if (error) {
@@ -42,17 +42,10 @@ export function useSDaiData() {
     if (!data || data.length === 0) {
       return
     }
-
-    const typedData: bigint[] = data.map((item) => {
-      if (typeof item.result === 'bigint') {
-        return item.result
-      }
-      throw Error('Error while fetching DSR data')
-    })
-
-    const dsr = unsafeConvertBigNumberToNumer(typedData[0])
-    const chi = unsafeConvertBigNumberToNumer(typedData[1])
-    const rho = unsafeConvertBigNumberToNumer(typedData[2])
+    const typedData = data as ContractCallBigIntResult[]
+    const dsr = unsafeConvertBigNumberToNumer(typedData[0].result || 0)
+    const chi = unsafeConvertBigNumberToNumer(typedData[1].result || 0)
+    const rho = unsafeConvertBigNumberToNumer(typedData[2].result || 0)
 
     const apy = Math.pow(
       dsr / Math.pow(10, 27),
