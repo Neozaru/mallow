@@ -37,7 +37,7 @@ class SettingsService {
 
   // Helper method to save settings to localStorage
   private static saveSettingsToLocalStorage(settings: Settings): void {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings, (_, v) => typeof v === 'bigint' ? v.toString() : v));
   }
 
   // Method to get all settings

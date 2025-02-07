@@ -91,7 +91,7 @@ const Settings = () => {
       settings.onChainAccounts.map(account => `${account.address}`).join('\n')
     )
     setManualPositions(
-      settings.manualPositions.map(({poolName, balanceUsd, apy}) => `${poolName},${balanceUsd},${apy}`).join('\n')
+      settings.manualPositions.map(({symbol, balanceUsd, apy}) => `${symbol},${balanceUsd},${apy}`).join('\n')
     )
   }, []);
 
@@ -113,7 +113,6 @@ const Settings = () => {
       return {
         id: `manual-${name}-${i}`,
         symbol: name, 
-        // platform: 'manual' as const,
         poolName: name,
         balanceUsd: parseFloat(balanceUsd),
         balance: BigInt(balanceUsd),
