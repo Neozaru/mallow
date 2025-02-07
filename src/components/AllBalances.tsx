@@ -180,18 +180,21 @@ const AllBalances: React.FC<AllBalancesProps> = ({accountAddresses, manualPositi
   const { data: coinbaseBalances } = useQuery({
     queryKey: ['coinbase'],
     queryFn: getCoinbaseBalance,
+    staleTime: Infinity,
     enabled: enableExchanges && !!SettingsService.getSettings().apiKeys.coinbaseKeyName && !!SettingsService.getSettings().apiKeys.coinbaseApiSecret
   })
 
   const { data: binanceBalances } = useQuery({
     queryKey: ['binance'],
     queryFn: getBinanceBalance,
+    staleTime: Infinity,
     enabled: enableExchanges && !!SettingsService.getSettings().apiKeys.binanceApiKey && !!SettingsService.getSettings().apiKeys.binanceApiSecret
   })
 
   const { data: krakenBalances } = useQuery({
     queryKey: ['kraken'],
     queryFn: getKrakenBalances,
+    staleTime: Infinity,
     enabled: enableExchanges && !!SettingsService.getSettings().apiKeys.krakenApiKey && !!SettingsService.getSettings().apiKeys.krakenApiSecret
   })
 
