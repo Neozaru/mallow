@@ -43,7 +43,7 @@ const useBeefyOpportunities = (): LoadableData<YieldOpportunityOnChain[]> => {
         poolTokenAddress: earnContractAddress,
         apy: apys[vault.id],
         platform: 'beefy' as const,
-        poolName: 'Boosted ' + vault.id.split('-').map(capitalize).join(' '),
+        poolName: 'Boost ' + vault.id.split('-').map(capitalize).join(' '),
         chainId: getChainIdFromBeefyName(chain),
         type: 'onchain' as const,
         metadata: {

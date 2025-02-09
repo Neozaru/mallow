@@ -12,7 +12,7 @@ const useSexyDaiOpportunities = () => {
       id: `sexy-dai`,
       symbol: 'DAI',
       platform: 'dsr' as const,
-      poolName: 'DSR Gnosis',
+      poolName: 'DAI DAI Savings',
       poolTokenAddress: '0xaf204776c7245bF4147c2612BF6e5972Ee483701',
       chainId: gnosis.id,
       apy,

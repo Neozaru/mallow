@@ -1,19 +1,11 @@
 import { GET_USER_VAULT_POSITIONS } from '@/lib/graphqlMorpho/GET_USER_VAULT_POSITIONS';
 import request from 'graphql-request'
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { QueriesOptions, replaceEqualDeep, useQueries } from '@tanstack/react-query'
+import { useEffect, useMemo, useState } from 'react';
+import { QueriesOptions, useQueries } from '@tanstack/react-query'
 import { formatBalanceWithSymbol } from '../../lib/formatBalanceWithSymbol';
 import getMorphoVaultLink from '@/utils/getMorphoVaultLink';
 import { Address } from 'viem';
-
-function useStable<T>(value: T) {
-  const ref = useRef(value);
-  const stable = replaceEqualDeep(ref.current, value);
-  useEffect(() => {
-    ref.current = stable;
-  }, [stable]);
-  return stable;
-}
+import useStable from '@/utils/useStable';
 
 export type UserVaultPosition = {
   assets: number;

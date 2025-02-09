@@ -5,6 +5,7 @@ import { arbitrum, base, gnosis, mainnet, optimism, scroll, zksync, polygon } fr
 import { injected, walletConnect } from 'wagmi/connectors'
 
 export const wagmiconfig = createConfig({
+  ssr: true,
   chains: [mainnet, optimism, arbitrum, scroll, base, zksync, gnosis, polygon],
   connectors: [
     injected(),

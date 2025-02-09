@@ -1,20 +1,19 @@
 "use client";
 
 import AllBalances from '@/components/AllBalances';
-import Layout from '@/components/Layout';
-import SettingsService, { OnChainAccount } from '@/lib/settingsService';
+import SettingsService from '@/lib/settingsService';
 import { map } from 'lodash';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useAccount, useDisconnect } from 'wagmi';
 import EthereumAddress from './EthereumAddress';
-import dynamic from 'next/dynamic';
 import { ConnectKitButton } from 'connectkit';
 import { Address } from 'viem';
+import dynamic from 'next/dynamic';
 
 const WelcomeActionsWrapper = styled.div`
   font-size: 36px;
@@ -38,8 +37,8 @@ const Label = styled.label`
   display: block;
 `;
 
-const Input = styled.input`
-  width: 100%;
+const AddressWatchInput = styled.input`
+  width: 44ch;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -71,6 +70,7 @@ const ConnectOrWatchWrapper = styled.div`
 
 const OrText = styled.div`
   padding: 20px;
+  padding-top: 30px;
   color: gray;
   font-size: 16px;
 `;
@@ -99,68 +99,122 @@ const ConnectButtonWrapper = styled.div`
   }
 `
 
+type DashboardConfig = {
+  onChainAddresses: [];
+  manualPositions: [];
+  enableExchanges: false;
+  source: 'none';
+  isLoading: boolean;
+} | {
+  onChainAddresses: [Address];
+  manualPositions: [];
+  enableExchanges: false;
+  source: 'watched' | 'connected';
+  isLoading: false;
+} | {
+  onChainAddresses: Address[];
+  manualPositions: YieldPositionManual[];
+  enableExchanges: boolean;
+  source: 'settings';
+  isLoading: false;
+}
+
+const initialDashboardConfig: DashboardConfig = {
+  onChainAddresses: [],
+  manualPositions: [],
+  enableExchanges: false,
+  source: 'none',
+  isLoading: true
+}
+
+const isEthereumAddress = address => address.startsWith('0x') && address.length === 42
+
 function DashboardComponent() {
-  const params = useParams<{ address: string }>()
+  const params = useParams<{ address: Address }>()
   const router = useRouter()
 
-  const [onChainAccounts, setOnChainAccounts] = useState<OnChainAccount[]>([])
-  const manualPositions = SettingsService.getSettings().manualPositions
+  // TODO: Could this be better done via middleware ?
+  const inputUrlAddress = params?.address
+  if (inputUrlAddress && !isEthereumAddress(inputUrlAddress)) {
+    router.replace('/dashboard')
+  }
 
-  const isAdvanced = SettingsService.getSettings().onChainAccounts.length > 0 || manualPositions.length > 0
-
-  const { address } = useAccount()
+  const [dashboardConfig, setDashboardConfig] = useState<DashboardConfig>(initialDashboardConfig)
+  const { address: connectedWalletAddress, status: walletConnectionStatus } = useAccount()
   const { disconnect } = useDisconnect()
 
   useEffect(() => {
-    if (isAdvanced) {
+    // Case we have a valid input address
+    if (inputUrlAddress && isEthereumAddress(inputUrlAddress)) {
+      setDashboardConfig({
+        onChainAddresses: [inputUrlAddress],
+        manualPositions: [],
+        enableExchanges: false,
+        source: 'watched',
+        isLoading: false
+      })
       return
     }
-    if (address?.startsWith('0x') && address?.length === 42) {
-      setOnChainAccounts([{ address, chainType: 'evm'}])
-    }
-  }, [address, router, isAdvanced])
-
-  useEffect(() => {
-    if (!params?.address) {
-      if (isAdvanced) {
-        setOnChainAccounts(SettingsService.getSettings().onChainAccounts)
-      }
+    // If wallet status is still in limbo, wait
+    if (walletConnectionStatus !== 'connected' && walletConnectionStatus !== 'disconnected') {
       return
-    } 
-    if (params.address.startsWith('0x') && params.address.length === 42) {
-      setOnChainAccounts([{ address: params.address as Address, chainType: 'evm' }])
-    } else {
-      router.push(`/dashboard`)
     }
-  }, [params?.address, isAdvanced, router])
+    // If wallet connected, display that
+    if (walletConnectionStatus === 'connected') {
+      setDashboardConfig({
+        onChainAddresses: [connectedWalletAddress],
+        manualPositions: [],
+        enableExchanges: false,
+        source: 'connected',
+        isLoading: false
+      })
+      return
+    }
+    // If nothing set to be watched or nothing connected, read config from Settings
+    const onChainAddresses = map(SettingsService.getSettings().onChainAccounts, 'address')
+    const manualPositions = SettingsService.getSettings().manualPositions
+    // TODO: Explicit enabling/disabling of exchanges
+    if (onChainAddresses.length > 0 || manualPositions.length > 0) {
+      setDashboardConfig({
+        onChainAddresses,
+        manualPositions,
+        enableExchanges: true,
+        source: 'settings',
+        isLoading: false
+      })
+      return
+    }
+    // If nothing will be shown, clear the watchlist (in case a wallet was watched or connected)
+    setDashboardConfig({
+      onChainAddresses: [],
+      manualPositions: [],
+      enableExchanges: false,
+      source: 'none',
+      isLoading: false
+    })
+  }, [inputUrlAddress, connectedWalletAddress, walletConnectionStatus])
 
-  const accountAddresses = useMemo(() => {
-    return map(onChainAccounts, 'address')
-  }, [onChainAccounts])
-
-  const tryInputAddress = inputAddress => {
-    if (inputAddress.startsWith('0x') && inputAddress.length === 42) {
+  const tryInputAddress = useCallback(inputAddress => {
+    if (isEthereumAddress(inputAddress)) {
       router.push(`/dashboard/${inputAddress}`)
     }
-  }
+  }, [router])
 
-  const stopWatchingAddress = () => {
+  const stopWatchingAddress = useCallback(() => {
     router.push('/dashboard')
-  }
+  }, [router])
 
-  const disconnectAndStopWatching = () => {
+  const disconnectAndStopWatching = useCallback(() => {
     disconnect()
-    setOnChainAccounts([])
-  }
-
-  const isAddressWatchOrConnected = !!(params?.address || address)
+  }, [disconnect])
 
   return (
-    <Layout>
-      {!false && <span>
-      {(accountAddresses.length > 0 || manualPositions.length > 0) && <AllBalances accountAddresses={accountAddresses} manualPositions={isAddressWatchOrConnected ? [] : manualPositions} enableExchanges={!isAddressWatchOrConnected}/>}
+    <span key="dashboard">
+      {/* {(accountAddresses.length > 0 || manualPositions.length > 0) && <AllBalances accountAddresses={accountAddresses} manualPositions={isAddressWatchOrConnected ? [] : manualPositions} enableExchanges={!isAddressWatchOrConnected}/>} */}
+      {(dashboardConfig.source !== 'none' && dashboardConfig.onChainAddresses.length > 0 || dashboardConfig.manualPositions.length > 0)
+        && <AllBalances accountAddresses={dashboardConfig.onChainAddresses} manualPositions={dashboardConfig.manualPositions} enableExchanges={dashboardConfig.enableExchanges}/>}
       <WelcomeActionsWrapper>
-        {accountAddresses.length === 0 &&
+        {dashboardConfig.source === 'none' ?
         <ConnectOrWatchWrapper>
           <NoWatchedAddresses>Welcome to Mallow</NoWatchedAddresses>
           <LogoWrapper>
@@ -171,24 +225,28 @@ function DashboardComponent() {
           </ConnectButtonWrapper>
           <OrText>or</OrText>
           <Label htmlFor="watchAddress">watch any address</Label>
-            <Input
-              placeholder='0xabd...'
-              id="watchAddress"
-              type="text"
-              onChange={(e) => tryInputAddress(e.target.value)}
-            />
-          </ConnectOrWatchWrapper>}
-          {/* Watching Connected Wallet */}
-          {onChainAccounts.length === 1 && !params?.address && !isAdvanced && address && <WatchingStatus><div>🦊 Currently watching connected wallet <EthereumAddress address={onChainAccounts[0].address}/></div><Button onClick={() => disconnectAndStopWatching()}>Disconnect</Button></WatchingStatus>}
-          {/* Watching Query Address */}
-          {onChainAccounts.length === 1 && params?.address && <WatchingStatus><div>👀 Currently watching <EthereumAddress address={onChainAccounts[0].address}/></div><Button onClick={() => stopWatchingAddress()}>Stop watching</Button></WatchingStatus>}
-          {/* Watching Address(es) as Set in Settings */}
-          {isAdvanced && !params?.address && <WatchingStatus>🕵️ Watching <Link href='/settings'>{onChainAccounts.length} addresses from Settings</Link></WatchingStatus>}
-        </WelcomeActionsWrapper>
-      </span>}
-    </Layout>)
+          <AddressWatchInput
+            placeholder='0xabd...'
+            id="watchAddress"
+            type="text"
+            onChange={(e) => tryInputAddress(e.target.value)}
+          />
+        </ConnectOrWatchWrapper> : <>
+        {/* Watching Connected Wallet */}
+        {dashboardConfig.source === 'connected'
+          && <WatchingStatus><div>🦊 Currently watching connected wallet <EthereumAddress address={dashboardConfig.onChainAddresses[0]}/></div><Button onClick={() => disconnectAndStopWatching()}>Disconnect</Button></WatchingStatus>}
+        {/* Watching Query Address */}
+        {dashboardConfig.source === 'watched'
+          && <WatchingStatus><div>👀 Currently watching <EthereumAddress address={dashboardConfig.onChainAddresses[0]}/></div><Button onClick={() => stopWatchingAddress()}>Stop watching</Button></WatchingStatus>}
+        {/* Watching Address(es) as Set in Settings */}
+        {dashboardConfig.source === 'settings'
+          && <WatchingStatus>🕵️ Watching <Link href='/settings'>{dashboardConfig.onChainAddresses.length} addresses from Settings</Link></WatchingStatus>}
+        </>}
+      </WelcomeActionsWrapper>
+    </span>)
 }
 
+// TODO: Make non-styled-component CSS to enable display before hydration
 export default dynamic(() => Promise.resolve(DashboardComponent), {
   ssr: false,
 })

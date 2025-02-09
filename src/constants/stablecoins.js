@@ -9,7 +9,7 @@ const stablecoins = [
   'EURC',
   'stkGHO',
   'WXDAI',
-  'USDS'
+  'USDS',
 ]
 
 export default stablecoins

@@ -43,7 +43,7 @@ const platformNames = {
   aave: "Aave",
   morpho: "Morpho",
   beefy: "Beefy",
-  dsr: "DAI Savings",
+  dsr: "DSR",
   ssr: "Sky Savings"
 }
 

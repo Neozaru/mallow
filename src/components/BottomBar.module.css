@@ -1,0 +1,32 @@
+.bottomBarContainer {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #3a184d;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.bottomBarItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+}
+
+.bottomBarItemCurrent {
+  color: white;
+  font-weight: bold;
+}
+
+.bottomBarItemDefault {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 768px) {
+  .bottomBarContainer {
+    display: flex;
+  }
+}

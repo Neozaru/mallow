@@ -1,47 +1,26 @@
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import styled from "styled-components";
-import { DashboardIcon, ExploreIcon, SettingsIcon } from "./MenuIcons";
+import { DashboardIcon, ExploreIcon, SettingsIcon } from "./MenuIcons"; // Import icons
+import styles from './BottomBar.module.css'; // Import the CSS module
 
-const BottomBarContainer = styled.div`
-  display: none;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  height: 60px;
-  background-color: #3a184d;
-  justify-content: space-around;
-  align-items: center;
-
-  @media (max-width: 768px) {
-    display: flex; /* Show bottom bar on mobile */
-  }
-`;
-
-const BottomBarItem = styled(Link)<{ $iscurrentpage: boolean }>`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: ${({ $iscurrentpage }) => ($iscurrentpage ? "white" : "rgba(255, 255, 255, 0.7)")};
-  font-weight: ${({ $iscurrentpage }) => ($iscurrentpage ? "bold" : "normal")};
-  text-decoration: none;
-`;
-
-const BottomBar: React.FC = () => {
-  const pathname = usePathname();
-
+const BottomBar = ({ page }) => {
   return (
-    <BottomBarContainer>
-      <BottomBarItem href="/dashboard" $iscurrentpage={pathname === "/dashboard"}>
-        <DashboardIcon />
-      </BottomBarItem>
-      <BottomBarItem href="/explore" $iscurrentpage={pathname === "/explore"}>
-        <ExploreIcon />
-      </BottomBarItem>
-      <BottomBarItem href="/settings" $iscurrentpage={pathname === "/settings"}>
-        <SettingsIcon />
-      </BottomBarItem>
-    </BottomBarContainer>
+    <div className={styles.bottomBarContainer}>
+      <Link href="/dashboard" passHref>
+        <div className={page === 'dashboard' ? `${styles.bottomBarItem} ${styles.bottomBarItemCurrent}` : `${styles.bottomBarItem} ${styles.bottomBarItemDefault}`}>
+          <DashboardIcon />
+        </div>
+      </Link>
+      <Link href="/explore" passHref>
+        <div className={page === 'explore' ? `${styles.bottomBarItem} ${styles.bottomBarItemCurrent}` : `${styles.bottomBarItem} ${styles.bottomBarItemDefault}`}>
+          <ExploreIcon />
+        </div>
+      </Link>
+      <Link href="/settings" passHref>
+        <div className={page === 'settings' ? `${styles.bottomBarItem} ${styles.bottomBarItemCurrent}` : `${styles.bottomBarItem} ${styles.bottomBarItemDefault}`}>
+          <SettingsIcon />
+        </div>
+      </Link>
+    </div>
   );
 };
 

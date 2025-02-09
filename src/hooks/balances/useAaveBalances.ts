@@ -13,14 +13,11 @@ export function useAaveBalances(accountAddresses: Address[]): LoadableData<Yield
     if (!aaveOpportunities) {
       return
     }
-    const fetchData = async () => {
-      const tokenConfigs = aaveOpportunities.map(({ poolTokenAddress, chainId }) => ({
-        address: poolTokenAddress,
-        chainId
-      }))
-      return tokenConfigs
-    }
-    fetchData().then(setAaveTokenConfigs)
+    const tokenConfigs = aaveOpportunities.map(({ poolTokenAddress, chainId }) => ({
+      address: poolTokenAddress,
+      chainId
+    }))
+    setAaveTokenConfigs(tokenConfigs)
   }, [aaveOpportunities])
 
   return useMemo(() => {
@@ -33,7 +30,7 @@ export function useAaveBalances(accountAddresses: Address[]): LoadableData<Yield
         d => d.poolTokenAddress === tokenAddress && d.chainId === chainId
       )
       if (!opportunity) {
-        throw new Error('Unexpected opportunity mismatch')
+        throw new Error(`Unexpected opportunity mismatch ${JSON.stringify({ tokenAddress, chainId })}`)
       }
       // Assuming not legitimate stablecoin with ever start with 'A'.
       const formattedBalance = formatBalanceWithSymbol(balance, opportunity.symbol)

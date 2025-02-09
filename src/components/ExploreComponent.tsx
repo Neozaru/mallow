@@ -1,3 +1,5 @@
+'use client';
+
 import { createColumnHelper, getCoreRowModel, getExpandedRowModel, getGroupedRowModel, getSortedRowModel, GroupingState, SortingState, useReactTable } from '@tanstack/react-table'
 import MallowTable from './MallowTable'
 import PlatformDisplay from './PlatformDisplay'
@@ -12,7 +14,7 @@ const columnHelper = createColumnHelper<YieldOpportunityOnChain>()
 const columns = [
   columnHelper.accessor(row => pick(row, ['metadata', 'platform', 'poolName', 'symbol', 'chainId', 'type']), {
     id: 'platform',
-    header: () => <span>Position</span>,
+    header: () => <span>Opportunity</span>,
     sortingFn: 'alphanumeric',
     aggregationFn: 'uniqueCount',
     enableGrouping: false,

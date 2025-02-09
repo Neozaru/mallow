@@ -1,21 +1,17 @@
 "use client";
 
 import { useOnChainBalances } from '@/hooks/balances/useOnChainBalances';
-import { getBinanceBalance } from '@/lib/getBinanceBalance';
-import { getCoinbaseBalance } from '@/lib/getCoinbaseBalance';
-import { getKrakenBalances } from '@/lib/getKrakenBalances';
 import { pick, sumBy } from 'lodash'
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { createColumnHelper, getCoreRowModel, getExpandedRowModel, getGroupedRowModel, getSortedRowModel, GroupingState, Row, SortingState, useReactTable } from '@tanstack/react-table';
 import PlatformDisplay from './PlatformDisplay';
 import getChainName from '@/utils/getChainName';
-import SettingsService from '@/lib/settingsService';
 import MallowTable from './MallowTable';
 import ApyCell from './ApyCell';
 import LoadingSpinner from './LoadingSpinner';
 import { Address } from 'viem';
-import { useQuery } from '@tanstack/react-query';
+import useExchangeBalances from '@/hooks/balances/useExchangeBalances';
 
 type AllBalancesProps = {
   accountAddresses: Array<Address> | [];
@@ -29,11 +25,6 @@ const formatUsdBalance = (balance: number, minimumFractionDigits = 0, maximumFra
     maximumFractionDigits,
   }).format(balance);
 };
-
-const ComponentWrapper = styled.div`
-  background-color: #1e093f;
-  color: white;
-`;
 
 const ComponentHeader = styled.div`
   display: flex;
@@ -177,46 +168,25 @@ const columns = [
 ]
 
 const AllBalances: React.FC<AllBalancesProps> = ({accountAddresses, manualPositions, enableExchanges = false}) => {
-  const { data: coinbaseBalances } = useQuery({
-    queryKey: ['coinbase'],
-    queryFn: getCoinbaseBalance,
-    staleTime: Infinity,
-    enabled: enableExchanges && !!SettingsService.getSettings().apiKeys.coinbaseKeyName && !!SettingsService.getSettings().apiKeys.coinbaseApiSecret
-  })
 
-  const { data: binanceBalances } = useQuery({
-    queryKey: ['binance'],
-    queryFn: getBinanceBalance,
-    staleTime: Infinity,
-    enabled: enableExchanges && !!SettingsService.getSettings().apiKeys.binanceApiKey && !!SettingsService.getSettings().apiKeys.binanceApiSecret
-  })
+  const { data: exchangeBalances, isLoading: isExchangeBalancesLoading } = useExchangeBalances(enableExchanges)
+  const { data: onChainBalances, isLoading: isOnChainBalancesLoading } = useOnChainBalances(accountAddresses)
 
-  const { data: krakenBalances } = useQuery({
-    queryKey: ['kraken'],
-    queryFn: getKrakenBalances,
-    staleTime: Infinity,
-    enabled: enableExchanges && !!SettingsService.getSettings().apiKeys.krakenApiKey && !!SettingsService.getSettings().apiKeys.krakenApiSecret
-  })
-
-  const { data: onChainBalances, isLoading } = useOnChainBalances(accountAddresses)
   const allBalances: YieldPositionAny[] = useMemo<YieldPositionAny[]>(() => {
-    if (isLoading) {
+    if (isOnChainBalancesLoading || isExchangeBalancesLoading) {
       return []
     }
     return [
       ...(onChainBalances || []),
-      ...(krakenBalances || []),
-      ...(coinbaseBalances || []),
-      ...(binanceBalances || []),
+      ...(exchangeBalances || []),
       ...(manualPositions || []),
     ]
   }, [
     onChainBalances,
-    krakenBalances,
-    coinbaseBalances,
-    binanceBalances,
+    exchangeBalances,
     manualPositions,
-    isLoading
+    isOnChainBalancesLoading,
+    isExchangeBalancesLoading
   ])
 
   const smallBalancesHideAmount = 1
@@ -259,6 +229,10 @@ const AllBalances: React.FC<AllBalancesProps> = ({accountAddresses, manualPositi
   const [sorting, setSorting] = useState<SortingState>([{id: 'balance', desc: true}])
   const [grouping, setGrouping] = React.useState<GroupingState>([])
 
+  const isLoading = useMemo(() => {
+    return isOnChainBalancesLoading || isExchangeBalancesLoading
+  }, [isOnChainBalancesLoading, isExchangeBalancesLoading])
+
   const table = useReactTable({
     data: allBalancesFiltered,
     columns,
@@ -286,30 +260,29 @@ const AllBalances: React.FC<AllBalancesProps> = ({accountAddresses, manualPositi
     enableSorting: true,
   })
 
-  return (<ComponentWrapper>
-    <ComponentHeader>
-      <Summary>
-        <TotalWithAPY>
-          <Total>${formatUsdBalance(balancesSum, 0, 0)}{hideZeroApy && <GrandTotal>/${formatUsdBalance(balancesGrandTotal, 0, 0)}</GrandTotal>}</Total>
-          <APY>{(hasEnoughBalance ? averageAPY*100 : 0).toFixed(2)}% APY</APY>
-        </TotalWithAPY>
-        {hasEnoughBalance && <Details>
-          <Earnings>
-            <span>Year ${formatUsdBalance(earnings.year, 0, 0)}</span>
-            <span>Month ${formatUsdBalance(earnings.month, 0, 0)}</span>
-            <span>Day ${formatUsdBalance(earnings.day, 0, 0)}</span>
-          </Earnings>
-        </Details>}
-      </Summary>
-    </ComponentHeader>
-    {isLoading 
-    ? <LoadingSpinner/>
-    : hasEnoughBalance ? <MallowTable table={table}/>
-    : (!isLoading && <NothingToShowWrapper>
-        <NothingToShow>Nothing to show 🤷</NothingToShow>
-        <div>Supported platforms are Aave, Morpho, Beefy and DSR (more to come soon).</div>
-      </NothingToShowWrapper>)}
-  </ComponentWrapper>)
+  return isLoading ? <LoadingSpinner/>
+    : <>
+        <ComponentHeader>
+          <Summary>
+            <TotalWithAPY>
+              <Total>${formatUsdBalance(balancesSum, 0, 0)}{hideZeroApy && <GrandTotal>/${formatUsdBalance(balancesGrandTotal, 0, 0)}</GrandTotal>}</Total>
+              <APY>{(hasEnoughBalance ? averageAPY*100 : 0).toFixed(2)}% APY</APY>
+            </TotalWithAPY>
+            {hasEnoughBalance && <Details>
+              <Earnings>
+                <span>Year ${formatUsdBalance(earnings.year, 0, 0)}</span>
+                <span>Month ${formatUsdBalance(earnings.month, 0, 0)}</span>
+                <span>Day ${formatUsdBalance(earnings.day, 0, 0)}</span>
+              </Earnings>
+            </Details>}
+          </Summary>
+        </ComponentHeader>
+        {hasEnoughBalance ? <MallowTable table={table}/>
+        : <NothingToShowWrapper>
+            <NothingToShow>Nothing to show 🤷</NothingToShow>
+            <div>Supported platforms are Aave, Morpho, Beefy and DSR (more to come soon).</div>
+          </NothingToShowWrapper>}
+      </>
 }
 
 export default AllBalances

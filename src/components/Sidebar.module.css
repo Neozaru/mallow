@@ -1,0 +1,41 @@
+.sidebarContainer {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  height: 100vh;
+  background-color: rgb(58, 24, 77);
+  color: white;
+  position: fixed;
+}
+
+.sidebarList {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebarItem {
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.sidebarItem:hover {
+  background-color: #8d54b2;
+}
+
+.icon {
+  margin-right: 10px;
+}
+
+.logo {
+  margin: 20px;
+  height: 40px;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  .sidebarContainer {
+    display: none; /* Hide sidebar on mobile */
+  }
+}

@@ -1,42 +1,25 @@
-"use client";
-
-import BottomBar from './BottomBar'
-import Sidebar from './Sidebar'
-import styled from 'styled-components'
-
-const LayoutContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh; /* Full height for layout */
-  background-color: rgb(30, 9, 63);
-`;
-
-const Content = styled.div`
-  padding-left: 250px;
-  width: 100%;
-  max-width: 1024px;
-  align: center;
-  margin: auto;
-  margin-bottom: 0;
-  margin-top: 0;
-
-  @media (max-width: 768px) {
-    padding-left: 0px;
-    margin-left: 0; /* Remove left margin on mobile */
-    margin-bottom: 60px; /* Leave space for BottomBar */
-  }
-`;
+import BottomBar from './BottomBar';
+import Sidebar from './Sidebar';
+import React, { Suspense } from 'react';
+import styles from './Layout.module.css'; // Import the CSS module
+import LoadingSpinner from './LoadingSpinner';
 
 interface LayoutProps {
   children: React.ReactNode;
+  page: 'dashboard' | 'explore' | 'settings'
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => (
-  <LayoutContainer>
-    <Sidebar />
-    <Content>{children}</Content>
-    <BottomBar />
-  </LayoutContainer>
+const Layout: React.FC<LayoutProps> = ({ children, page }) => (
+  <div className={styles.layoutContainer}>
+    <Sidebar page={page} />
+    <div className={styles.content}>
+      {/* TODO: Is suspense really working here ? */}
+      <Suspense fallback={<LoadingSpinner/>}>
+        {children}
+      </Suspense>
+    </div>
+    <BottomBar page={page} />
+  </div>
 );
 
 export default Layout;

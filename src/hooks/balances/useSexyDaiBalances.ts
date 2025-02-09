@@ -61,7 +61,7 @@ export function useSexyDaiBalances(accountAddresses: Address[]): LoadableData<Yi
         balanceUsd,
         formattedBalance,
         platform: 'dsr' as const,
-        poolName: 'DSR Gnosis',
+        poolName: 'DAI Savings',
         chainId: gnosis.id,
         apy,
         type: 'onchain' as const,
