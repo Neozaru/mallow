@@ -20,7 +20,7 @@ export function useTokenBalances(accountAddresses: Address[], tokenConfigs: Toke
         address,
         abi: erc20Abi,
         functionName: 'balanceOf',
-        args: [accountAddress as `0x${string}`],
+        args: [accountAddress],
         chainId
       }))
     })
@@ -36,10 +36,10 @@ export function useTokenBalances(accountAddresses: Address[], tokenConfigs: Toke
     if (!contractReadCalls.contracts || isReadContractLoading || !data) {
       return { isLoading: true, data: [], error }
     }
-    const typedData = data as ContractCallBigIntResult[]
-    const balances = typedData.map((data, i) => {
-      const { chainId, address, args } = contractReadCalls.contracts![i]
-      const balance = data.status === 'success' ? data.result :  BigInt(0)
+    const balances = data.map((data, i) => {
+      const contractCallConfig = contractReadCalls.contracts![i]
+      const { chainId, address, args } = contractCallConfig
+      const balance = data.status === 'success' ? data.result : BigInt(0)
       const accountAddress: Address = args![0] as Address // We know this is set because we set it ourselves earlier in the lifecycle
       return {
         balance,

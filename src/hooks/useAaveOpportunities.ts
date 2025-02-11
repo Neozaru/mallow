@@ -26,6 +26,14 @@ const aaveChainNames = {
   [scroll.id]: 'scroll',
 }
 
+// Some tokens wrongly show as Ethereum token even though they come from Avalanche. Weird bug.
+const aTokenBlacklist = [
+  '0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a',
+  '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1',
+  '0x532e6537fea298397212f09a61e03311686f548e',
+  '0x46a51127c3ce23fb7ab1de06226147f446e4a857'
+]
+
 const supportedChainIds = getSupportedChainIds()
 const stablecoinsAaveSymbols = stablecoins.flatMap(symbol => [symbol, `${symbol}.E`, `A${symbol}`])
 
@@ -54,23 +62,25 @@ export function useAaveOpportunities() {
     if (isLoading || !aaveStablecoinData) {
       return []
     }
-    return aaveStablecoinData.map(({ id, symbol, apy, aTokenAddress, underlyingAsset, chainId } : AavePoolData) => {
-      const isNewAToken = symbol.startsWith('A')
-      const spotTokenSymbol = isNewAToken ? symbol.slice(1) : symbol
-      return {
-        id,
-        symbol: spotTokenSymbol,
-        poolTokenAddress: aTokenAddress,
-        platform: 'aave' as const,
-        poolName: `Aave ${spotTokenSymbol}`,
-        chainId,
-        apy,
-        type: 'onchain' as const,
-        metadata: {
-          link: `https://app.aave.com/reserve-overview/?underlyingAsset=${underlyingAsset}&marketName=proto_${aaveChainNames[chainId] || 'mainnet'}_v3`
+    return aaveStablecoinData
+      .filter(({ aTokenAddress }) => !aTokenBlacklist.includes(aTokenAddress.toLowerCase()))
+      .map(({ id, symbol, apy, aTokenAddress, underlyingAsset, chainId } : AavePoolData) => {
+        const isNewAToken = symbol.startsWith('A')
+        const spotTokenSymbol = isNewAToken ? symbol.slice(1) : symbol
+        return {
+          id,
+          symbol: spotTokenSymbol,
+          poolTokenAddress: aTokenAddress,
+          platform: 'aave' as const,
+          poolName: `Aave ${spotTokenSymbol}`,
+          chainId,
+          apy,
+          type: 'onchain' as const,
+          metadata: {
+            link: `https://app.aave.com/reserve-overview/?underlyingAsset=${underlyingAsset}&marketName=proto_${aaveChainNames[chainId] || 'mainnet'}_v3`
+          }
         }
-      }
-    })
+      })
   }, [aaveStablecoinData, isLoading])
   return { data: aaveOpportunities, isLoading }
 }

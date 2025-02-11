@@ -20,7 +20,6 @@ export function useAaveBalances(accountAddresses: Address[]): LoadableData<Yield
     if (isLoadingBalances || isLoadingOpportunities || !aaveOpportunities || !aaveTokenConfigs) {
       return { data: [], isLoading: true }
     }
-    console.log('recomputed here')
     const balances = aTokenBalances?.map(bal => {
       const { balance, chainId, accountAddress, tokenAddress } = bal
       const opportunity: YieldOpportunityOnChain | undefined = aaveOpportunities.find(
@@ -38,7 +37,7 @@ export function useAaveBalances(accountAddresses: Address[]): LoadableData<Yield
         balanceUsd: parseFloat(formattedBalance),
         formattedBalance,
       }
-    })
+    }) || []
     return { data: balances, isLoading: false }
   }, [aTokenBalances, aaveOpportunities, aaveTokenConfigs, isLoadingBalances, isLoadingOpportunities])
 }

@@ -42,7 +42,7 @@ export function useSpotBalances(accountAddresses: Address[]): LoadableData<Yield
         apy: 0,
         type: 'onchain' as const
       }
-    })
+    }) || []
     return { data: balances, isLoading: false }
   }, [isLoading, spotTokenBalances, error])
 }
