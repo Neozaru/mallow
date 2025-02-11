@@ -14,6 +14,7 @@ import EthereumAddress from './EthereumAddress';
 import { ConnectKitButton } from 'connectkit';
 import { Address } from 'viem';
 import dynamic from 'next/dynamic';
+import LoadingSpinner from './LoadingSpinner';
 
 const WelcomeActionsWrapper = styled.div`
   font-size: 36px;
@@ -210,39 +211,42 @@ function DashboardComponent() {
 
   return (
     <span key="dashboard">
-      {/* {(accountAddresses.length > 0 || manualPositions.length > 0) && <AllBalances accountAddresses={accountAddresses} manualPositions={isAddressWatchOrConnected ? [] : manualPositions} enableExchanges={!isAddressWatchOrConnected}/>} */}
-      {(dashboardConfig.source !== 'none' && dashboardConfig.onChainAddresses.length > 0 || dashboardConfig.manualPositions.length > 0)
-        && <AllBalances accountAddresses={dashboardConfig.onChainAddresses} manualPositions={dashboardConfig.manualPositions} enableExchanges={dashboardConfig.enableExchanges}/>}
-      <WelcomeActionsWrapper>
-        {dashboardConfig.source === 'none' ?
-        <ConnectOrWatchWrapper>
-          <NoWatchedAddresses>Welcome to Mallow</NoWatchedAddresses>
-          <LogoWrapper>
-            <Logo src='/mallowLogoWhiteTransparentBackground.svg' alt=''></Logo>
-          </LogoWrapper>
-          <ConnectButtonWrapper>
-            <ConnectKitButton/>
-          </ConnectButtonWrapper>
-          <OrText>or</OrText>
-          <Label htmlFor="watchAddress">watch any address</Label>
-          <AddressWatchInput
-            placeholder='0xabd...'
-            id="watchAddress"
-            type="text"
-            onChange={(e) => tryInputAddress(e.target.value)}
-          />
-        </ConnectOrWatchWrapper> : <>
-        {/* Watching Connected Wallet */}
-        {dashboardConfig.source === 'connected'
-          && <WatchingStatus><div>🦊 Currently watching connected wallet <EthereumAddress address={dashboardConfig.onChainAddresses[0]}/></div><Button onClick={() => disconnectAndStopWatching()}>Disconnect</Button></WatchingStatus>}
-        {/* Watching Query Address */}
-        {dashboardConfig.source === 'watched'
-          && <WatchingStatus><div>👀 Currently watching <EthereumAddress address={dashboardConfig.onChainAddresses[0]}/></div><Button onClick={() => stopWatchingAddress()}>Stop watching</Button></WatchingStatus>}
-        {/* Watching Address(es) as Set in Settings */}
-        {dashboardConfig.source === 'settings'
-          && <WatchingStatus>🕵️ Watching <Link href='/settings'>{dashboardConfig.onChainAddresses.length} addresses from Settings</Link></WatchingStatus>}
-        </>}
-      </WelcomeActionsWrapper>
+      {dashboardConfig.isLoading ? <LoadingSpinner/>
+      : <>
+        {/* {(accountAddresses.length > 0 || manualPositions.length > 0) && <AllBalances accountAddresses={accountAddresses} manualPositions={isAddressWatchOrConnected ? [] : manualPositions} enableExchanges={!isAddressWatchOrConnected}/>} */}
+        {(dashboardConfig.source !== 'none' && dashboardConfig.onChainAddresses.length > 0 || dashboardConfig.manualPositions.length > 0)
+          && <AllBalances accountAddresses={dashboardConfig.onChainAddresses} manualPositions={dashboardConfig.manualPositions} enableExchanges={dashboardConfig.enableExchanges}/>}
+        <WelcomeActionsWrapper>
+          {dashboardConfig.source === 'none' ?
+          <ConnectOrWatchWrapper>
+            <NoWatchedAddresses>Welcome to Mallow</NoWatchedAddresses>
+            <LogoWrapper>
+              <Logo src='/mallowLogoWhiteTransparentBackground.svg' alt=''></Logo>
+            </LogoWrapper>
+            <ConnectButtonWrapper>
+              <ConnectKitButton/>
+            </ConnectButtonWrapper>
+            <OrText>or</OrText>
+            <Label htmlFor="watchAddress">watch any address</Label>
+            <AddressWatchInput
+              placeholder='0xabd...'
+              id="watchAddress"
+              type="text"
+              onChange={(e) => tryInputAddress(e.target.value)}
+            />
+          </ConnectOrWatchWrapper> : <>
+          {/* Watching Connected Wallet */}
+          {dashboardConfig.source === 'connected'
+            && <WatchingStatus><div>🦊 Currently watching connected wallet <EthereumAddress address={dashboardConfig.onChainAddresses[0]}/></div><Button onClick={() => disconnectAndStopWatching()}>Disconnect</Button></WatchingStatus>}
+          {/* Watching Query Address */}
+          {dashboardConfig.source === 'watched'
+            && <WatchingStatus><div>👀 Currently watching <EthereumAddress address={dashboardConfig.onChainAddresses[0]}/></div><Button onClick={() => stopWatchingAddress()}>Stop watching</Button></WatchingStatus>}
+          {/* Watching Address(es) as Set in Settings */}
+          {dashboardConfig.source === 'settings'
+            && <WatchingStatus>🕵️ Watching <Link href='/settings'>{dashboardConfig.onChainAddresses.length} addresses from Settings</Link></WatchingStatus>}
+          </>}
+        </WelcomeActionsWrapper>
+      </>}
     </span>)
 }
 
