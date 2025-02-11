@@ -36,7 +36,7 @@ export function useAaveOpportunities() {
       const { data } = await axios.get(
         `/api/defi/aave/poolsdata?symbols=${stablecoinsAaveSymbols}&chainIds=${supportedChainIds}`
       )
-      return data.filter(({ apy }) => apy > 0)
+      return data
     },
     retry: (failureCount, error) => {
       // API usage limit

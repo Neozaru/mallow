@@ -49,7 +49,7 @@ export const getNonce = () => {
 };
 
 type KrakenResponse = {
-  error?: any;
+  error: unknown[];
   result: { [symbol: string]: string };
 }
 
@@ -71,8 +71,9 @@ export async function getKrakenBalances(): Promise<YieldPositionExchange[]> {
   try {
     // Send the request to Binance API
     const response = await postWithQueue(`/api/exchanges/kraken${endpoint}`, payload, { headers })
+    console.log('RES', response)
     if (response.data.error.length > 0) {
-      throw new Error(response.data.error)
+      throw new Error(JSON.stringify(response.data.error))
     }
     const stablecoinsWithSuffixes = [
       ...stablecoins,

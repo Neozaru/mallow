@@ -1,29 +1,26 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useTokenBalances } from './useTokenBalances';
 import { useAaveOpportunities } from '../useAaveOpportunities';
 import { formatBalanceWithSymbol } from '../../lib/formatBalanceWithSymbol';
 import { Address } from 'viem';
 
 export function useAaveBalances(accountAddresses: Address[]): LoadableData<YieldPositionOnChain[]> {
-  const [aaveTokenConfigs, setAaveTokenConfigs] = useState<TokenConfig[]>([]);
-  const { data: aTokenBalances, isLoading: isLoadingBalances } = useTokenBalances(accountAddresses, aaveTokenConfigs);
-  const { data: aaveOpportunities, isLoading: isLoadingStablecoinData } = useAaveOpportunities()
-
-  useEffect(() => {
-    if (!aaveOpportunities) {
-      return
-    }
-    const tokenConfigs = aaveOpportunities.map(({ poolTokenAddress, chainId }) => ({
+  const { data: aaveOpportunities, isLoading: isLoadingOpportunities } = useAaveOpportunities()
+  
+  const aaveTokenConfigs = useMemo(() => {    
+    return aaveOpportunities?.map(({ poolTokenAddress, chainId }) => ({
       address: poolTokenAddress,
       chainId
-    }))
-    setAaveTokenConfigs(tokenConfigs)
+    })) || []
   }, [aaveOpportunities])
-
+  
+  const { data: aTokenBalances, isLoading: isLoadingBalances } = useTokenBalances(accountAddresses, aaveTokenConfigs);
+  
   return useMemo(() => {
-    if (isLoadingBalances || isLoadingStablecoinData || !aaveOpportunities || !aaveTokenConfigs) {
-      return { balances: [], isLoading: true }
+    if (isLoadingBalances || isLoadingOpportunities || !aaveOpportunities || !aaveTokenConfigs) {
+      return { data: [], isLoading: true }
     }
+    console.log('recomputed here')
     const balances = aTokenBalances?.map(bal => {
       const { balance, chainId, accountAddress, tokenAddress } = bal
       const opportunity: YieldOpportunityOnChain | undefined = aaveOpportunities.find(
@@ -43,5 +40,5 @@ export function useAaveBalances(accountAddresses: Address[]): LoadableData<Yield
       }
     })
     return { data: balances, isLoading: false }
-  }, [aTokenBalances, aaveOpportunities, aaveTokenConfigs, isLoadingBalances, isLoadingStablecoinData])
+  }, [aTokenBalances, aaveOpportunities, aaveTokenConfigs, isLoadingBalances, isLoadingOpportunities])
 }

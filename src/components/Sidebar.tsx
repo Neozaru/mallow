@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { DashboardIcon, ExploreIcon, SettingsIcon } from "./MenuIcons"; // Import icons
-import styles from "./Sidebar.module.css"; // Import CSS module
+import Link from 'next/link'
+import { DashboardIcon, ExploreIcon, SettingsIcon } from './MenuIcons'
+import styles from './Sidebar.module.css'
 
 const Sidebar = ({ page }) => {
   return (

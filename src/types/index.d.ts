@@ -44,7 +44,12 @@ type YieldPositionAny = YieldPositionOnChain | YieldPositionExchange | YieldPosi
 type LoadableData<T> = {
   isLoading: boolean;
   data?: T;
-  error?: any;
+  error?: unknown;
+  isFetching?: boolean | undefined;
+};
+
+type FetchableData<T> = LoadableData<T> & {
+  isFetching: boolean;
 };
 
 type TokenConfig = {
@@ -59,7 +64,7 @@ type ContractCallBigIntResultOk = {
 
 type ContractCallBigIntError = {
   status: 'failure';
-  error: any;
+  error?: unknown;
 }
 
 type ContractCallBigIntResult = ContractCallBigIntResultOk | ContractCallBigIntResultError

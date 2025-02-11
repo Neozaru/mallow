@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { DashboardIcon, ExploreIcon, SettingsIcon } from "./MenuIcons"; // Import icons
-import styles from './BottomBar.module.css'; // Import the CSS module
+import { DashboardIcon, ExploreIcon, SettingsIcon } from "./MenuIcons"
+import styles from './BottomBar.module.css'
 
 const BottomBar = ({ page }) => {
   return (

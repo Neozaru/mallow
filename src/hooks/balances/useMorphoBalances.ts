@@ -1,7 +1,7 @@
 import { GET_USER_VAULT_POSITIONS } from '@/lib/graphqlMorpho/GET_USER_VAULT_POSITIONS';
 import request from 'graphql-request'
-import { useEffect, useMemo, useState } from 'react';
-import { QueriesOptions, useQueries } from '@tanstack/react-query'
+import { useMemo } from 'react';
+import { useQueries, UseQueryOptions } from '@tanstack/react-query'
 import { formatBalanceWithSymbol } from '../../lib/formatBalanceWithSymbol';
 import getMorphoVaultLink from '@/utils/getMorphoVaultLink';
 import { Address } from 'viem';
@@ -37,22 +37,18 @@ export type GetUserVaultPositionsResponse = {
   };
 };
 
-type QueryOptionState = {
-  queries: QueriesOptions<any>[]; // Unsure why any required here
+type QueryOptions = {
+  queries: UseQueryOptions<GetUserVaultPositionsResponse>[];
 };
 
 const initialQueriesState = { queries: [] }
 
 export function useMorphoBalances(accountAddresses: Address[]): LoadableData<YieldPositionOnChain[]> {
-  const [queries, setQueries] = useState<QueryOptionState>(initialQueriesState)
-  const queriesResult = useQueries(queries)
-  const queriesResultStable = useStable(queriesResult)
-
-  useEffect(() => {
+  const queryOptions = useMemo<QueryOptions>(() => {
     if (!accountAddresses) {
-      return
+      return initialQueriesState
     }
-    const queriesArray = accountAddresses.map(accountAddress => {
+    const queries = accountAddresses.map(accountAddress => {
       return {
         queryKey: ['vaultPositions', accountAddress],
         queryFn: () =>
@@ -65,8 +61,13 @@ export function useMorphoBalances(accountAddresses: Address[]): LoadableData<Yie
         staleTime: Infinity,
       }
     })
-    setQueries({ queries: queriesArray })
-  }, [accountAddresses, setQueries])
+    return {
+      queries
+    }
+  }, [accountAddresses])
+
+  const queriesResult = useQueries(queryOptions)
+  const queriesResultStable = useStable(queriesResult)
 
   return useMemo(() => {
     if (!queriesResultStable) {

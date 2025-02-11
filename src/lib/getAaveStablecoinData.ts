@@ -8,8 +8,28 @@ type AaveRatesHistoryPoint = {
 
 type AaveRatesHistory = AaveRatesHistoryPoint[]
 
+type AaveAssetData = {
+  underlyingAsset: string;
+  symbol: string;
+  isActive: boolean;
+  isFreezed: boolean;
+  borrowingEnabled: boolean;
+  stableBorrowRateEnabled: boolean;
+  variableBorrowRate: string;
+  stableBorrowRate: string;
+  liquidityRate: string;
+  totalLiquidity: string;
+  lastUpdateTimestamp: number;
+  aTokenAddress: string;
+  totalBorrows: string;
+  totalLiquidityUSD: string;
+  id: string;
+  totalBorrowsUSD: string;
+  interestPerSecond: string;
+}
+
 type AaveMarketData = {
-  reserves: any[];
+  reserves: AaveAssetData[];
 }
 
 export async function getAaveStablecoinData(symbols: string[], chainIds: number[]) {
@@ -37,7 +57,7 @@ export async function getAaveStablecoinData(symbols: string[], chainIds: number[
     const fromDateSecs = Math.floor((Date.now() / 1000 - 3600))
     const rateUrl = `https://aave-api-v2.aave.com/data/rates-history?reserveId=${poolIdRateHistory}&from=${fromDateSecs}&resolutionInHours=1`
 
-    const { data: poolRateHistory } = await axiosGetCached<AaveRatesHistory>(rateUrl, 600000)
+    const { data: poolRateHistory } = await axiosGetCached<AaveRatesHistory>(rateUrl)
 
     const apr = poolRateHistory && poolRateHistory.length > 0
       ? poolRateHistory[poolRateHistory.length - 1].liquidityRate_avg

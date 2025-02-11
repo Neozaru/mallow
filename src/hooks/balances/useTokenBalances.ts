@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useReadContracts, UseReadContractsParameters } from 'wagmi';
 import { Address, ContractFunctionParameters, erc20Abi } from 'viem';
 
@@ -9,13 +9,11 @@ type TokenBalance = {
   balance: bigint;
 }
 
+const initialContractReadCalls = { batchSize: 512, contracts: [] }
 export function useTokenBalances(accountAddresses: Address[], tokenConfigs: TokenConfig[]): LoadableData<TokenBalance[]> {
-  const [contractReadCalls, setContractReadCalls] = useState<UseReadContractsParameters>({ batchSize: 512, contracts: [] })
-  const { data, error, isLoading: isReadContractLoading } = useReadContracts<ContractCallBigIntResult[]>(contractReadCalls);
-
-  useEffect(() => {
+  const contractReadCalls = useMemo<UseReadContractsParameters>(() => {
     if (!accountAddresses || !tokenConfigs) {
-      return 
+      return initialContractReadCalls
     }
     const calls: ContractFunctionParameters[] = accountAddresses.flatMap(accountAddress => {
       return tokenConfigs.map(({ address, chainId }) => ({
@@ -26,12 +24,14 @@ export function useTokenBalances(accountAddresses: Address[], tokenConfigs: Toke
         chainId
       }))
     })
-    setContractReadCalls({
+    return {
       batchSize: 512, // 1024 default value fails with Alchemy when tracking too many addresses
       contracts: calls
-    })
+    }
   }, [accountAddresses, tokenConfigs])
 
+  const { data, error, isLoading: isReadContractLoading, isFetching: isReadContractFetching } = useReadContracts<ContractCallBigIntResult[]>(contractReadCalls);
+  
   return useMemo(() => {
     if (!contractReadCalls.contracts || isReadContractLoading || !data) {
       return { isLoading: true, data: [], error }
@@ -48,6 +48,7 @@ export function useTokenBalances(accountAddresses: Address[], tokenConfigs: Toke
         chainId: chainId!
       }
     })
-    return { isLoading: false, error, data: balances }
-  }, [data, contractReadCalls, isReadContractLoading, error])
+    return { isLoading: false, error, data: balances, isFetching: isReadContractFetching }
+
+  }, [data, contractReadCalls, isReadContractLoading, error, isReadContractFetching])
 }

@@ -1,8 +1,8 @@
-import BottomBar from './BottomBar';
-import Sidebar from './Sidebar';
-import React, { Suspense } from 'react';
-import styles from './Layout.module.css'; // Import the CSS module
-import LoadingSpinner from './LoadingSpinner';
+import BottomBar from './BottomBar'
+import Sidebar from './Sidebar'
+import React, { Suspense } from 'react'
+import styles from './Layout.module.css'
+import LoadingSpinner from './LoadingSpinner'
 
 interface LayoutProps {
   children: React.ReactNode;

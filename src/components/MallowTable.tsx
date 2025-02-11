@@ -63,52 +63,52 @@ const TableCell = styled.div<CustomAlignProp>`
 const MallowTable = ({ table }) => {
   return (
     <TableWrapper>
-          <TableHeader>
-            {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <TableCell
-                    key={header.id}
-                    onClick={header.column.getToggleSortingHandler()}
-                    style={{ cursor: 'pointer' }}
+      <TableHeader>
+        {table.getHeaderGroups().map(headerGroup => (
+          <TableRow key={headerGroup.id}>
+            {headerGroup.headers.map(header => (
+              <TableCell
+                key={header.id}
+                onClick={header.column.getToggleSortingHandler()}
+                style={{ cursor: 'pointer' }}
+              >
+                {flexRender(
+                  header.column.columnDef.header,
+                  header.getContext()
+                )}
+                {{
+                  asc: ' ▲',
+                  desc: ' ▼',
+                }[header.column.getIsSorted() as string] || null}
+                {header.column.getCanGroup() ? (
+                  <button
+                    {...{
+                      onClick: header.column.getToggleGroupingHandler(),
+                      style: {
+                        cursor: 'pointer',
+                      },
+                    }}
                   >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                    {{
-                      asc: ' ▲',
-                      desc: ' ▼',
-                    }[header.column.getIsSorted() as string] || null}
-                    {header.column.getCanGroup() ? (
-                      <button
-                        {...{
-                          onClick: header.column.getToggleGroupingHandler(),
-                          style: {
-                            cursor: 'pointer',
-                          },
-                        }}
-                      >
-                        {header.column.getIsGrouped()
-                          ? `🛑(${header.column.getGroupedIndex()}) `
-                          : `👊 `}
-                      </button>
-                    ) : null}{' '}
-                  </TableCell>
-                ))}
-              </TableRow>
+                    {header.column.getIsGrouped()
+                      ? `🛑(${header.column.getGroupedIndex()}) `
+                      : `👊 `}
+                  </button>
+                ) : null}{' '}
+              </TableCell>
             ))}
-          </TableHeader>
-          {table.getRowModel().rows.map(row => (
-            <TableRow key={row.id}>
-              {row.getVisibleCells().map(cell => (
-                <TableCell key={cell.id} className={cell.id === 'apy' ? 'apyCell' : ''}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
+          </TableRow>
+        ))}
+      </TableHeader>
+      {table.getRowModel().rows.map(row => (
+        <TableRow key={row.id}>
+          {row.getVisibleCells().map(cell => (
+            <TableCell key={cell.id} className={cell.id === 'apy' ? 'apyCell' : ''}>
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </TableCell>
           ))}
-        </TableWrapper>
+        </TableRow>
+      ))}
+    </TableWrapper>
   )
 }
 

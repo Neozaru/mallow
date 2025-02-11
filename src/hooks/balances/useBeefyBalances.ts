@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useBeefyData } from '../useBeefyData';
 import { useTokenBalances } from './useTokenBalances';
 import { formatBalanceWithSymbol } from '../../lib/formatBalanceWithSymbol';
@@ -6,21 +6,19 @@ import { Address, formatUnits } from 'viem';
 import useBeefyOpportunities from '../useBeefyOpportunities';
 import { find } from 'lodash';
 
+const initialTokenConfig = []
 export function useBeefyBalances(accountAddresses: Address[]): LoadableData<YieldPositionOnChain[]> {
-  const [beefyTokenConfigs, setBeefyTokenConfigs] = useState<TokenConfig[]>([])
-  const { data: balancesOpportunities } = useTokenBalances(accountAddresses, beefyTokenConfigs)
-
   const { vaults, boosts } = useBeefyData()
-
   const { data: opportunities } = useBeefyOpportunities()
 
-  useEffect(() => {
+  const beefyTokenConfigs = useMemo(() => {
     if (!opportunities) {
-      return
+      return initialTokenConfig
     }
-    const tokenConfigs: TokenConfig[] = opportunities.map(({ chainId, poolTokenAddress }) => ({ chainId, address: poolTokenAddress }))
-    setBeefyTokenConfigs(tokenConfigs)
+    return opportunities.map(({ chainId, poolTokenAddress }) => ({ chainId, address: poolTokenAddress }))
   }, [opportunities])
+
+  const { data: balancesOpportunities } = useTokenBalances(accountAddresses, beefyTokenConfigs)
 
   return useMemo(() => {
     if (!balancesOpportunities || !vaults || !boosts) {

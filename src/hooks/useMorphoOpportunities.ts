@@ -61,7 +61,7 @@ const useMorphoOpportunities = () => {
             whitelisted: true
           },
         }
-      ),
+      )
   })
 
   return useMemo(() => {

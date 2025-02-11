@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Address, formatUnits } from 'viem';
 import { gnosis } from 'viem/chains';
 import { useReadContracts, UseReadContractsParameters } from 'wagmi';
@@ -14,17 +14,15 @@ const sexyDaiTokenConfig: TokenConfig[] = [{
   chainId: gnosis.id
 }]
 
+const initialContractReadCalls = { contracts: [] }
 export function useSexyDaiBalances(accountAddresses: Address[]): LoadableData<YieldPositionOnChain[]> {
   const { data: sexyDaiShareBalances, isLoading: isLoadingBalances } = useTokenBalances(accountAddresses, sexyDaiTokenConfig)
 
-  const { apy } = useSDaiData()
+  const { data: sDaiData, isLoading: isLoadingSDaiData } = useSDaiData()
 
-  const [assetConvertcontractReadCalls, setAssetConvertContractReadCalls] = useState<UseReadContractsParameters>({ contracts: [] })
-  const { data: assetBalanceData, isLoading: isLoadingReadContracts } = useReadContracts<ContractCallBigIntResult>(assetConvertcontractReadCalls);
-
-  useEffect(() => {
+  const assetConvertcontractReadCalls = useMemo<UseReadContractsParameters>(() => {
     if (isLoadingBalances) {
-      return
+      return initialContractReadCalls
     }
     const callConfigs = sexyDaiShareBalances?.map(balanceData => {
       return {
@@ -34,14 +32,16 @@ export function useSexyDaiBalances(accountAddresses: Address[]): LoadableData<Yi
         args: [balanceData.balance],
         chainId: gnosis.id
       }
-    })
-    setAssetConvertContractReadCalls({
+    }) || []
+    return {
       contracts: callConfigs
-    })
+    }
   }, [sexyDaiShareBalances, isLoadingBalances])
 
+  const { data: assetBalanceData, isLoading: isLoadingReadContracts } = useReadContracts<ContractCallBigIntResult>(assetConvertcontractReadCalls);
+
   return useMemo(() => {
-    if (isLoadingBalances || isLoadingReadContracts || !assetBalanceData || !sexyDaiShareBalances) {
+    if (isLoadingBalances || isLoadingReadContracts || isLoadingSDaiData || !assetBalanceData || !sexyDaiShareBalances) {
       return { isLoading: true, data: [] }
     }
     const balances = sexyDaiShareBalances.flatMap((shareBalanceData, i) => {
@@ -63,7 +63,7 @@ export function useSexyDaiBalances(accountAddresses: Address[]): LoadableData<Yi
         platform: 'dsr' as const,
         poolName: 'DAI Savings',
         chainId: gnosis.id,
-        apy,
+        apy: sDaiData?.apy || 0,
         type: 'onchain' as const,
         metadata: {
           link: 'https://agavefinance.eth.limo/sdai/'
@@ -71,5 +71,5 @@ export function useSexyDaiBalances(accountAddresses: Address[]): LoadableData<Yi
       }]
     })
     return { data: balances, isLoading: false }
-  }, [assetBalanceData, sexyDaiShareBalances, isLoadingReadContracts, isLoadingBalances, apy])
+  }, [assetBalanceData, sexyDaiShareBalances, isLoadingReadContracts, isLoadingBalances, isLoadingSDaiData, sDaiData])
 }

@@ -3,11 +3,12 @@ import { useSDaiData } from './useDsrData'
 import { gnosis } from 'viem/chains'
 
 const useSexyDaiOpportunities = () => {
-  const { apy } = useSDaiData()
+  const { data: sDaiData, isLoading } = useSDaiData()
   return useMemo(() => {
-    if (!apy) {
+    if (isLoading) {
       return { data: [], isLoading: true }
     }
+    const apy = sDaiData?.apy || 0
     const opportunities: YieldOpportunityOnChain[] = [{
       id: `sexy-dai`,
       symbol: 'DAI',
@@ -19,7 +20,7 @@ const useSexyDaiOpportunities = () => {
       type: 'onchain' as const
     }]
     return { data: opportunities, isLoading: false }
-  }, [apy])
+  }, [sDaiData, isLoading])
 }
 
 export default useSexyDaiOpportunities

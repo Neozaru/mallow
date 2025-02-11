@@ -12,16 +12,19 @@ const dsrContracts: TokenConfig[] = [
 const RAY = Math.pow(10, 27)
 
 export function useSDaiBalances(accountAddress: Address): LoadableData<YieldPositionOnChain[]> {
-  const { apy, chi } = useSDaiData()
+  const { data: sDaiData } = useSDaiData()
   const { data: dsrBalances, isLoading } = useTokenBalances([accountAddress], dsrContracts)
 
   const dsrBalancesRet = useMemo(() => {
+    if (isLoading || !sDaiData) {
+      return []
+    }
     return dsrBalances?.map((bal, i) => {
       const symbol = 'sDAI'
       const { chainId, address } = dsrContracts[i]
       const balance = bal.balance
       const formattedBalance = formatUnits(balance, 18)
-      const balanceUsd = parseInt(`${balance}`) * chi / RAY
+      const balanceUsd = parseInt(`${balance}`) * sDaiData.chi / RAY
       const formattedBalanceUsd = formatUnits(BigInt(balanceUsd), 18)
       return {
         id: `${chainId}-DSR`,
@@ -34,10 +37,10 @@ export function useSDaiBalances(accountAddress: Address): LoadableData<YieldPosi
         formattedBalance,
         platform: 'dsr' as const,
         chainId,
-        apy,
+        apy: sDaiData.apy,
         type: 'onchain' as const
       }
-    })
-  }, [apy, dsrBalances, accountAddress, chi])
+    }) || []
+  }, [sDaiData, dsrBalances, accountAddress, isLoading])
   return { data: dsrBalancesRet, isLoading }
 }

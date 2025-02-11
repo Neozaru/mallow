@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { mainnet } from 'viem/chains';
 import { useReadContracts, UseReadContractsParameters } from 'wagmi';
 
@@ -30,29 +30,36 @@ const readContractsParams: UseReadContractsParameters = {
   }]
 }
 
-export function useSDaiData() {
-  const [sDaiData, setSDaiData] = useState({ apy: 0, rho: 0, chi: 0 })
-  const { data, error } = useReadContracts<ContractCallBigIntResult>(readContractsParams)
-  
-  useEffect(() => {
+type DaiPotData = {
+  apy: number;
+  chi: number;
+  rho: number;
+}
+
+export function useSDaiData(): LoadableData<DaiPotData> {
+  const { data: readContractsData, error, isLoading } = useReadContracts<ContractCallBigIntResult>(readContractsParams)
+  return useMemo<LoadableData<DaiPotData>>(() => {
+    if (isLoading) {
+      return { isLoading: true, error }
+    }
     if (error) {
       console.error('dsr data error', error)
-      throw Error('sDAI Data error', error)
+      return { error, isLoading: false }
     }
-    if (!data || data.length === 0) {
-      return
-    }
-    const typedData = data as ContractCallBigIntResult[]
-    const dsr = unsafeConvertBigNumberToNumer(typedData[0].result || 0)
-    const chi = unsafeConvertBigNumberToNumer(typedData[1].result || 0)
-    const rho = unsafeConvertBigNumberToNumer(typedData[2].result || 0)
+    const typedReadContractsData = readContractsData as ContractCallBigIntResult[]
+    const dsr = unsafeConvertBigNumberToNumer(typedReadContractsData[0].result || 0)
+    const chi = unsafeConvertBigNumberToNumer(typedReadContractsData[1].result || 0)
+    const rho = unsafeConvertBigNumberToNumer(typedReadContractsData[2].result || 0)
 
     const apy = Math.pow(
       dsr / Math.pow(10, 27),
       60 * 60 * 24 * 365
     ) - 1
-    setSDaiData({ apy, chi, rho })
-  }, [error, data])
-
-  return sDaiData
+    const data = {
+      apy,
+      chi,
+      rho
+    }
+    return { data, isLoading: false }
+  }, [error, readContractsData, isLoading])
 }
