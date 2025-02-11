@@ -4,7 +4,7 @@ import { getKrakenBalances } from '@/lib/getKrakenBalances'
 import SettingsService from '@/lib/settingsService'
 import useStable from '@/utils/useStable'
 import { useQueries } from '@tanstack/react-query'
-import { flatMap, some } from 'lodash'
+import { flatMap, identity, some } from 'lodash'
 import { useMemo } from 'react'
 
 const useExchangeBalances = (enabled: boolean): LoadableData<YieldPositionExchange[]> => {
@@ -37,7 +37,7 @@ const useExchangeBalances = (enabled: boolean): LoadableData<YieldPositionExchan
   }, [resultsStable])
 
   const data = useMemo(() => {
-    return isLoading || !enabled ? [] : flatMap(resultsStable, 'data')
+    return isLoading || !enabled ? [] : flatMap(resultsStable, 'data').filter(identity)
   }, [resultsStable, isLoading, enabled])
 
   return {
