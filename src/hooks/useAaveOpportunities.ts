@@ -37,7 +37,7 @@ const aTokenBlacklist = [
 const supportedChainIds = getSupportedChainIds()
 const stablecoinsAaveSymbols = stablecoins.flatMap(symbol => [symbol, `${symbol}.E`, `A${symbol}`])
 
-export function useAaveOpportunities() {
+export function useAaveOpportunities({ enabled } = { enabled: true }) {
   const { isLoading, data: aaveStablecoinData } = useQuery<AavePoolData[]>({
     queryKey: ['aavedata'],
     queryFn: async () => {
@@ -55,7 +55,8 @@ export function useAaveOpportunities() {
       return false
     },
     retryDelay: attemptIndex => Math.min(2000 * 2 ** attemptIndex, 30000),
-    staleTime: 600000
+    staleTime: 600000,
+    enabled
   })
 
   const aaveOpportunities: YieldOpportunityOnChain[] = useMemo(() => {
@@ -82,5 +83,5 @@ export function useAaveOpportunities() {
         }
       })
   }, [aaveStablecoinData, isLoading])
-  return { data: aaveOpportunities, isLoading }
+  return { data: aaveOpportunities, isLoading: enabled && isLoading }
 }

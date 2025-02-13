@@ -5,8 +5,7 @@ import { formatBalanceWithSymbol } from '../../lib/formatBalanceWithSymbol';
 import { Address } from 'viem';
 
 export function useAaveBalances(accountAddresses: Address[]): LoadableData<YieldPositionOnChain[]> {
-  const { data: aaveOpportunities, isLoading: isLoadingOpportunities } = useAaveOpportunities()
-  
+  const { data: aaveOpportunities, isLoading: isLoadingOpportunities } = useAaveOpportunities({ enabled: false })
   const aaveTokenConfigs = useMemo(() => {    
     return aaveOpportunities?.map(({ poolTokenAddress, chainId }) => ({
       address: poolTokenAddress,

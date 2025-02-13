@@ -6,7 +6,7 @@ import useSexyDaiOpportunities from './useSexyDaiOpportunities'
 import useMorphoOpportunities from './useMorphoOpportunities'
 
 export function useOpportunities() {
-  const { data: aaveOpportunities, isLoading: isLoadingAave } = useAaveOpportunities()
+  const { data: aaveOpportunities, isLoading: isLoadingAave } = useAaveOpportunities({ enabled: false })
   const { data: beefyOpportunities, isLoading: isLoadingBeefy } = useBeefyOpportunities()
   const { data: sexyDaiOpportunities, isLoading: isLoadingSexyDai } = useSexyDaiOpportunities()
   const { data: morphoOpportunities, isLoading: isLoadingMorphoOpportunities } = useMorphoOpportunities()
