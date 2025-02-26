@@ -13,7 +13,6 @@ const Layout: React.FC<LayoutProps> = ({ children, page }) => (
   <div className={styles.layoutContainer}>
     <Sidebar page={page} />
     <div className={styles.content}>
-      {/* TODO: Is suspense really working here ? */}
       <Suspense fallback={<LoadingSpinner/>}>
         {children}
       </Suspense>

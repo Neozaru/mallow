@@ -79,6 +79,7 @@ const useMorphoOpportunities = () => {
           poolTokenAddress: vault.address,
           chainId: vault.chain.id,
           apy: vault.dailyApys.netApy,
+          rateToPrincipal: 1,
           type: 'onchain' as const,
           metadata: {
             link: getMorphoVaultLink(vault)

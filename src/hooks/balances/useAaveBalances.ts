@@ -5,7 +5,7 @@ import { formatBalanceWithSymbol } from '../../lib/formatBalanceWithSymbol';
 import { Address } from 'viem';
 
 export function useAaveBalances(accountAddresses: Address[]): LoadableData<YieldPositionOnChain[]> {
-  const { data: aaveOpportunities, isLoading: isLoadingOpportunities } = useAaveOpportunities({ enabled: false })
+  const { data: aaveOpportunities, isLoading: isLoadingOpportunities } = useAaveOpportunities()
   const aaveTokenConfigs = useMemo(() => {    
     return aaveOpportunities?.map(({ poolTokenAddress, chainId }) => ({
       address: poolTokenAddress,
@@ -27,7 +27,6 @@ export function useAaveBalances(accountAddresses: Address[]): LoadableData<Yield
       if (!opportunity) {
         throw new Error(`Unexpected opportunity mismatch ${JSON.stringify({ tokenAddress, chainId })}`)
       }
-      // Assuming not legitimate stablecoin with ever start with 'A'.
       const formattedBalance = formatBalanceWithSymbol(balance, opportunity.symbol)
       return {
         ...opportunity,

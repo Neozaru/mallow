@@ -1,0 +1,39 @@
+diff --git a/node_modules/@aave/contract-helpers/dist/cjs/v3-UiPoolDataProvider-contract/index.js b/node_modules/@aave/contract-helpers/dist/cjs/v3-UiPoolDataProvider-contract/index.js
+index de42439..cbfe16f 100644
+--- a/node_modules/@aave/contract-helpers/dist/cjs/v3-UiPoolDataProvider-contract/index.js
++++ b/node_modules/@aave/contract-helpers/dist/cjs/v3-UiPoolDataProvider-contract/index.js
+@@ -112,7 +112,7 @@ class UiPoolDataProvider {
+                 accruedToTreasury: reserveRaw.accruedToTreasury.toString(),
+                 unbacked: reserveRaw.unbacked.toString(),
+                 isolationModeTotalDebt: reserveRaw.isolationModeTotalDebt.toString(),
+-                debtCeilingDecimals: reserveRaw.debtCeilingDecimals.toNumber(),
++                debtCeilingDecimals: reserveRaw.debtCeilingDecimals.toString(),
+                 isSiloedBorrowing: reserveRaw.isSiloedBorrowing,
+                 flashLoanEnabled: reserveRaw.flashLoanEnabled,
+                 virtualAccActive,
+diff --git a/node_modules/@aave/contract-helpers/dist/esm/v3-UiPoolDataProvider-contract/index.js b/node_modules/@aave/contract-helpers/dist/esm/v3-UiPoolDataProvider-contract/index.js
+index 65617e7..2303ac0 100644
+--- a/node_modules/@aave/contract-helpers/dist/esm/v3-UiPoolDataProvider-contract/index.js
++++ b/node_modules/@aave/contract-helpers/dist/esm/v3-UiPoolDataProvider-contract/index.js
+@@ -108,7 +108,7 @@ export class UiPoolDataProvider {
+                 accruedToTreasury: reserveRaw.accruedToTreasury.toString(),
+                 unbacked: reserveRaw.unbacked.toString(),
+                 isolationModeTotalDebt: reserveRaw.isolationModeTotalDebt.toString(),
+-                debtCeilingDecimals: reserveRaw.debtCeilingDecimals.toNumber(),
++                debtCeilingDecimals: reserveRaw.debtCeilingDecimals.toString(),
+                 isSiloedBorrowing: reserveRaw.isSiloedBorrowing,
+                 flashLoanEnabled: reserveRaw.flashLoanEnabled,
+                 virtualAccActive,
+diff --git a/node_modules/@aave/contract-helpers/src/v3-UiPoolDataProvider-contract/index.ts b/node_modules/@aave/contract-helpers/src/v3-UiPoolDataProvider-contract/index.ts
+index 3f87369..d5f92b6 100644
+--- a/node_modules/@aave/contract-helpers/src/v3-UiPoolDataProvider-contract/index.ts
++++ b/node_modules/@aave/contract-helpers/src/v3-UiPoolDataProvider-contract/index.ts
+@@ -184,7 +184,7 @@ export class UiPoolDataProvider implements UiPoolDataProviderInterface {
+           accruedToTreasury: reserveRaw.accruedToTreasury.toString(),
+           unbacked: reserveRaw.unbacked.toString(),
+           isolationModeTotalDebt: reserveRaw.isolationModeTotalDebt.toString(),
+-          debtCeilingDecimals: reserveRaw.debtCeilingDecimals.toNumber(),
++          debtCeilingDecimals: reserveRaw.debtCeilingDecimals.toString(),
+           isSiloedBorrowing: reserveRaw.isSiloedBorrowing,
+           flashLoanEnabled: reserveRaw.flashLoanEnabled,
+           virtualAccActive,

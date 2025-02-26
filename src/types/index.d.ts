@@ -13,8 +13,9 @@ type YieldOpportunityBase = {
 type YieldOpportunityOnChain = YieldOpportunityBase & {
   id: string;
   poolTokenAddress: EvmAddressInternal;
-  platform: 'spot' | 'aave' | 'morpho' | 'beefy' | 'dsr' | 'ssr';
+  platform: 'spot' | 'aave' | 'morpho' | 'beefy' | 'dsr' | 'ssr' | 'pendle';
   chainId: number;
+  rateToPrincipal?: number; // Optional: When the LP token is non-rebasing
   type: 'onchain';
 }
 

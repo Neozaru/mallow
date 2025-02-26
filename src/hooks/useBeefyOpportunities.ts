@@ -27,6 +27,7 @@ const useBeefyOpportunities = (): LoadableData<YieldOpportunityOnChain[]> => {
         poolName: id.split('-').map(capitalize).join(' '),
         chainId: getChainIdFromBeefyName(chain),
         type: 'onchain' as const,
+        rateToPrincipal: 1,
         metadata: {
           link: `https://app.beefy.com/vault/${id}`
         }
@@ -46,6 +47,7 @@ const useBeefyOpportunities = (): LoadableData<YieldOpportunityOnChain[]> => {
         poolName: 'Boost ' + vault.id.split('-').map(capitalize).join(' '),
         chainId: getChainIdFromBeefyName(chain),
         type: 'onchain' as const,
+        rateToPrincipal: 1,
         metadata: {
           link: `https://app.beefy.com/vault/${poolId}`
         }

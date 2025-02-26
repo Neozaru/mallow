@@ -1,0 +1,42 @@
+import { UiPoolDataProvider } from '@aave/contract-helpers';
+import * as markets from '@bgd-labs/aave-address-book';
+import { arbitrum, base, gnosis, mainnet, optimism, polygon, scroll, zksync } from 'viem/chains';
+import getRpcProviderForChain from '@/utils/getRpcProviderForChain';
+
+// TODO: Is there a better to map them ? This is harder to maintain.
+const marketsPerChain = {
+  [mainnet.id]: markets.AaveV3Ethereum,
+  [optimism.id]: markets.AaveV3Optimism,
+  [arbitrum.id]: markets.AaveV3Arbitrum,
+  [scroll.id]: markets.AaveV3Scroll,
+  [base.id]: markets.AaveV3Base,
+  [zksync.id]: markets.AaveV3ZkSync,
+  [polygon.id]: markets.AaveV3Polygon,
+  [gnosis.id]: markets.AaveV3Gnosis,
+}
+
+const getAaveReservesForChain = async chainId => {
+  const market = marketsPerChain[chainId]
+  if (!market) {
+    console.warn(`No Aave market set for chain ${chainId}`)
+    return []
+  }
+  const provider = getRpcProviderForChain(chainId)
+
+  const poolDataProviderContract = new UiPoolDataProvider({
+    uiPoolDataProviderAddress: market.UI_POOL_DATA_PROVIDER,
+    provider,
+    chainId,
+  })
+  const reserves = await poolDataProviderContract.getReservesHumanized({
+    lendingPoolAddressProvider: market.POOL_ADDRESSES_PROVIDER,
+  })
+  return reserves.reservesData
+}
+
+const getAaveReserves = async ({ symbols, chainIds }) => {
+  const reserves = await Promise.all(chainIds.map(getAaveReservesForChain))
+  return reserves.flat().filter(a => symbols.includes(a.symbol))
+}
+
+export default getAaveReserves

@@ -10,7 +10,8 @@ const platformIcons = {
   morpho: "https://assets.coingecko.com/coins/images/29837/standard/Morpho-token-icon.png",
   beefy: "https://assets.coingecko.com/coins/images/12704/standard/bifi.png",
   dsr: "https://pbs.twimg.com/profile_images/1828469202753122304/i8YRkB4A_400x400.jpg",
-  ssr: "https://pbs.twimg.com/profile_images/1828469202753122304/i8YRkB4A_400x400.jpg"
+  ssr: "https://pbs.twimg.com/profile_images/1828469202753122304/i8YRkB4A_400x400.jpg",
+  pendle: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-dQOIOQMdZqULJmTErCR_UY-loP626kk_EA&s'
 }
 
 const tokenIcons = {
@@ -44,7 +45,8 @@ const platformNames = {
   morpho: "Morpho",
   beefy: "Beefy",
   dsr: "DSR",
-  ssr: "Sky Savings"
+  ssr: "Sky Savings",
+  pendle: "Pendle",
 }
 
 const PlatformWrapper = styled.div`
