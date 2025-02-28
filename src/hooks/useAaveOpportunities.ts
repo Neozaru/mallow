@@ -6,6 +6,11 @@ import { useMemo } from 'react'
 import { Address } from 'viem'
 import { arbitrum, base, gnosis, mainnet, optimism, polygon, scroll, zksync } from 'viem/chains'
 
+function convertAprToApy(apr: number): number {
+  const SECONDS_PER_YEAR = 31_536_000; // 60 * 60 * 24 * 365
+  return Math.pow(1 + apr / SECONDS_PER_YEAR, SECONDS_PER_YEAR) - 1;
+}
+
 type AaveReserveData = {
   id: string;
   symbol: string;
@@ -46,7 +51,8 @@ export function useAaveOpportunities({ enabled } = { enabled: true }) {
       const isNewAToken = symbol.startsWith('A')
       const spotTokenSymbol = isNewAToken ? symbol.slice(1) : symbol
       const chainId = Number(id.split('-')[0])
-      const apy = Number(variableBorrowRate) / 1000000000000000000000000000
+      // Hack to take USDS in account approx. Couldn't get anything useful from the API
+      const apy = convertAprToApy(Number(variableBorrowRate) / 1000000000000000000000000000) + (spotTokenSymbol === 'USDS' ? 0.08 : 0) 
       return {
         id,
         symbol: spotTokenSymbol,
