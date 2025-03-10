@@ -1,10 +1,11 @@
 import stablecoins from '@/constants/stablecoins'
+import createOpportunity from '@/lib/createOpportunity'
 import getAaveReserves from '@/lib/getAaveReserves'
 import getSupportedChainIds from '@/utils/getSupportedChainIds'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { Address } from 'viem'
-import { arbitrum, base, gnosis, mainnet, optimism, polygon, scroll, zksync } from 'viem/chains'
+import { arbitrum, avalanche, base, bsc, gnosis, mainnet, optimism, polygon, scroll, zksync } from 'viem/chains'
 
 function convertAprToApy(apr: number): number {
   const SECONDS_PER_YEAR = 31_536_000; // 60 * 60 * 24 * 365
@@ -28,6 +29,8 @@ const aaveChainNames = {
   [polygon.id]: 'polygon',
   [gnosis.id]: 'gnosis',
   [scroll.id]: 'scroll',
+  [avalanche.id]: 'avalanche',
+  [bsc.id]: 'bnb',
 }
 
 const supportedChainIds = getSupportedChainIds()
@@ -53,7 +56,7 @@ export function useAaveOpportunities({ enabled } = { enabled: true }) {
       const chainId = Number(id.split('-')[0])
       // Hack to take USDS in account approx. Couldn't get anything useful from the API
       const apy = convertAprToApy(Number(variableBorrowRate) / 1000000000000000000000000000) + (spotTokenSymbol === 'USDS' ? 0.08 : 0) 
-      return {
+      return createOpportunity({
         id,
         symbol: spotTokenSymbol,
         poolTokenAddress: interestRateStrategyAddress,
@@ -65,7 +68,7 @@ export function useAaveOpportunities({ enabled } = { enabled: true }) {
         metadata: {
           link: `https://app.aave.com/reserve-overview/?underlyingAsset=${underlyingAsset}&marketName=proto_${aaveChainNames[chainId] || 'mainnet'}_v3`
         }
-      }
+      })
     })
   }, [aaveStablecoinData, isLoading])
   return { data: aaveOpportunities, isLoading: enabled && isLoading }

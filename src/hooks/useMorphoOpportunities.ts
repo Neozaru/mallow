@@ -1,4 +1,5 @@
 import stablecoins from '@/constants/stablecoins'
+import createOpportunity from '@/lib/createOpportunity'
 import { GET_VAULTS } from '@/lib/graphqlMorpho/GET_VAULTS'
 import getMorphoVaultLink from '@/utils/getMorphoVaultLink'
 import getSupportedChainIds from '@/utils/getSupportedChainIds'
@@ -71,7 +72,7 @@ const useMorphoOpportunities = () => {
     const opportunities: YieldOpportunityOnChain[] = data.vaults.items
       .filter(isVaultCollateralInWhitelist)
       .map(vault => {
-        return {
+        return createOpportunity({
           id: vault.id,
           symbol: vault.asset.symbol,
           platform: 'morpho' as const,
@@ -84,7 +85,7 @@ const useMorphoOpportunities = () => {
           metadata: {
             link: getMorphoVaultLink(vault)
           }
-        }
+        })
       })
     return { data: opportunities, isLoading: false }
   }, [data, isLoading])

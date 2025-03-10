@@ -8,6 +8,7 @@ import ApyCell from './ApyCell'
 import { useState } from 'react'
 import LoadingSpinner from './LoadingSpinner'
 import { useOpportunities } from '@/hooks/useOpportunities'
+import RiskCell from './RiskCell';
 
 const columnHelper = createColumnHelper<YieldOpportunityOnChain>()
 
@@ -22,6 +23,13 @@ const columns = [
       const { metadata, platform, poolName, symbol, chainId, type } = info.getValue()
       return (<PlatformDisplay link={metadata?.link} platform={platform} pool={poolName} symbol={symbol} chainId={chainId} type={type}></PlatformDisplay>)
     }
+  }),
+  columnHelper.accessor('risk', {
+    header: () => 'Risk',
+    cell: info => <RiskCell risk={info.renderValue()}/>,
+    sortingFn: 'basic',
+    aggregationFn: 'mean',
+    enableGrouping: false,
   }),
   columnHelper.accessor('apy', {
     header: () => 'Apy',

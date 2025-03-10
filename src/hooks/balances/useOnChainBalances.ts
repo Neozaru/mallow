@@ -17,7 +17,6 @@ export function useOnChainBalances(accountAddresses: Address[]): LoadableData<Yi
   const { data: sexyDaiBalances, isLoading: isLoadingSexyDai } = useSexyDaiBalances(accountAddresses)
   const { data: ssrBalances, isLoading: isLoadingSSR } = useSSRBalances(accountAddresses)
   const { data: pendleBalances, isLoading: isLoadingPendle } = usePendleBalances(accountAddresses)
-
   const isLoading = useMemo(
     () => {
       return some([isLoadingSpot, isLoadingAave, isLoadingMorpho, isLoadingBeefy, isLoadingSexyDai, isLoadingSSR, isLoadingPendle])

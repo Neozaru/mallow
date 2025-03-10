@@ -1,6 +1,7 @@
 import getChainName from '@/utils/getChainName';
 import Link from 'next/link';
 import styled from 'styled-components';
+import { arbitrum, avalanche, base, bsc, gnosis, linea, mainnet, optimism, polygon, scroll, sonic, zksync } from 'viem/chains';
 
 const platformIcons = {
   coinbase: "https://assets.coingecko.com/markets/images/23/large/Coinbase_Coin_Primary.png",
@@ -17,6 +18,9 @@ const platformIcons = {
 const tokenIcons = {
   USDC: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png",
   USDT: "https://cryptologos.cc/logos/tether-usdt-logo.png",
+  aUSDC: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png",
+  aUSDT: "https://cryptologos.cc/logos/tether-usdt-logo.png",
+  aUSDS: "https://img.cryptorank.io/coins/usds1724768606452.png",
   DAI: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png",
   xDAI: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png",
   WXDAI: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png",
@@ -26,15 +30,18 @@ const tokenIcons = {
 }
 
 const chainIcons = {
-  1: "https://svgmix.com/uploads/3287b3-ethereum-eth.svg",
-  56: "https://cryptologos.cc/logos/binance-coin-bnb-logo.png",
-  137: "https://cryptologos.cc/logos/polygon-matic-logo.png",
-  100: "https://s1.coincarp.com/logo/1/gnosis-gno.png?style=200&v=1630481838",
-  10: "https://cryptologos.cc/logos/optimism-ethereum-op-logo.png",
-  42161: "https://cryptologos.cc/logos/arbitrum-arb-logo.png",
-  324: "https://s2.coinmarketcap.com/static/img/coins/200x200/24091.png",
-  534352: "https://scroll.io/_next/static/media/Scroll_Logomark.ad5d0348.svg",
-  8453: "https://www.base.org/document/apple-touch-icon.png"
+  [mainnet.id]: "https://svgmix.com/uploads/3287b3-ethereum-eth.svg",
+  [bsc.id]: "https://cryptologos.cc/logos/binance-coin-bnb-logo.png",
+  [polygon.id]: "https://cryptologos.cc/logos/polygon-matic-logo.png",
+  [gnosis.id]: "https://s1.coincarp.com/logo/1/gnosis-gno.png?style=200&v=1630481838",
+  [optimism.id]: "https://cryptologos.cc/logos/optimism-ethereum-op-logo.png",
+  [arbitrum.id]: "https://cryptologos.cc/logos/arbitrum-arb-logo.png",
+  [zksync.id]: "https://s2.coinmarketcap.com/static/img/coins/200x200/24091.png",
+  [scroll.id]: "https://scroll.io/_next/static/media/Scroll_Logomark.ad5d0348.svg",
+  [base.id]: "https://www.base.org/document/apple-touch-icon.png",
+  [sonic.id]: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGaBA0DvSfL6cqxtrHiTkyZBQMPK5KX7csPg&s",
+  [avalanche.id]: "https://cryptologos.cc/logos/avalanche-avax-logo.png",
+  [linea.id]: "https://images.seeklogo.com/logo-png/52/1/linea-logo-png_seeklogo-527155.png"
 }
 
 const platformNames = {

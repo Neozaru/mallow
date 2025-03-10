@@ -1,4 +1,5 @@
 import stablecoins from '@/constants/stablecoins'
+import createOpportunity from '@/lib/createOpportunity'
 import getSupportedChainIds from '@/utils/getSupportedChainIds'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
@@ -18,11 +19,8 @@ const pendleChainNames = {
   [scroll.id]: 'scroll',
 }
 
-const getBaseTokenSymbol = pendleSymbolName => {
+const getTokenSymbolFromName = pendleSymbolName => {
   const pendleSymbolTrimmed = pendleSymbolName.split(' ')[0]
-  if (pendleSymbolTrimmed.startsWith('a')) {
-    return pendleSymbolTrimmed.substring(1)
-  }
   return pendleSymbolTrimmed
 }
 
@@ -45,15 +43,16 @@ export function usePendleOpportunities({ enabled } = { enabled: true }) {
     }
     return pendleStablecoinData.map(({ info, rates, chainId }) => {
       const id = `pendle-${chainId}-${info.address}`
-      const symbol = getBaseTokenSymbol(info.name)
+      const symbol = getTokenSymbolFromName(info.name)
+      // const symbol = info.name
       const apy = rates.impliedApy
       const rateToPrincipal = rates.ptToUnderlyingTokenRate
-      return {
+      return createOpportunity({
         id,
         symbol,
         poolTokenAddress: info.pt.split('-')[1],
         platform: 'pendle' as const,
-        poolName: `Pendle ${symbol}`,
+        poolName: info.name,
         chainId,
         apy,
         type: 'onchain' as const,
@@ -61,7 +60,7 @@ export function usePendleOpportunities({ enabled } = { enabled: true }) {
         metadata: {
           link: `https://app.pendle.finance/trade/markets/${info.address}?view=pt&chain=${pendleChainNames[chainId]}`
         }
-      }
+      })
     })
   }, [pendleStablecoinData, isLoading])
   return { data: pendleOpportunities, isLoading }

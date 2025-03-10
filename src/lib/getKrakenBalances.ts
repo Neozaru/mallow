@@ -53,6 +53,28 @@ type KrakenResponse = {
   result: { [symbol: string]: string };
 }
 
+const stablecoinSavings = {
+  M: {
+    poolName: 'Flexible',
+    apy: 0.0425
+  },
+  B: {
+    poolName: 'Bonded',
+    apy: 0.065
+  }
+}
+
+const getStablecoinPoolNameAndApy = (typeLetter: string | undefined) => {
+  const savingsProps = typeLetter && stablecoinSavings[typeLetter]
+  if (!savingsProps) {
+    return {
+      poolName: 'Spot',
+      apy: 0
+    }
+  }
+  return savingsProps 
+}
+
 export async function getKrakenBalances(): Promise<YieldPositionExchange[]> {
   const apiKey = SettingsService.getSettings().apiKeys.krakenApiKey
   const apiSecret = SettingsService.getSettings().apiKeys.krakenApiSecret
@@ -76,7 +98,7 @@ export async function getKrakenBalances(): Promise<YieldPositionExchange[]> {
     }
     const stablecoinsWithSuffixes = [
       ...stablecoins,
-      ...stablecoins.flatMap(symbol => [`${symbol}.F`, `${symbol}.M`])
+      ...stablecoins.flatMap(symbol => [`${symbol}.F`, `${symbol}.M`, `${symbol}.B`])
     ]
     const balances: { symbol: string, balance: bigint, poolName: string, apy: number }[] = []
     Object.entries(response.data.result)
@@ -84,16 +106,17 @@ export async function getKrakenBalances(): Promise<YieldPositionExchange[]> {
         if (!stablecoinsWithSuffixes.includes(asset)) {
           return
         }
-        const [symbol, afterDot] = asset.split('.')
         const balanceBn = BigInt(parseInt(balance))
         if (balanceBn <= 0) {
           return
         }
+        const [symbol, afterDot] = asset.split('.')
+        const { apy, poolName } = getStablecoinPoolNameAndApy(afterDot)
         balances.push({
           symbol,
           balance: balanceBn,
-          poolName: afterDot === 'M' ? 'Kraken Savings' : `Spot ${symbol}`,
-          apy: afterDot === 'M' ? 0.04 : 0,
+          poolName,
+          apy
         })
     })
     const krakenBalances: YieldPositionExchange[] = balances.map(({symbol, balance, poolName, apy}, i): YieldPositionExchange => {

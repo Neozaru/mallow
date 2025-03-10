@@ -10,12 +10,17 @@ type YieldOpportunityBase = {
   }
 }
 
+type RiskValue = 0 | 1 | 2 | 3
+
+type Protocol = 'spot' | 'aave' | 'morpho' | 'beefy' | 'dsr' | 'ssr' | 'pendle'
+
 type YieldOpportunityOnChain = YieldOpportunityBase & {
   id: string;
   poolTokenAddress: EvmAddressInternal;
-  platform: 'spot' | 'aave' | 'morpho' | 'beefy' | 'dsr' | 'ssr' | 'pendle';
+  platform: Protocol;
   chainId: number;
   rateToPrincipal?: number; // Optional: When the LP token is non-rebasing
+  risk?: RiskValue;
   type: 'onchain';
 }
 

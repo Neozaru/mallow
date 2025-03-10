@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useSDaiData } from './useDsrData'
 import { gnosis } from 'viem/chains'
+import createOpportunity from '@/lib/createOpportunity'
 
 const useSexyDaiOpportunities = () => {
   const { data: sDaiData, isLoading } = useSDaiData()
@@ -9,7 +10,7 @@ const useSexyDaiOpportunities = () => {
       return { data: [], isLoading: true }
     }
     const apy = sDaiData?.apy || 0
-    const opportunities: YieldOpportunityOnChain[] = [{
+    const opportunities: YieldOpportunityOnChain[] = [createOpportunity({
       id: `sexy-dai`,
       symbol: 'DAI',
       platform: 'dsr' as const,
@@ -19,7 +20,7 @@ const useSexyDaiOpportunities = () => {
       apy,
       rateToPrincipal: 1,
       type: 'onchain' as const
-    }]
+    })]
     return { data: opportunities, isLoading: false }
   }, [sDaiData, isLoading])
 }

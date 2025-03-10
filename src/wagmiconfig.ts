@@ -1,14 +1,13 @@
 "use client";
 
 import { http, createConfig } from 'wagmi'
-import { arbitrum, base, gnosis, mainnet, optimism, scroll, zksync, polygon } from 'wagmi/chains'
 import { injected, walletConnect } from 'wagmi/connectors'
-import mallowConfig from './mallow.config';
-import { mapValues } from 'lodash';
+import { mapValues } from 'lodash'
+import mallowConfig from './mallow.config'
 
 export const wagmiconfig = createConfig({
   ssr: true,
-  chains: [mainnet, optimism, arbitrum, scroll, base, zksync, gnosis, polygon],
+  chains: mallowConfig.enabledChains,
   connectors: [
     injected(),
     walletConnect({
@@ -26,5 +25,5 @@ export const wagmiconfig = createConfig({
   ],
   transports: mapValues(mallowConfig.chains, ({ rpcUrl }) => {
     return http(rpcUrl)
-  }),
+  })
 })

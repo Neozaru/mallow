@@ -3,6 +3,7 @@ import { useBeefyData } from './useBeefyData'
 import { capitalize, find } from 'lodash'
 import stablecoins from '@/constants/stablecoins'
 import getChainIdFromBeefyName from '@/utils/getChainIdFromBeefyName'
+import createOpportunity from '@/lib/createOpportunity'
 
 const shouldIncludeVault = vault => vault.status === 'active' &&
   !!getChainIdFromBeefyName(vault.chain) &&
@@ -18,7 +19,7 @@ const useBeefyOpportunities = (): LoadableData<YieldOpportunityOnChain[]> => {
 
     const vaultOpportunities = vaults
       .filter(shouldIncludeVault)
-      .map(({ id, chain, earnContractAddress, token }): YieldOpportunityOnChain => ({
+      .map(({ id, chain, earnContractAddress, token }): YieldOpportunityOnChain => createOpportunity({
         id,
         symbol: token,
         poolTokenAddress: earnContractAddress,
@@ -38,7 +39,7 @@ const useBeefyOpportunities = (): LoadableData<YieldOpportunityOnChain[]> => {
       if (!vault || !shouldIncludeVault(vault)) {
         return
       }
-      return {
+      return createOpportunity({
         id,
         symbol: vault.token,
         poolTokenAddress: earnContractAddress,
@@ -51,7 +52,7 @@ const useBeefyOpportunities = (): LoadableData<YieldOpportunityOnChain[]> => {
         metadata: {
           link: `https://app.beefy.com/vault/${poolId}`
         }
-      }
+      })
     }).filter(o => !!o)
 
     const opportunities = [

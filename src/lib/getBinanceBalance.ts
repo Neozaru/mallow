@@ -11,23 +11,21 @@ export async function getBinanceBalance(): Promise<YieldPositionExchange[]> {
   }
   const requestPath = '/api/exchanges/binance/v1/capital/config/getall';
   
-  const timestamp = Date.now(); // Get current timestamp
-  const queryString = `timestamp=${timestamp}&recvWindow=60000`; // API request parameters
+  const timestamp = Date.now()
+  const queryString = `timestamp=${timestamp}&recvWindow=60000`
   const signature = createHmac('sha256', secretKey)
     .update(queryString)
-    .digest('hex'); // Sign the request
+    .digest('hex')
 
   const url = `${requestPath}?${queryString}&signature=${signature}`
   try {
-    // Send the request to Binance API
     const response = await axios.get(url, {
       headers: {
-        'X-MBX-APIKEY': apiKey, // Add API key in header
+        'X-MBX-APIKEY': apiKey
       },
-    });
+    })
 
-    const balances = response.data; // Account balances array
-
+    const balances = response.data
     return balances.filter(
       b => stablecoins.includes(b.coin)
     ).map(b => {
