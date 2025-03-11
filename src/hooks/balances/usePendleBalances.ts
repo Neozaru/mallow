@@ -28,7 +28,6 @@ export function usePendleBalances(accountAddresses: Address[]): LoadableData<Yie
         throw new Error(`Unexpected opportunity mismatch ${JSON.stringify({ tokenAddress, chainId })}`)
       }
       const formattedBalance = formatBalanceWithSymbol(balance, opportunity.symbol)
-      // const rateToPrincipal = opportunity.rateToPrincipal ?? 1
       return {
         ...opportunity,
         accountAddress,

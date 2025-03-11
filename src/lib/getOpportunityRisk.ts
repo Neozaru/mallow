@@ -12,8 +12,8 @@ const riskFunctions = {
     return Math.max(chainRisk, protocolRisk, symbolRisk)
   },
   weighted: ({chainRisk, protocolRisk, symbolRisk}) => {
-    const totalRisk = (0.4 * chainRisk) + (0.3 * protocolRisk) + (0.3 * symbolRisk);
-    return Math.min(Math.round(totalRisk), 4);
+    const totalRisk = (0.4 * chainRisk) + (0.3 * protocolRisk) + (0.3 * symbolRisk)
+    return Math.min(Math.round(totalRisk), 4)
   },
 }
 
