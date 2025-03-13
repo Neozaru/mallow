@@ -8,7 +8,7 @@ import ApyCell from './ApyCell'
 import { useState } from 'react'
 import LoadingSpinner from './LoadingSpinner'
 import { useOpportunities } from '@/hooks/useOpportunities'
-import RiskCell from './RiskCell';
+import RiskGauge from './RiskGauge';
 
 const columnHelper = createColumnHelper<YieldOpportunityOnChain>()
 
@@ -26,7 +26,7 @@ const columns = [
   }),
   columnHelper.accessor('risk', {
     header: () => 'Risk',
-    cell: info => <RiskCell risk={info.renderValue()}/>,
+    cell: info => <RiskGauge risk={info.renderValue() as RiskValue}/>,
     sortingFn: 'basic',
     aggregationFn: 'mean',
     enableGrouping: false,

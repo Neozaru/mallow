@@ -39,7 +39,7 @@ const chainIcons = {
   [zksync.id]: "https://s2.coinmarketcap.com/static/img/coins/200x200/24091.png",
   [scroll.id]: "https://scroll.io/_next/static/media/Scroll_Logomark.ad5d0348.svg",
   [base.id]: "https://www.base.org/document/apple-touch-icon.png",
-  [sonic.id]: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGaBA0DvSfL6cqxtrHiTkyZBQMPK5KX7csPg&s",
+  [sonic.id]: "https://s2.coinmarketcap.com/static/img/coins/200x200/32684.png",
   [avalanche.id]: "https://cryptologos.cc/logos/avalanche-avax-logo.png",
   [linea.id]: "https://images.seeklogo.com/logo-png/52/1/linea-logo-png_seeklogo-527155.png"
 }
