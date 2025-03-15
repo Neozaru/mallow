@@ -60,7 +60,7 @@ const stablecoinSavings = {
   },
   B: {
     poolName: 'Bonded',
-    apy: 0.065
+    apy: 0.055
   }
 }
 
