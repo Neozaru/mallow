@@ -12,6 +12,7 @@ import ApyCell from './ApyCell';
 import LoadingSpinner from './LoadingSpinner';
 import { Address } from 'viem';
 import useExchangeBalances from '@/hooks/balances/useExchangeBalances';
+import EthereumAddress from './EthereumAddress';
 
 type AllBalancesProps = {
   accountAddresses: Array<Address> | [];
@@ -81,12 +82,12 @@ const Earnings = styled.div`
 const NothingToShowWrapper = styled.div`
   text-align: center;
   padding: 50px;
-`
+`;
 
 const NothingToShow = styled.div`
   font-size: 32px;
   text-align: center;
-`
+`;
 
 const columnHelper = createColumnHelper<YieldPositionExchange | YieldPositionOnChain | YieldPositionManual>()
 
@@ -149,6 +150,15 @@ const columns = [
     sortingFn: balanceSortingFn,
     aggregationFn: balanceAggregationFn,
     enableGrouping: false,
+  }),
+  columnHelper.accessor('accountAddress', {
+    header: () => 'Account',
+    cell: info => {
+      const value = info.renderValue()
+      return value ? <EthereumAddress address={value} enableCopy={true}/> : ''
+    },
+    enableGrouping: false,
+    enableHiding: true
   }),
   columnHelper.accessor('apy', {
     header: () => 'Apy',
@@ -237,7 +247,7 @@ const AllBalances: React.FC<AllBalancesProps> = ({accountAddresses, manualPositi
     data: allBalancesFiltered,
     columns,
     initialState: {
-      columnVisibility: { accountAddress: false, chainId: false },
+      columnVisibility: { chainId: false, accountAddress: false },
     },
     state: {
       sorting,

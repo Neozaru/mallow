@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { Address } from 'viem'
 import { arbitrum, avalanche, base, bsc, gnosis, mainnet, optimism, polygon, scroll, zksync } from 'viem/chains'
+import { useSSRData } from './useSSRData'
 
 function convertAprToApy(apr: number): number {
   const SECONDS_PER_YEAR = 31_536_000; // 60 * 60 * 24 * 365
@@ -46,8 +47,11 @@ export function useAaveOpportunities({ enabled } = { enabled: true }) {
     enabled
   })
 
+  // For sUSDS rate (will use it as proxy for Aave USDS rate)
+  const { data: ssrDatauseSSRData, isLoading: isSSRDataLoading } = useSSRData() 
+
   const aaveOpportunities: YieldOpportunityOnChain[] = useMemo(() => {
-    if (isLoading || !aaveStablecoinData) {
+    if (isLoading || isSSRDataLoading || !aaveStablecoinData) {
       return []
     }
     return aaveStablecoinData.map(({ id, symbol, interestRateStrategyAddress, variableBorrowRate, underlyingAsset }) => {
@@ -55,7 +59,8 @@ export function useAaveOpportunities({ enabled } = { enabled: true }) {
       const spotTokenSymbol = isNewAToken ? symbol.slice(1) : symbol
       const chainId = Number(id.split('-')[0])
       // Hack to take USDS in account approx. Couldn't get anything useful from the API
-      const apy = convertAprToApy(Number(variableBorrowRate) / 1000000000000000000000000000) + (spotTokenSymbol === 'USDS' ? 0.08 : 0) 
+      const usdsAPY = ssrDatauseSSRData?.apy || 0.065
+      const apy = convertAprToApy(Number(variableBorrowRate) / 1000000000000000000000000000) + (spotTokenSymbol === 'USDS' ? usdsAPY : 0) 
       return createOpportunity({
         id,
         symbol: spotTokenSymbol,

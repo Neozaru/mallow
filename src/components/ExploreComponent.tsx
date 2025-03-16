@@ -5,10 +5,17 @@ import MallowTable from './MallowTable'
 import PlatformDisplay from './PlatformDisplay'
 import { pick } from 'lodash'
 import ApyCell from './ApyCell'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import LoadingSpinner from './LoadingSpinner'
 import { useOpportunities } from '@/hooks/useOpportunities'
 import RiskGauge from './RiskGauge';
+import SearchBar from './SearchBar';
+import styled from 'styled-components';
+import { useDebounce } from 'use-debounce';
+
+const Container = styled.div`
+  padding-top: 10px;
+`
 
 const columnHelper = createColumnHelper<YieldOpportunityOnChain>()
 
@@ -45,8 +52,21 @@ const ExploreComponent = () => {
   const [grouping, setGrouping] = useState<GroupingState>([])
   const { data: opportunities, isLoading } = useOpportunities()
 
+  const [textFilter, setTextFilter] = useState('')
+  const [debouncedTextFilter] = useDebounce(textFilter, 500)
+
+  const filteredOpportunities = useMemo(() => {
+    const trimmedTextFilter = debouncedTextFilter.trim().toLocaleLowerCase()
+    if (trimmedTextFilter === '') {
+      return opportunities
+    }
+    return opportunities.filter(
+      op => op.poolName.toLocaleLowerCase().includes(trimmedTextFilter) || op.platform.toLocaleLowerCase().includes(trimmedTextFilter)
+    )
+  }, [opportunities, debouncedTextFilter])
+
   const table = useReactTable({
-    data: opportunities,
+    data: filteredOpportunities,
     columns,
     initialState: {
       columnVisibility: { accountAddress: false, chainId: false },
@@ -61,12 +81,17 @@ const ExploreComponent = () => {
     getSortedRowModel: getSortedRowModel(),
     getGroupedRowModel: getGroupedRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
-    // debugTable: true,
     debugHeaders: true,
     enableSorting: true,
   })
 
-  return isLoading ? <LoadingSpinner/> : <MallowTable table={table}/>
+  if (isLoading) {
+    return <LoadingSpinner/>
+  }
+  return <Container>
+    <SearchBar autoFocus={true} value={textFilter} onChange={e => setTextFilter(e.target.value)} onClear={() => setTextFilter('')} />
+    <MallowTable table={table}/>
+  </Container>
 
 }
 

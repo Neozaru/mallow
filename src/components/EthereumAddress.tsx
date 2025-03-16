@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FaCopy, FaThumbsUp } from 'react-icons/fa';
 import styled from 'styled-components';
 
 const Wrapper = styled.span`
@@ -21,7 +22,7 @@ const EthereumAddress = ({ address, enableCopy = false }) => {
     <Wrapper onClick={handleCopy}>
       <span>{shortenAddress(address)}</span>
       {enableCopy && <button style={{ marginLeft: "8px" }}>
-        {copied ? "🤌" : '📄'}
+        {copied ? <FaThumbsUp/> : <FaCopy/>}
       </button>}
     </Wrapper>
   );

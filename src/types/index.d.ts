@@ -39,7 +39,7 @@ type PositionBalances = {
   formattedBalance: string;
 }
 
-type YieldPositionOnChain = YieldOpportunityOnChain & PositionBalances
+type YieldPositionOnChain = YieldOpportunityOnChain & PositionBalances & { accountAddress: EvmAddressInternal }
 
 type YieldPositionExchange = YieldOpportunityExchange & PositionBalances
 
