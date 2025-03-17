@@ -9,7 +9,7 @@ import { arbitrum, base, gnosis, mainnet, optimism, polygon, scroll, zksync } fr
 const supportedChainIds = getSupportedChainIds()
 
 const pendleChainNames = {
-  [mainnet.id]: 'mainnet',
+  [mainnet.id]: 'ethereum',
   [optimism.id]: 'optimism',
   [arbitrum.id]: 'arbitrum',
   [zksync.id]: 'zksync',
