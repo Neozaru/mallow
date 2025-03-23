@@ -1,3 +1,4 @@
+import { formatApy } from '@/lib/formatApy';
 import styled from 'styled-components';
 
 const ApyWapper = styled.div`
@@ -6,7 +7,7 @@ const ApyWapper = styled.div`
 `
 
 const ApyCell = ({ apy }) => {
-  return <ApyWapper>{((apy || 0) * 100).toFixed(2)}%</ApyWapper>
+  return <ApyWapper>{formatApy(apy)}</ApyWapper>
 }
 
 export default ApyCell

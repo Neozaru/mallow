@@ -33,6 +33,8 @@ export const GET_VAULTS = gql`
           isUnderReview
         }
         state {
+          sharePrice
+          sharePriceUsd
           allocation {
             market {
               collateralAsset {

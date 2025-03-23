@@ -13,7 +13,7 @@ export function useAaveBalances(accountAddresses: Address[]): LoadableData<Yield
     })) || []
   }, [aaveOpportunities])
   
-  const { data: aTokenBalances, isLoading: isLoadingBalances } = useTokenBalances(accountAddresses, aaveTokenConfigs);
+  const { data: aTokenBalances, isLoading: isLoadingBalances, refetch } = useTokenBalances(accountAddresses, aaveTokenConfigs);
   
   return useMemo(() => {
     if (isLoadingBalances || isLoadingOpportunities || !aaveOpportunities || !aaveTokenConfigs) {
@@ -25,7 +25,7 @@ export function useAaveBalances(accountAddresses: Address[]): LoadableData<Yield
         d => d.poolTokenAddress === tokenAddress && d.chainId === chainId
       )
       if (!opportunity) {
-        throw new Error(`Unexpected opportunity mismatch ${JSON.stringify({ tokenAddress, chainId })}`)
+        throw new Error(`Aave: Unexpected opportunity mismatch ${JSON.stringify({ tokenAddress, chainId })}`)
       }
       const formattedBalance = formatBalanceWithSymbol(balance, opportunity.symbol)
       return {
@@ -36,6 +36,6 @@ export function useAaveBalances(accountAddresses: Address[]): LoadableData<Yield
         formattedBalance,
       }
     }) || []
-    return { data: balances, isLoading: false }
-  }, [aTokenBalances, aaveOpportunities, aaveTokenConfigs, isLoadingBalances, isLoadingOpportunities])
+    return { data: balances, isLoading: false, refetch }
+  }, [aTokenBalances, aaveOpportunities, aaveTokenConfigs, isLoadingBalances, isLoadingOpportunities, refetch])
 }

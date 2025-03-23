@@ -13,7 +13,7 @@ const sUSDSTokenConfig: TokenConfig[] = [{
 }]
 
 export function useSSRBalances(accountAddresses: Address[]): LoadableData<YieldPositionOnChain[]> {
-  const { data: sUSDSBalances, isLoading: isLoadingBalances } = useTokenBalances(accountAddresses, sUSDSTokenConfig)
+  const { data: sUSDSBalances, isLoading: isLoadingBalances, refetch } = useTokenBalances(accountAddresses, sUSDSTokenConfig)
 
   const { data: ssrData, isLoading: isLoadingSSRData } = useSSRData()
 
@@ -33,6 +33,7 @@ export function useSSRBalances(accountAddresses: Address[]): LoadableData<YieldP
         balance,
         balanceUsd,
         poolTokenAddress: tokenAddress,
+        poolAddress: tokenAddress,
         formattedBalance,
         platform: 'ssr' as const,
         poolName: 'sUSDS',
@@ -44,6 +45,6 @@ export function useSSRBalances(accountAddresses: Address[]): LoadableData<YieldP
         }
       }]
     })
-    return { data: balances, isLoading: false }
-  }, [isLoadingBalances, isLoadingSSRData, ssrData, sUSDSBalances])
+    return { data: balances, isLoading: false, refetch }
+  }, [isLoadingBalances, isLoadingSSRData, ssrData, sUSDSBalances, refetch])
 }

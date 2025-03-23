@@ -1,9 +1,6 @@
 "use client";
 
 import AllBalances from '@/components/AllBalances';
-import SettingsService from '@/lib/settingsService';
-import { map } from 'lodash';
-import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
@@ -15,6 +12,7 @@ import { ConnectKitButton } from 'connectkit';
 import { Address } from 'viem';
 import dynamic from 'next/dynamic';
 import LoadingSpinner from './LoadingSpinner';
+import MallowLogo from './MallowLogo';
 
 const WelcomeActionsWrapper = styled.div`
   font-size: 36px;
@@ -76,26 +74,18 @@ const OrText = styled.div`
   font-size: 16px;
 `;
 
-const LogoWrapper = styled.div`
-  text-align: center;
-`;
-
-const Logo = styled.img`
-  margin: auto;
-  padding-bottom: 40px;
-`
-
 const ConnectButtonWrapper = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
 
   div:first-child {
-    background-color: #703e91;
+    background-color: #D98E04;
+    color: black;
     border-radius: 5px;
 
     &:hover {
-      background-color: #8d54b2;
+      background-color: rgba(217, 142, 4, 0.8); /* #D98E04 at 80% opacity */
     }
   }
 `
@@ -111,12 +101,6 @@ type DashboardConfig = {
   manualPositions: [];
   enableExchanges: false;
   source: 'watched' | 'connected';
-  isLoading: false;
-} | {
-  onChainAddresses: Address[];
-  manualPositions: YieldPositionManual[];
-  enableExchanges: boolean;
-  source: 'settings';
   isLoading: false;
 }
 
@@ -171,20 +155,6 @@ function DashboardComponent() {
       })
       return
     }
-    // If nothing set to be watched or nothing connected, read config from Settings
-    const onChainAddresses = map(SettingsService.getSettings().onChainAccounts, 'address')
-    const manualPositions = SettingsService.getSettings().manualPositions
-    // TODO: Explicit enabling/disabling of exchanges
-    if (onChainAddresses.length > 0 || manualPositions.length > 0) {
-      setDashboardConfig({
-        onChainAddresses,
-        manualPositions,
-        enableExchanges: true,
-        source: 'settings',
-        isLoading: false
-      })
-      return
-    }
     // If nothing will be shown, clear the watchlist (in case a wallet was watched or connected)
     setDashboardConfig({
       onChainAddresses: [],
@@ -213,16 +183,16 @@ function DashboardComponent() {
     <span key="dashboard">
       {dashboardConfig.isLoading ? <LoadingSpinner/>
       : <>
-        {/* {(accountAddresses.length > 0 || manualPositions.length > 0) && <AllBalances accountAddresses={accountAddresses} manualPositions={isAddressWatchOrConnected ? [] : manualPositions} enableExchanges={!isAddressWatchOrConnected}/>} */}
-        {(dashboardConfig.source !== 'none' && dashboardConfig.onChainAddresses.length > 0 || dashboardConfig.manualPositions.length > 0)
-          && <AllBalances accountAddresses={dashboardConfig.onChainAddresses} manualPositions={dashboardConfig.manualPositions} enableExchanges={dashboardConfig.enableExchanges}/>}
+        {(dashboardConfig.source !== 'none' && dashboardConfig.onChainAddresses.length > 0)
+          && <AllBalances accountAddresses={dashboardConfig.onChainAddresses} />}
         <WelcomeActionsWrapper>
+          {/* {true ? */}
           {dashboardConfig.source === 'none' ?
           <ConnectOrWatchWrapper>
             <NoWatchedAddresses>Welcome to Mallow</NoWatchedAddresses>
-            <LogoWrapper>
-              <Logo src='/mallowLogoWhiteTransparentBackground.svg' alt=''></Logo>
-            </LogoWrapper>
+            <div className='pb-10'>
+              <MallowLogo />
+            </div>
             <ConnectButtonWrapper>
               <ConnectKitButton/>
             </ConnectButtonWrapper>
@@ -241,9 +211,6 @@ function DashboardComponent() {
           {/* Watching Query Address */}
           {dashboardConfig.source === 'watched'
             && <WatchingStatus><div>👀 Currently watching <EthereumAddress address={dashboardConfig.onChainAddresses[0]}/></div><Button onClick={() => stopWatchingAddress()}>Stop watching</Button></WatchingStatus>}
-          {/* Watching Address(es) as Set in Settings */}
-          {dashboardConfig.source === 'settings'
-            && <WatchingStatus>🕵️ Watching <Link href='/settings'>{dashboardConfig.onChainAddresses.length} addresses from Settings</Link></WatchingStatus>}
           </>}
         </WelcomeActionsWrapper>
       </>}

@@ -28,7 +28,7 @@ const columns = [
     enableGrouping: false,
     cell: info => {
       const { metadata, platform, poolName, symbol, chainId, type } = info.getValue()
-      return (<PlatformDisplay link={metadata?.link} platform={platform} pool={poolName} symbol={symbol} chainId={chainId} type={type}></PlatformDisplay>)
+      return (<PlatformDisplay link={metadata?.link} platform={platform} poolName={poolName} symbol={symbol} chainId={chainId} type={type}></PlatformDisplay>)
     }
   }),
   columnHelper.accessor('risk', {

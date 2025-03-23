@@ -1,6 +1,6 @@
 import { GET_USER_VAULT_POSITIONS } from '@/lib/graphqlMorpho/GET_USER_VAULT_POSITIONS';
 import request from 'graphql-request'
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useQueries, UseQueryOptions } from '@tanstack/react-query'
 import { formatBalanceWithSymbol } from '../../lib/formatBalanceWithSymbol';
 import getMorphoVaultLink from '@/utils/getMorphoVaultLink';
@@ -69,6 +69,8 @@ export function useMorphoBalances(accountAddresses: Address[]): LoadableData<Yie
   const queriesResult = useQueries(queryOptions)
   const queriesResultStable = useStable(queriesResult)
 
+  const refetchAll = useCallback(() => queriesResultStable.forEach(query => query.refetch()), [queriesResultStable])
+
   return useMemo(() => {
     if (!queriesResultStable) {
       return { isLoading: true, balances: [] }
@@ -78,15 +80,16 @@ export function useMorphoBalances(accountAddresses: Address[]): LoadableData<Yie
         return []
       }
       const typedData = data as GetUserVaultPositionsResponse // Failed to infer types with graphql-request
-      const { address: accountAddress } = typedData.userByAddress 
+      const { address: accountAddress } = typedData.userByAddress
       return typedData.userByAddress.vaultPositions.map(position => {
         const symbol = position.vault.asset.symbol
         const balance = BigInt(position.assets)
         const formattedBalance = formatBalanceWithSymbol(balance, symbol)
         const apy = Number(position.vault.dailyApys.netApy)
         return {
-          id: position.id,
+          id: position.vault.id,
           accountAddress,
+          poolAddress: position.vault.address,
           poolTokenAddress: position.vault.address,
           symbol,
           balance,
@@ -103,6 +106,6 @@ export function useMorphoBalances(accountAddresses: Address[]): LoadableData<Yie
         }
       })
     })
-    return { data: balances, isLoading: false }
-  }, [queriesResultStable])
+    return { data: balances, isLoading: false, refetch: refetchAll }
+  }, [queriesResultStable, refetchAll])
 }

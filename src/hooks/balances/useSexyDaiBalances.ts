@@ -16,7 +16,7 @@ const sexyDaiTokenConfig: TokenConfig[] = [{
 
 const initialContractReadCalls = { contracts: [] }
 export function useSexyDaiBalances(accountAddresses: Address[]): LoadableData<YieldPositionOnChain[]> {
-  const { data: sexyDaiShareBalances, isLoading: isLoadingBalances } = useTokenBalances(accountAddresses, sexyDaiTokenConfig)
+  const { data: sexyDaiShareBalances, isLoading: isLoadingBalances, refetch } = useTokenBalances(accountAddresses, sexyDaiTokenConfig)
 
   const { data: sDaiData, isLoading: isLoadingSDaiData } = useSDaiData()
 
@@ -56,6 +56,7 @@ export function useSexyDaiBalances(accountAddresses: Address[]): LoadableData<Yi
         id: `sexy-dai`,
         accountAddress,
         poolTokenAddress: sexyDaiGnosisAddress,
+        poolAddress: sexyDaiGnosisAddress,
         symbol: 'DAI',
         balance,
         balanceUsd,
@@ -70,6 +71,6 @@ export function useSexyDaiBalances(accountAddresses: Address[]): LoadableData<Yi
         }
       }]
     })
-    return { data: balances, isLoading: false }
-  }, [assetBalanceData, sexyDaiShareBalances, isLoadingReadContracts, isLoadingBalances, isLoadingSDaiData, sDaiData])
+    return { data: balances, isLoading: false, refetch }
+  }, [assetBalanceData, sexyDaiShareBalances, isLoadingReadContracts, isLoadingBalances, isLoadingSDaiData, sDaiData, refetch])
 }

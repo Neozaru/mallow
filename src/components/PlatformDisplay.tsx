@@ -112,7 +112,6 @@ const PoolName = styled.div`
   color: #b4b0c4;
   display: flex;
   align-items: center;
-
 `;
 
 const PoolNameText = styled.span`
@@ -147,7 +146,7 @@ const ExternalLinkWrapper = styled.span`
 interface PlatformParameters {
   symbol: string;
   type: string | undefined;
-  pool: string;
+  poolName: string;
   chainId?: number;
   link?: string;
   platform?: string;
@@ -162,7 +161,7 @@ function ExternalLink({ href }) {
 }
 
 const PlatformDisplay = (params: PlatformParameters) => {
-  const { link, platform, symbol, pool, chainId, type } = params
+  const { link, platform, symbol, poolName, chainId, type } = params
   const isSpot = platform === 'spot'
   const isManual = type === 'manual'
   const platformIconUrl = platform && platformIcons[platform] || `https://placehold.co/32x32?text=${platform}`;
@@ -185,7 +184,7 @@ const PlatformDisplay = (params: PlatformParameters) => {
             {chainIconUrl && <ChainIcon src={chainIconUrl} alt={chainName} />}
           </PlatformNameWrapper>
           <PoolName>
-            <PoolNameText>{pool || 'Spot'}</PoolNameText>
+            <PoolNameText>{poolName || 'Spot'}</PoolNameText>
             {link && <ExternalLinkWrapper><ExternalLink href={link}/></ExternalLinkWrapper>}
           </PoolName>
         </PlatformInfo>

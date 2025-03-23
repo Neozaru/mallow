@@ -32,6 +32,7 @@ export function useSDaiBalances(accountAddress: Address): LoadableData<YieldPosi
         symbol,
         poolName: 'DAI Savings rates',
         poolTokenAddress: address,
+        poolAddress: address,
         balance,
         balanceUsd: parseFloat(formattedBalanceUsd),
         formattedBalance,

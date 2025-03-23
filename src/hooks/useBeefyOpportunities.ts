@@ -4,6 +4,7 @@ import { capitalize, find } from 'lodash'
 import stablecoins from '@/constants/stablecoins'
 import getChainIdFromBeefyName from '@/utils/getChainIdFromBeefyName'
 import createOpportunity from '@/lib/createOpportunity'
+import { baseToShares } from '@/lib/lpUtils'
 
 const shouldIncludeVault = vault => vault.status === 'active' &&
   !!getChainIdFromBeefyName(vault.chain) &&
@@ -19,7 +20,7 @@ const useBeefyOpportunities = (): LoadableData<YieldOpportunityOnChain[]> => {
 
     const vaultOpportunities = vaults
       .filter(shouldIncludeVault)
-      .map(({ id, chain, earnContractAddress, token }): YieldOpportunityOnChain => createOpportunity({
+      .map(({ id, chain, earnContractAddress, token, pricePerFullShare }): YieldOpportunityOnChain => createOpportunity({
         id,
         symbol: token,
         poolTokenAddress: earnContractAddress,
@@ -28,7 +29,8 @@ const useBeefyOpportunities = (): LoadableData<YieldOpportunityOnChain[]> => {
         poolName: id.split('-').map(capitalize).join(' '),
         chainId: getChainIdFromBeefyName(chain),
         type: 'onchain' as const,
-        rateToPrincipal: 1,
+        rateToPrincipal: BigInt(pricePerFullShare),
+        convertPrincipalToLP: principal => baseToShares(principal, BigInt(pricePerFullShare)),
         metadata: {
           link: `https://app.beefy.com/vault/${id}`
         }
@@ -48,7 +50,7 @@ const useBeefyOpportunities = (): LoadableData<YieldOpportunityOnChain[]> => {
         poolName: 'Boost ' + vault.id.split('-').map(capitalize).join(' '),
         chainId: getChainIdFromBeefyName(chain),
         type: 'onchain' as const,
-        rateToPrincipal: 1,
+        rateToPrincipal: BigInt(vault.pricePerFullShare),
         metadata: {
           link: `https://app.beefy.com/vault/${poolId}`
         }

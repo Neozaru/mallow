@@ -1,6 +1,7 @@
 import stablecoins from '@/constants/stablecoins'
 import createOpportunity from '@/lib/createOpportunity'
 import { GET_VAULTS } from '@/lib/graphqlMorpho/GET_VAULTS'
+import { baseToShares } from '@/lib/lpUtils'
 import getMorphoVaultLink from '@/utils/getMorphoVaultLink'
 import getSupportedChainIds from '@/utils/getSupportedChainIds'
 import { useQuery } from '@tanstack/react-query'
@@ -23,6 +24,17 @@ type MorphoVault = {
   dailyApys: {
     netApy: number;
     apy: number;
+  };
+  state: {
+    sharePrice: number;
+    sharePriceUsd: number;
+    allocation: {
+      market: {
+        collateralAsset: {
+          symbol: string;
+        }
+      }
+    }[]
   }
 }
 
@@ -80,7 +92,8 @@ const useMorphoOpportunities = () => {
           poolTokenAddress: vault.address,
           chainId: vault.chain.id,
           apy: vault.dailyApys.netApy,
-          rateToPrincipal: 1,
+          rateToPrincipal: vault.state.sharePrice,
+          convertPrincipalToLP: principal => baseToShares(principal, BigInt(vault.state.sharePrice)), // TODO: Find definitive solution
           type: 'onchain' as const,
           metadata: {
             link: getMorphoVaultLink(vault)

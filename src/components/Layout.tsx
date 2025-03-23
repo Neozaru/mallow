@@ -6,7 +6,7 @@ import LoadingSpinner from './LoadingSpinner'
 
 interface LayoutProps {
   children: React.ReactNode;
-  page: 'dashboard' | 'explore' | 'settings'
+  page: 'dashboard' | 'explore' | 'swap' | 'pro' | 'settings'
 }
 
 const Layout: React.FC<LayoutProps> = ({ children, page }) => (

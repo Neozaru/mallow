@@ -13,7 +13,7 @@ export function usePendleBalances(accountAddresses: Address[]): LoadableData<Yie
     })) || []
   }, [pendleOpportunities])
 
-  const { data: pendleTokenBalances, isLoading: isLoadingBalances } = useTokenBalances(accountAddresses, pendleTokenConfigs)
+  const { data: pendleTokenBalances, isLoading: isLoadingBalances, refetch } = useTokenBalances(accountAddresses, pendleTokenConfigs)
 
   return useMemo(() => {
     if (isLoadingBalances || isLoadingOpportunities || !pendleOpportunities || !pendleTokenConfigs) {
@@ -36,6 +36,6 @@ export function usePendleBalances(accountAddresses: Address[]): LoadableData<Yie
         formattedBalance,
       }
     }) || []
-    return { data: balances, isLoading: false }
-  }, [pendleTokenBalances, pendleOpportunities, pendleTokenConfigs, isLoadingBalances, isLoadingOpportunities])
+    return { data: balances, isLoading: false, refetch }
+  }, [pendleTokenBalances, pendleOpportunities, pendleTokenConfigs, isLoadingBalances, isLoadingOpportunities, refetch])
 }

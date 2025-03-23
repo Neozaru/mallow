@@ -11,6 +11,13 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        widgetBorderColor: "#333333",
+        primary: "#D98E04",
+        secondary: "#4A403A",
+        valueBg: "#351961",
+        widgetBg: "#3a184d",
+        grayTxt: "#888",
+        error: "#D46565"
       },
     },
   },

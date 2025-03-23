@@ -30,8 +30,8 @@ export function useTokenBalances(accountAddresses: Address[], tokenConfigs: Toke
     }
   }, [accountAddresses, tokenConfigs])
 
-  const { data, error, isLoading: isReadContractLoading, isFetching: isReadContractFetching } = useReadContracts<ContractCallBigIntResult[]>(contractReadCalls);
-  
+  const { data, error, isLoading: isReadContractLoading, isFetching: isReadContractFetching, refetch } = useReadContracts<ContractCallBigIntResult[]>(contractReadCalls);
+
   return useMemo(() => {
     if (!contractReadCalls.contracts || isReadContractLoading) {
       return { isLoading: true, data: [], error }
@@ -48,7 +48,6 @@ export function useTokenBalances(accountAddresses: Address[], tokenConfigs: Toke
         chainId: chainId!
       }
     }) || []
-    return { isLoading: false, error, data: balances, isFetching: isReadContractFetching }
-
-  }, [data, contractReadCalls, isReadContractLoading, error, isReadContractFetching])
+    return { isLoading: false, error, data: balances, isFetching: isReadContractFetching, refetch }
+  }, [data, contractReadCalls, isReadContractLoading, error, isReadContractFetching, refetch])
 }

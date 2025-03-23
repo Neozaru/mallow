@@ -13,11 +13,15 @@ import LoadingSpinner from './LoadingSpinner';
 import { Address } from 'viem';
 import useExchangeBalances from '@/hooks/balances/useExchangeBalances';
 import EthereumAddress from './EthereumAddress';
+import Link from 'next/link';
+import { base } from 'viem/chains';
 
 type AllBalancesProps = {
   accountAddresses: Array<Address> | [];
-  manualPositions: Array<YieldPositionManual> | [];
-  enableExchanges: boolean;
+  manualPositions?: Array<YieldPositionManual> | [];
+  displayAccounts?: boolean;
+  enableExchanges?: boolean;
+  enableSwapLinks?: boolean;
 };
 
 const formatUsdBalance = (balance: number, minimumFractionDigits = 0, maximumFractionDigits = 0)  => {
@@ -132,7 +136,7 @@ const columns = [
       const { metadata, poolName, symbol, type } = value
       const chainId = value.type === 'onchain' ? value.chainId : undefined
       const platform = value.type !== 'manual' ? value.platform : undefined
-      return (<PlatformDisplay link={metadata?.link} platform={platform} pool={poolName} symbol={symbol} chainId={chainId} type={type}></PlatformDisplay>)
+      return (<PlatformDisplay link={metadata?.link} platform={platform} poolName={poolName} symbol={symbol} chainId={chainId} type={type}></PlatformDisplay>)
     }
   }),
   columnHelper.accessor(row => pick(row, ['formattedBalance', 'balanceUsd', 'symbol', 'type']), {
@@ -157,12 +161,22 @@ const columns = [
       const value = info.renderValue()
       return value ? <EthereumAddress address={value} enableCopy={true}/> : ''
     },
-    enableGrouping: false,
-    enableHiding: true
+    enableGrouping: false
   }),
-  columnHelper.accessor('apy', {
+  columnHelper.accessor(row => row, {
+    id: 'apy',
     header: () => 'Apy',
-    cell: info => <ApyCell apy={info.renderValue()}/>,
+    cell: info => {
+      const value = info.getValue()
+      const { id, apy } = value
+      if (value.type === 'onchain' && value.platform === 'spot' && value.chainId === base.id) {
+        return <div className='flex-end justify-end align-middle text-right'>
+            <Link className=' text-black bg-[#d98e04] hover:bg-[#d98e04]/80 p-2 rounded' href={`/swap?from=${id}`} passHref>Zap</Link>
+          </div>
+      } else {
+        return (<ApyCell apy={apy}/>)
+      }
+    },
     sortingFn: 'basic',
     aggregationFn: 'mean',
     enableGrouping: false,
@@ -177,7 +191,14 @@ const columns = [
   }),
 ]
 
-const AllBalances: React.FC<AllBalancesProps> = ({accountAddresses, manualPositions, enableExchanges = false}) => {
+const emptyArray = []
+
+const AllBalances: React.FC<AllBalancesProps> = ({
+  accountAddresses,
+  manualPositions = emptyArray,
+  displayAccounts = false,
+  enableExchanges = false
+}) => {
 
   const { data: exchangeBalances, isLoading: isExchangeBalancesLoading } = useExchangeBalances(enableExchanges)
   const { data: onChainBalances, isLoading: isOnChainBalancesLoading } = useOnChainBalances(accountAddresses)
@@ -187,9 +208,9 @@ const AllBalances: React.FC<AllBalancesProps> = ({accountAddresses, manualPositi
       return []
     }
     return [
-      ...(onChainBalances || []),
-      ...(exchangeBalances || []),
-      ...(manualPositions || []),
+      ...(onChainBalances || emptyArray),
+      ...(exchangeBalances || emptyArray),
+      ...(manualPositions || emptyArray),
     ]
   }, [
     onChainBalances,
@@ -247,7 +268,7 @@ const AllBalances: React.FC<AllBalancesProps> = ({accountAddresses, manualPositi
     data: allBalancesFiltered,
     columns,
     initialState: {
-      columnVisibility: { chainId: false, accountAddress: false },
+      columnVisibility: { chainId: false, accountAddress: displayAccounts },
     },
     state: {
       sorting,

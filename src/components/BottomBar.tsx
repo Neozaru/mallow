@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DashboardIcon, ExploreIcon, SettingsIcon } from "./MenuIcons"
+import { DashboardIcon, ExploreIcon, SwapIcon } from "./MenuIcons"
 import styles from './BottomBar.module.css'
 
 const BottomBar = ({ page }) => {
@@ -10,14 +10,14 @@ const BottomBar = ({ page }) => {
           <DashboardIcon />
         </div>
       </Link>
+      <Link href="/swap" passHref>
+        <div className={page === 'swap' ? `${styles.bottomBarItem} ${styles.bottomBarItemCurrent}` : `${styles.bottomBarItem} ${styles.bottomBarItemDefault}`}>
+          <SwapIcon />
+        </div>
+      </Link>
       <Link href="/explore" passHref>
         <div className={page === 'explore' ? `${styles.bottomBarItem} ${styles.bottomBarItemCurrent}` : `${styles.bottomBarItem} ${styles.bottomBarItemDefault}`}>
           <ExploreIcon />
-        </div>
-      </Link>
-      <Link href="/settings" passHref>
-        <div className={page === 'settings' ? `${styles.bottomBarItem} ${styles.bottomBarItemCurrent}` : `${styles.bottomBarItem} ${styles.bottomBarItemDefault}`}>
-          <SettingsIcon />
         </div>
       </Link>
     </div>

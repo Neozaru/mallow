@@ -2,9 +2,10 @@ import { useMemo } from 'react';
 import { useBeefyData } from '../useBeefyData';
 import { useTokenBalances } from './useTokenBalances';
 import { formatBalanceWithSymbol } from '../../lib/formatBalanceWithSymbol';
-import { Address, formatUnits } from 'viem';
+import { Address } from 'viem';
 import useBeefyOpportunities from '../useBeefyOpportunities';
 import { find } from 'lodash';
+import { sharesToBase } from '@/lib/lpUtils';
 
 const initialTokenConfig = []
 export function useBeefyBalances(accountAddresses: Address[]): LoadableData<YieldPositionOnChain[]> {
@@ -18,7 +19,7 @@ export function useBeefyBalances(accountAddresses: Address[]): LoadableData<Yiel
     return opportunities.map(({ chainId, poolTokenAddress }) => ({ chainId, address: poolTokenAddress }))
   }, [opportunities])
 
-  const { data: balancesOpportunities } = useTokenBalances(accountAddresses, beefyTokenConfigs)
+  const { data: balancesOpportunities, refetch } = useTokenBalances(accountAddresses, beefyTokenConfigs)
 
   return useMemo(() => {
     if (!balancesOpportunities || !vaults || !boosts) {
@@ -36,9 +37,7 @@ export function useBeefyBalances(accountAddresses: Address[]): LoadableData<Yiel
       // Calculate USD value of owned vault shares
       const correspondingVault = find(vaults, { id: vaultId })!
       const { pricePerFullShare } = correspondingVault
-      const balance = BigInt(
-        parseInt(formatUnits(BigInt(sharesBalance) * BigInt(pricePerFullShare), 18))
-      )
+      const balance = sharesToBase(sharesBalance, pricePerFullShare)
       const formattedBalance = formatBalanceWithSymbol(balance, symbol)
       return {
         accountAddress,
@@ -48,6 +47,6 @@ export function useBeefyBalances(accountAddresses: Address[]): LoadableData<Yiel
         ...opportunity
       }
     })
-    return { data: balances, isLoading: false }
-  }, [vaults, boosts, opportunities, balancesOpportunities])
+    return { data: balances, isLoading: false, refetch }
+  }, [vaults, boosts, opportunities, balancesOpportunities, refetch])
 }

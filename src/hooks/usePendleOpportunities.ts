@@ -44,7 +44,6 @@ export function usePendleOpportunities({ enabled } = { enabled: true }) {
     return pendleStablecoinData.map(({ info, rates, chainId }) => {
       const id = `pendle-${chainId}-${info.address}`
       const symbol = getTokenSymbolFromName(info.name)
-      // const symbol = info.name
       const apy = rates.impliedApy
       const rateToPrincipal = rates.ptToUnderlyingTokenRate
       return createOpportunity({

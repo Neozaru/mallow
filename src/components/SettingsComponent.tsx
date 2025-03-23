@@ -127,7 +127,7 @@ const SettingsComponent = () => {
       onChainAccounts: onChainAccountsNewSettings,
       manualPositions: manualPositionsNewSettings,
     })
-    router.push('/dashboard')
+    router.push('/pro')
   }
 
   return (

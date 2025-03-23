@@ -7,6 +7,9 @@ import { useMemo } from 'react'
 import { Address } from 'viem'
 import { arbitrum, avalanche, base, bsc, gnosis, mainnet, optimism, polygon, scroll, zksync } from 'viem/chains'
 import { useSSRData } from './useSSRData'
+import { useReadContracts } from 'wagmi'
+
+import aaveATokenAbi from '@/abis/aaveAToken.abi'
 
 function convertAprToApy(apr: number): number {
   const SECONDS_PER_YEAR = 31_536_000; // 60 * 60 * 24 * 365
@@ -37,8 +40,10 @@ const aaveChainNames = {
 const supportedChainIds = getSupportedChainIds()
 const stablecoinsAaveSymbols = stablecoins.flatMap(symbol => [symbol, `${symbol}.E`, `A${symbol}`])
 
+const poolIdToChainId = poolId => Number(poolId.split('-')[0])
+
 export function useAaveOpportunities({ enabled } = { enabled: true }) {
-  const { isLoading, data: aaveStablecoinData } = useQuery<AaveReserveData[]>({
+  const { isLoading: isAaveDataLoading, data: aaveStablecoinData } = useQuery<AaveReserveData[]>({
     queryKey: ['aavedata'],
     queryFn: async () => {
       return getAaveReserves({ chainIds: supportedChainIds, symbols: stablecoinsAaveSymbols })
@@ -47,17 +52,35 @@ export function useAaveOpportunities({ enabled } = { enabled: true }) {
     enabled
   })
 
+  const aavePoolReadContractParams = useMemo(() => {
+    if (isAaveDataLoading || !aaveStablecoinData) {
+      return { contracts: [] }
+    }
+    const contracts = aaveStablecoinData?.map(({ id, interestRateStrategyAddress }) => {
+      const chainId = poolIdToChainId(id)
+      return {
+        abi: aaveATokenAbi,
+        address: interestRateStrategyAddress,
+        chainId,
+        functionName: 'POOL',
+        args: [],
+      }
+    })
+    return { contracts }
+  }, [isAaveDataLoading, aaveStablecoinData])
+  const { data: aavePoolsData, isLoading: isPoolsDataLoading } = useReadContracts(aavePoolReadContractParams)
   // For sUSDS rate (will use it as proxy for Aave USDS rate)
   const { data: ssrDatauseSSRData, isLoading: isSSRDataLoading } = useSSRData() 
 
   const aaveOpportunities: YieldOpportunityOnChain[] = useMemo(() => {
-    if (isLoading || isSSRDataLoading || !aaveStablecoinData) {
+    if (isAaveDataLoading || isPoolsDataLoading || isSSRDataLoading || !aaveStablecoinData) {
       return []
     }
-    return aaveStablecoinData.map(({ id, symbol, interestRateStrategyAddress, variableBorrowRate, underlyingAsset }) => {
+    return aaveStablecoinData.map(({ id, symbol, interestRateStrategyAddress, variableBorrowRate, underlyingAsset }, i) => {
       const isNewAToken = symbol.startsWith('A')
       const spotTokenSymbol = isNewAToken ? symbol.slice(1) : symbol
-      const chainId = Number(id.split('-')[0])
+      const chainId = poolIdToChainId(id)
+      const poolAddress = aavePoolsData?.[i]?.result
       // Hack to take USDS in account approx. Couldn't get anything useful from the API
       const usdsAPY = ssrDatauseSSRData?.apy || 0.065
       const apy = convertAprToApy(Number(variableBorrowRate) / 1000000000000000000000000000) + (spotTokenSymbol === 'USDS' ? usdsAPY : 0) 
@@ -65,6 +88,7 @@ export function useAaveOpportunities({ enabled } = { enabled: true }) {
         id,
         symbol: spotTokenSymbol,
         poolTokenAddress: interestRateStrategyAddress,
+        poolAddress,
         platform: 'aave' as const,
         poolName: `Aave ${spotTokenSymbol}`,
         chainId,
@@ -75,6 +99,6 @@ export function useAaveOpportunities({ enabled } = { enabled: true }) {
         }
       })
     })
-  }, [aaveStablecoinData, isLoading])
-  return { data: aaveOpportunities, isLoading: enabled && isLoading }
+  }, [aaveStablecoinData, isAaveDataLoading, isPoolsDataLoading, isSSRDataLoading, ssrDatauseSSRData, aavePoolsData])
+  return { data: aaveOpportunities, isLoading: enabled && (isPoolsDataLoading || isSSRDataLoading || isAaveDataLoading) }
 }

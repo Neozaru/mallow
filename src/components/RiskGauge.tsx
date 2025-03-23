@@ -15,7 +15,7 @@ const riskLevels = [
 const RiskGauge = React.memo<Props>(({ risk }) => {
   const gaugeStyle = {
     width: '100%',
-    height: '48px',
+    height: '24px',
   }
 
   const colors = riskLevels.map((level, index) =>
@@ -27,7 +27,7 @@ const RiskGauge = React.memo<Props>(({ risk }) => {
   )
 
   return (
-    <div style={{ position: 'relative', width: '48px', height: '48px' }}>
+    <div style={{ position: 'relative', width: '48px', height: '24px' }}>
       <GaugeChart
         id="risk-gauge-chart"
         nrOfLevels={4}
@@ -47,7 +47,7 @@ const RiskGauge = React.memo<Props>(({ risk }) => {
       <div
         style={{
           position: 'absolute',
-          top: '30%',
+          top: '60%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
           fontSize: '12px',

@@ -1,3 +1,4 @@
+import { Address } from 'viem'
 import { arbitrum, base, gnosis, mainnet, optimism, scroll, zksync, polygon, avalanche, linea, sonic, Chain, bsc } from 'viem/chains'
 
 type ChainConfig = {
@@ -26,6 +27,7 @@ type RiskAlgo = 'avg' | 'max' | 'weighted'
 type MallowConfig = {
   enabledChains: readonly [Chain, ...Chain[]];
   chains: { [c in ChainId]: ChainConfig };
+  mallowContractAddresses: { [c in ChainId]: { manager: Address } };
   risks: {
     algo: RiskAlgo;
     defaults: {
@@ -77,6 +79,13 @@ const mallowConfig: MallowConfig = {
     },
     [linea.id]: {
       rpcUrl: process.env.NEXT_PUBLIC_LINEA_URL,
+    }
+  },
+  mallowContractAddresses: {
+    [base.id]: {
+      // manager: '0x4E00a24d7A6CF315EBc631A612E56a4037B0EE57'
+      manager: '0xD89F7f0cB4B122123755A3EF0d43c7015A747FB6' // With spot
+      // manager: '0x71E9Bf1e3cdfEB5f72E15164d1c59B571F279a85' all ERC
     }
   },
   risks: {

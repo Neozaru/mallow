@@ -17,9 +17,11 @@ type Protocol = 'spot' | 'aave' | 'morpho' | 'beefy' | 'dsr' | 'ssr' | 'pendle'
 type YieldOpportunityOnChain = YieldOpportunityBase & {
   id: string;
   poolTokenAddress: EvmAddressInternal;
+  poolAddress: EvmAddressInternal; // Often same as poolTokenAddress - but not always
   platform: Protocol;
   chainId: number;
   rateToPrincipal?: number; // Optional: When the LP token is non-rebasing
+  convertPrincipalToLP?: (principal: bigint) => bigint; // Hack.
   risk?: RiskValue;
   type: 'onchain';
 }
@@ -52,6 +54,7 @@ type LoadableData<T> = {
   data?: T;
   error?: unknown;
   isFetching?: boolean | undefined;
+  refetch?: () => void;
 };
 
 type FetchableData<T> = LoadableData<T> & {
@@ -75,3 +78,15 @@ type ContractCallBigIntError = {
 
 type ContractCallBigIntResult = ContractCallBigIntResultOk | ContractCallBigIntResultError
 
+type TokenInfo = {
+  symbol: string;
+  address: `0x${string}`;
+  decimals: number;
+  name?: string;
+}
+
+type TokenAmountBaseAndDisplay = {
+  base: bigint;
+  display: string;
+  displayUsd: string;
+}

@@ -40,6 +40,11 @@ class SettingsService {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings, (_, v) => typeof v === 'bigint' ? v.toString() : v));
   }
 
+  static hasSetExchangeKeys(): boolean {
+    const settings = this.getSettings();
+    return Object.values(settings.apiKeys).some(key => key !== '');
+  }
+
   // Method to get all settings
   static getSettings(): Settings {
     const settings = this.getSettingsFromLocalStorage();
