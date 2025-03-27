@@ -41,7 +41,8 @@ export function useSpotBalances(accountAddresses: Address[]): LoadableData<Yield
         poolName: `Spot ${symbol}`,
         chainId,
         apy: 0,
-        type: 'onchain' as const
+        type: 'onchain' as const,
+        isSpot: true
       }
     }) || []
     return { data: balances, isLoading: false, refetch }

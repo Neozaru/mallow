@@ -15,6 +15,7 @@ import useExchangeBalances from '@/hooks/balances/useExchangeBalances';
 import EthereumAddress from './EthereumAddress';
 import Link from 'next/link';
 import { base } from 'viem/chains';
+import ToggleButton from './ToggleButton';
 
 type AllBalancesProps = {
   accountAddresses: Array<Address> | [];
@@ -221,12 +222,16 @@ const AllBalances: React.FC<AllBalancesProps> = ({
   ])
 
   const smallBalancesHideAmount = 1
-
   const hideZeroApy = false
-  
+  const [countSpot, setCountSpot] = useState(true)
+
   const allBalancesFiltered = useMemo(() => {
-    return allBalances.filter(({ balanceUsd, apy }) => balanceUsd >= smallBalancesHideAmount && (!hideZeroApy || apy > 0))
-  }, [allBalances, hideZeroApy])
+    return allBalances.filter(({ balanceUsd, apy, isSpot }) =>
+      balanceUsd >= smallBalancesHideAmount
+      && (!hideZeroApy || apy > 0)
+      && (countSpot || !isSpot)
+    )
+  }, [allBalances, hideZeroApy, countSpot])
 
 
   const balancesSum = useMemo(
@@ -308,6 +313,9 @@ const AllBalances: React.FC<AllBalancesProps> = ({
             </Details>}
           </Summary>
         </ComponentHeader>
+        <div className='flex flex-row items-start pl-2 pb-2'>
+          <ToggleButton label='Include spot positions' enabled={countSpot} setEnabled={setCountSpot} />
+        </div>
         {hasEnoughBalance ? <MallowTable table={table}/>
         : <NothingToShowWrapper>
             <NothingToShow>Nothing to show 🤷</NothingToShow>

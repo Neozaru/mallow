@@ -7,7 +7,8 @@ type YieldOpportunityBase = {
   apy: number;
   metadata?: {
     link: string;
-  }
+  },
+  isSpot?: boolean;
 }
 
 type RiskValue = 0 | 1 | 2 | 3

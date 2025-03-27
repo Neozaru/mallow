@@ -55,7 +55,8 @@ export async function getCoinbaseBalance(): Promise<YieldPositionExchange[]> {
         symbol,
         poolName: `Spot ${symbol}`,
         type: 'exchange' as const,
-        apy: 0
+        apy: 0,
+        isSpot: true
       }
     })
   } catch (error) {

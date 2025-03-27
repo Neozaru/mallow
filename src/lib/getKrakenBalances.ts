@@ -129,7 +129,8 @@ export async function getKrakenBalances(): Promise<YieldPositionExchange[]> {
         formattedBalance: `${balance}`,
         balanceUsd: Number(balance),
         type: 'exchange' as const,
-        apy
+        apy,
+        isSpot: apy === 0
       }
     })
     return krakenBalances
