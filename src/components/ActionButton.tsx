@@ -1,10 +1,8 @@
 
-// import { tv } from 'tailwind-variants';
-
 import { tv } from 'tailwind-variants'
 
 export type ActionButtonProps = {
-  disabled: boolean;
+  disabled?: boolean;
   variant?: 'primary' | 'secondary';
   text: string;
   callback?: (...args: unknown[]) => unknown;
@@ -19,7 +17,6 @@ const buttonStyle = tv({
     }
   }
 })
-// const buttonStyle = {}
 
 const ActionButton = (props: ActionButtonProps) => {
   return (<button className={buttonStyle({ variant: props.variant || 'primary' })} disabled={props.disabled} onClick={props.callback}>

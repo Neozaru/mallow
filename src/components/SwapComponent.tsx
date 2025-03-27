@@ -14,12 +14,12 @@ import getTokenInfo from '@/lib/getTokenInfo';
 import SwapInput from './SwapInput';
 import OpportunityPickerModal, { OpportunityPickerModalProps } from './OpportunityPickerModal';
 import { useRouter } from 'next/navigation';
-import { useModal } from 'connectkit';
 import SwitchIcon from './SwitchIcon';
 import useTokenAllowance from '@/hooks/useTokenAllowance';
 import useSwapQuote from '@/hooks/useSwapQuote';
 import useApproveSwap from '@/hooks/useApproveSwap';
 import useSwap from '@/hooks/useSwap';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 
 enum OpportunityFromTo {
   OPPORTUNITY_FROM,
@@ -99,7 +99,6 @@ const SwapComponent = ({ opportunities, fromOpportunityId, toOpportunityId }: Pr
   const txError = approveError || swapError
 
   const { address: userAddress, status: connectionStatus } = useAccount()
-  const { setOpen: setOpenWalletConnectionModal } = useModal()
 
   const { data: onChainBalances, refetch: refetchBalances } = useOnChainBalances(userAddress ? [userAddress] : [])
 
@@ -147,10 +146,10 @@ const SwapComponent = ({ opportunities, fromOpportunityId, toOpportunityId }: Pr
   const { switchChain } = useSwitchChain()
 
   useEffect(() => {
-    if (chainId && !isChainUnsupported) {
+    if (chainId && !isChainUnsupported && connectionStatus === 'connected') {
       switchChain({ chainId })
     }
-  }, [chainId, isChainUnsupported, switchChain])
+  }, [chainId, isChainUnsupported, switchChain, connectionStatus])
 
   const baseAssetTokenInfo = useMemo(() => {
     if ((!fromOpportunity && !toOpportunity) || isChainUnsupported) {
@@ -202,9 +201,11 @@ const SwapComponent = ({ opportunities, fromOpportunityId, toOpportunityId }: Pr
     }
   }, [swapTxReceipt, refetchBalances, refetchQuoteData, refetchAllowance])
 
+  const { openConnectModal } = useConnectModal()
+
   const ctaButtonProps = useMemo<ActionButtonProps>(() => {
     if (connectionStatus === 'disconnected') {
-      return { disabled: false, text: 'Connect wallet', callback: () => setOpenWalletConnectionModal(true) }
+      return { disabled: false, text: 'Connect wallet', callback: openConnectModal }
     }
     if (isChainUnsupported) {
       return { disabled: true, text: 'Unsupported chain' }
@@ -236,7 +237,7 @@ const SwapComponent = ({ opportunities, fromOpportunityId, toOpportunityId }: Pr
       return { disabled: false, text: 'Approve', callback: writeApprove }
     }
     return { disabled: false, text: 'Zap', callback: writeSwap }
-  }, [baseAssetAmount, fromOpportunity, toOpportunity, isLoadingAllowance, fromOpportunityBalance, needsApprove, connectionStatus, hasTxConfirmationPending, isChainUnsupported, writeSwap, writeApprove, isApproveTxSigningPending, isSwapTxSigningPending, setOpenWalletConnectionModal, isQuotePending, quoteError])
+  }, [baseAssetAmount, fromOpportunity, toOpportunity, isLoadingAllowance, fromOpportunityBalance, needsApprove, connectionStatus, hasTxConfirmationPending, isChainUnsupported, writeSwap, writeApprove, openConnectModal, isApproveTxSigningPending, isSwapTxSigningPending, isQuotePending, quoteError])
 
   const [modalState, setModalState] = useState<OpportunityPickerModalProps>(closedModalState)
 

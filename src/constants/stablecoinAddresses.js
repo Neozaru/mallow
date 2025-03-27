@@ -4,7 +4,7 @@ const stablecoinAddresses = [
     addresses: {
       1: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',    // Ethereum Mainnet
       10: '0x7f5c764cbc14f9669b88837ca1490cca17c31607',   // Optimism
-      42161: '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8', // Arbitrum
+      42161: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', // Arbitrum
       534352: '0x06efdbff2a14a7c8e15944d1f4a48f9f95f663a4', // Scroll (Address not yet live)
       324: '0x1d17cbcf0d6d143135ae902365d2e5e2a16538d4',   // zkSync
       100: '0xddafbb505ad214d7b80b1f830fccc89b60fb7a83',   // Gnosis

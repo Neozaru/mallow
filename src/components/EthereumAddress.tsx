@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 const Wrapper = styled.span`
   cursor: pointer;
+  color: #e5e7eb;
 `
 
 const EthereumAddress = ({ address, enableCopy = false }) => {

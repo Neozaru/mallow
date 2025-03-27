@@ -91,7 +91,7 @@ const useMorphoOpportunities = () => {
           poolName: vault.name,
           poolTokenAddress: vault.address,
           chainId: vault.chain.id,
-          apy: vault.dailyApys.netApy,
+          apy: vault.dailyApys.apy,
           rateToPrincipal: vault.state.sharePrice,
           convertPrincipalToLP: principal => baseToShares(principal, BigInt(vault.state.sharePrice)), // TODO: Find definitive solution
           type: 'onchain' as const,

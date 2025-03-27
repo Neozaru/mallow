@@ -8,13 +8,16 @@ import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useAccount, useDisconnect } from 'wagmi';
 import EthereumAddress from './EthereumAddress';
-import { ConnectKitButton } from 'connectkit';
 import { Address } from 'viem';
 import dynamic from 'next/dynamic';
 import LoadingSpinner from './LoadingSpinner';
 import MallowLogo from './MallowLogo';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
+import ActionButton from './ActionButton';
 
 const WelcomeActionsWrapper = styled.div`
+  display: flex;
+  justify-content: center;
   font-size: 36px;
   margin: auto;
   text-align: center;
@@ -63,32 +66,12 @@ const NoWatchedAddresses = styled.div`
   padding: 40px;
 `
 
-const ConnectOrWatchWrapper = styled.div`
-
-`;
-
 const OrText = styled.div`
   padding: 20px;
   padding-top: 30px;
   color: gray;
   font-size: 16px;
 `;
-
-const ConnectButtonWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-
-  div:first-child {
-    background-color: #D98E04;
-    color: black;
-    border-radius: 5px;
-
-    &:hover {
-      background-color: rgba(217, 142, 4, 0.8); /* #D98E04 at 80% opacity */
-    }
-  }
-`
 
 type DashboardConfig = {
   onChainAddresses: [];
@@ -127,6 +110,8 @@ function DashboardComponent() {
   const [dashboardConfig, setDashboardConfig] = useState<DashboardConfig>(initialDashboardConfig)
   const { address: connectedWalletAddress, status: walletConnectionStatus } = useAccount()
   const { disconnect } = useDisconnect()
+
+  const { openConnectModal } = useConnectModal()
 
   useEffect(() => {
     // Case we have a valid input address
@@ -188,14 +173,12 @@ function DashboardComponent() {
         <WelcomeActionsWrapper>
           {/* {true ? */}
           {dashboardConfig.source === 'none' ?
-          <ConnectOrWatchWrapper>
+          <div>
             <NoWatchedAddresses>Welcome to Mallow</NoWatchedAddresses>
             <div className='pb-10'>
               <MallowLogo />
             </div>
-            <ConnectButtonWrapper>
-              <ConnectKitButton/>
-            </ConnectButtonWrapper>
+            <ActionButton text='Connect wallet' callback={openConnectModal} />
             <OrText>or</OrText>
             <Label htmlFor="watchAddress">watch any address</Label>
             <AddressWatchInput
@@ -204,7 +187,7 @@ function DashboardComponent() {
               type="text"
               onChange={(e) => tryInputAddress(e.target.value)}
             />
-          </ConnectOrWatchWrapper> : <>
+          </div> : <>
           {/* Watching Connected Wallet */}
           {dashboardConfig.source === 'connected'
             && <WatchingStatus><div>🦊 Currently watching connected wallet <EthereumAddress address={dashboardConfig.onChainAddresses[0]}/></div><Button onClick={() => disconnectAndStopWatching()}>Disconnect</Button></WatchingStatus>}
