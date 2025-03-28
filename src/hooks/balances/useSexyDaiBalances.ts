@@ -2,23 +2,26 @@ import { useMemo } from 'react';
 import { Address, formatUnits } from 'viem';
 import { gnosis } from 'viem/chains';
 import { useReadContracts, UseReadContractsParameters } from 'wagmi';
-import { useSDaiData } from '../useDsrData';
 import { useTokenBalances } from './useTokenBalances';
 
 import sexyDaiAbi from '@/abis/sexyDaiAbi';
-
-const sexyDaiGnosisAddress: Address = '0xaf204776c7245bF4147c2612BF6e5972Ee483701'
-
-const sexyDaiTokenConfig: TokenConfig[] = [{
-  address: sexyDaiGnosisAddress,
-  chainId: gnosis.id
-}]
+import useSexyDaiOpportunities from '../useSexyDaiOpportunities';
+import { find } from 'lodash';
 
 const initialContractReadCalls = { contracts: [] }
 export function useSexyDaiBalances(accountAddresses: Address[]): LoadableData<YieldPositionOnChain[]> {
-  const { data: sexyDaiShareBalances, isLoading: isLoadingBalances, refetch } = useTokenBalances(accountAddresses, sexyDaiTokenConfig)
+  const { data: sexyDaiOpportunities, isLoading: isLoadingSexyDaiOpportunities } = useSexyDaiOpportunities()
 
-  const { data: sDaiData, isLoading: isLoadingSDaiData } = useSDaiData()
+  const sexyDaiTokenConfig = useMemo(() => {
+    if (isLoadingSexyDaiOpportunities) {
+      return []
+    }
+    return sexyDaiOpportunities?.map(({ poolTokenAddress, chainId }) =>
+      ({ address: poolTokenAddress, chainId })
+    ) || []
+  }, [sexyDaiOpportunities, isLoadingSexyDaiOpportunities])
+
+  const { data: sexyDaiShareBalances, isLoading: isLoadingBalances, refetch } = useTokenBalances(accountAddresses, sexyDaiTokenConfig)
 
   const assetConvertcontractReadCalls = useMemo<UseReadContractsParameters>(() => {
     if (isLoadingBalances) {
@@ -26,7 +29,7 @@ export function useSexyDaiBalances(accountAddresses: Address[]): LoadableData<Yi
     }
     const callConfigs = sexyDaiShareBalances?.map(balanceData => {
       return {
-        address: sexyDaiGnosisAddress,
+        address: balanceData.tokenAddress,
         abi: sexyDaiAbi,
         functionName: 'convertToAssets',
         args: [balanceData.balance],
@@ -41,7 +44,7 @@ export function useSexyDaiBalances(accountAddresses: Address[]): LoadableData<Yi
   const { data: assetBalanceData, isLoading: isLoadingReadContracts } = useReadContracts<ContractCallBigIntResult>(assetConvertcontractReadCalls);
 
   return useMemo(() => {
-    if (isLoadingBalances || isLoadingReadContracts || isLoadingSDaiData || !assetBalanceData || !sexyDaiShareBalances) {
+    if (isLoadingBalances || isLoadingReadContracts || !assetBalanceData || !sexyDaiShareBalances) {
       return { isLoading: true, data: [] }
     }
     const balances = sexyDaiShareBalances.flatMap((shareBalanceData, i) => {
@@ -52,25 +55,18 @@ export function useSexyDaiBalances(accountAddresses: Address[]): LoadableData<Yi
         return []
       }
       const balanceUsd = parseFloat(formatUnits(assetBalanceData[i].result, 18))
+      const opportunity = find(sexyDaiOpportunities, { poolTokenAddress: shareBalanceData.tokenAddress })
+      if (!opportunity) {
+        throw new Error('Cant find back sexyDAI oppportunity')
+      }
       return [{
-        id: `sexy-dai`,
+        ...opportunity,
         accountAddress,
-        poolTokenAddress: sexyDaiGnosisAddress,
-        poolAddress: sexyDaiGnosisAddress,
-        symbol: 'DAI',
         balance,
         balanceUsd,
         formattedBalance,
-        platform: 'dsr' as const,
-        poolName: 'DAI Savings',
-        chainId: gnosis.id,
-        apy: sDaiData?.apy || 0,
-        type: 'onchain' as const,
-        metadata: {
-          link: 'https://agavefinance.eth.limo/sdai/'
-        }
       }]
     })
     return { data: balances, isLoading: false, refetch }
-  }, [assetBalanceData, sexyDaiShareBalances, isLoadingReadContracts, isLoadingBalances, isLoadingSDaiData, sDaiData, refetch])
+  }, [assetBalanceData, sexyDaiShareBalances, isLoadingReadContracts, isLoadingBalances, sexyDaiOpportunities, refetch])
 }

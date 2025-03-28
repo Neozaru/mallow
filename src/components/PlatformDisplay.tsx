@@ -1,7 +1,7 @@
 import getChainName from '@/utils/getChainName';
 import Link from 'next/link';
 import styled from 'styled-components';
-import { arbitrum, avalanche, base, bsc, gnosis, linea, mainnet, optimism, polygon, scroll, sonic, zksync } from 'viem/chains';
+import { arbitrum, avalanche, base, bsc, gnosis, linea, mainnet, optimism, polygon, scroll, sei, sonic, zksync } from 'viem/chains';
 
 const platformIcons = {
   coinbase: "https://assets.coingecko.com/markets/images/23/large/Coinbase_Coin_Primary.png",
@@ -41,7 +41,8 @@ const chainIcons = {
   [base.id]: "https://www.base.org/document/apple-touch-icon.png",
   [sonic.id]: "https://s2.coinmarketcap.com/static/img/coins/200x200/32684.png",
   [avalanche.id]: "https://cryptologos.cc/logos/avalanche-avax-logo.png",
-  [linea.id]: "https://images.seeklogo.com/logo-png/52/1/linea-logo-png_seeklogo-527155.png"
+  [linea.id]: "https://images.seeklogo.com/logo-png/52/1/linea-logo-png_seeklogo-527155.png",
+  [sei.id]: "https://blog.sei.io/content/images/size/w100/2022/08/Sei-logo-only-6.png"
 }
 
 const platformNames = {

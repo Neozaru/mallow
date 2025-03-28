@@ -34,15 +34,21 @@ export function useBeefyData(): BeefyData {
     queries: [
       {
         queryKey: ['beefyVaults'],
-        queryFn: () => fetchWithAxios('https://api.beefy.finance/vaults')
+        queryFn: () => fetchWithAxios('https://api.beefy.finance/vaults'),
+        staleTime: 60000,
+        refetchOnWindowFocus: false
       },
       {
         queryKey: ['beefyBoosts'],
-        queryFn: () => fetchWithAxios('https://api.beefy.finance/boosts')
+        queryFn: () => fetchWithAxios('https://api.beefy.finance/boosts'),
+        staleTime: 60000,
+        refetchOnWindowFocus: false
       },
       {
         queryKey: ['beefyApys'],
-        queryFn: () => fetchWithAxios('https://api.beefy.finance/apy')
+        queryFn: () => fetchWithAxios('https://api.beefy.finance/apy'),
+        staleTime: 60000,
+        refetchOnWindowFocus: false
       }
     ]
   })

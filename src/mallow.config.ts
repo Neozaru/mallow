@@ -1,5 +1,5 @@
 import { Address } from 'viem'
-import { arbitrum, base, gnosis, mainnet, optimism, scroll, zksync, polygon, avalanche, linea, sonic, Chain, bsc } from 'viem/chains'
+import { arbitrum, base, gnosis, mainnet, optimism, scroll, zksync, polygon, avalanche, linea, sonic, Chain, bsc, fraxtal, mantle, berachain, mode, metis, moonbeam, rootstock, sei, celo, unichain } from 'viem/chains'
 
 type ChainConfig = {
   rpcUrl?: string
@@ -17,7 +17,17 @@ const enabledChains = [
   avalanche, 
   linea,
   bsc,
-  sonic
+  sonic,
+  fraxtal,
+  mantle,
+  berachain,
+  mode,
+  metis,
+  moonbeam,
+  rootstock,
+  sei,
+  celo,
+  unichain
 ] as [Chain, ...Chain[]]
 
 type ChainId = (typeof enabledChains[number])['id']
@@ -79,6 +89,30 @@ const mallowConfig: MallowConfig = {
     },
     [linea.id]: {
       rpcUrl: process.env.NEXT_PUBLIC_LINEA_URL,
+    },
+    [fraxtal.id]: {
+      rpcUrl: process.env.NEXT_PUBLIC_FRAX_URL,
+    },
+    [mantle.id]: {
+      rpcUrl: process.env.NEXT_PUBLIC_MANTLE_URL,
+    },
+    [berachain.id]: {
+      rpcUrl: process.env.NEXT_PUBLIC_BERACHAIN_URL,
+    },
+    [metis.id]: {
+      rpcUrl: process.env.NEXT_PUBLIC_METIS_URL,
+    },
+    [rootstock.id]: {
+      rpcUrl: process.env.NEXT_PUBLIC_ROOTSTOCK_URL,
+    },
+    [sei.id]: {
+      rpcUrl: process.env.NEXT_PUBLIC_SEI_URL,
+    },
+    [celo.id]: {
+      rpcUrl: process.env.NEXT_PUBLIC_CELO_URL,
+    },
+    [unichain.id]: {
+      rpcUrl: process.env.NEXT_PUBLIC_UNICHAIN_URL,
     }
   },
   mallowContractAddresses: {
@@ -107,7 +141,9 @@ const mallowConfig: MallowConfig = {
       [sonic.id]: 2,
       [avalanche.id]: 2,
       [linea.id]: 2,
-      [bsc.id]: 1
+      [bsc.id]: 1,
+      [mantle.id]: 2,
+      [fraxtal.id]: 1
     },
     protocols: {
       spot: 0,
@@ -115,7 +151,7 @@ const mallowConfig: MallowConfig = {
       morpho: 1,
       beefy: 2,
       dsr: 1,
-      ssr: 2,
+      ssr: 1,
       pendle: 2
     },
     symbols: {

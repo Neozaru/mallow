@@ -72,6 +72,54 @@ class SettingsService {
       ...settings
     })
   }
+
+  static async downloadSettingsToFile(): Promise<void> {
+    const settings = this.getSettings()
+    const date = new Date().toISOString().split('T')[0]
+    const fileName = `mallow-pro-settings-${date}.json`
+  
+    const blob = new Blob([JSON.stringify(settings, null, 2)], {
+      type: 'application/json',
+    })
+  
+    const url = URL.createObjectURL(blob)
+  
+    // Create a hidden anchor tag (cleanly in memory)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = fileName
+    anchor.style.display = 'none'
+  
+    document.body.appendChild(anchor)
+    anchor.click()
+    document.body.removeChild(anchor)
+  
+    URL.revokeObjectURL(url)
+  }
+
+  static async loadSettingsFromFile(file: File | undefined): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!file) {
+        return reject('No input file given.')
+      }
+      const reader = new FileReader()
+  
+      reader.onload = (event) => {
+        try {
+          const text = event.target?.result as string
+          const parsed = JSON.parse(text)
+          // Optional: validate structure here before saving
+          this.saveSettingsToLocalStorage(parsed)
+          resolve()
+        } catch (error) {
+          reject(error)
+        }
+      }
+  
+      reader.onerror = () => reject(reader.error)
+      reader.readAsText(file)
+    })
+  }
 }
 
 export default SettingsService;

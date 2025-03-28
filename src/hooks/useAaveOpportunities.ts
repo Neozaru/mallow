@@ -49,6 +49,7 @@ export function useAaveOpportunities({ enabled } = { enabled: true }) {
       return getAaveReserves({ chainIds: supportedChainIds, symbols: stablecoinsAaveSymbols })
     },
     staleTime: 600000,
+    refetchOnWindowFocus: false,
     enabled
   })
 
