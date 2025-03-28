@@ -7,6 +7,9 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import LoadingSpinner from './LoadingSpinner';
 import MallowLogo from './MallowLogo';
+import { useEffect, useMemo, useState } from 'react';
+
+const mobileScreenWidthBreakPoint = 768
 
 function ProComponent() {
   // If nothing set to be watched or nothing connected, read config from Settings
@@ -18,6 +21,20 @@ function ProComponent() {
 
   const isLoading = false
 
+  const [screenWidthInfo, setScreenWidthInfo] = useState<number>(window.innerWidth)
+
+  function handleWindowSizeChange() {
+    setScreenWidthInfo(window.innerWidth)
+  }
+  useEffect(() => {
+    window.addEventListener('resize', handleWindowSizeChange)
+    return () => {
+      window.removeEventListener('resize', handleWindowSizeChange)
+    }
+  }, [])
+
+  const isMobile = useMemo(() => screenWidthInfo < mobileScreenWidthBreakPoint, [screenWidthInfo])
+
   // TODO: Inject exchange balances / config
   return (
     <span key="pro">
@@ -25,9 +42,9 @@ function ProComponent() {
       : <>
         {hasSetSomethingToTrack
         ? <div>
-            <AllBalances accountAddresses={onChainAddresses} manualPositions={manualPositions} enableExchanges={true} displayAccounts={true} />
+            <AllBalances accountAddresses={onChainAddresses} manualPositions={manualPositions} enableExchanges={true} displayAccounts={!isMobile} />
             <div className='text-center'>
-              🕵️ Watching {onChainAddresses.length} addresses from
+              🕵️ Watching {onChainAddresses.length} addresses from {isMobile ? 'mobile' : 'desktop'}
               &nbsp;<Link href='/settings' className='underline'>&#9881;Settings</Link>
             </div>
           </div>

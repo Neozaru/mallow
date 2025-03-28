@@ -269,15 +269,21 @@ const AllBalances: React.FC<AllBalancesProps> = ({
     return isOnChainBalancesLoading || isExchangeBalancesLoading
   }, [isOnChainBalancesLoading, isExchangeBalancesLoading])
 
+  const columnVisibility = useMemo(() => ({
+    chainId: false,
+    accountAddress: displayAccounts
+  }), [displayAccounts])
+
   const table = useReactTable({
     data: allBalancesFiltered,
     columns,
     initialState: {
-      columnVisibility: { chainId: false, accountAddress: displayAccounts },
+      columnVisibility,
     },
     state: {
       sorting,
       grouping,
+      columnVisibility
     },
     onSortingChange: setSorting,
     onGroupingChange: setGrouping,
