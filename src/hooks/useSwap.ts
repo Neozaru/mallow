@@ -26,17 +26,17 @@ const useSwap = ({ fromOpportunity, toOpportunity, baseAmountIn, quote }) => {
       address: mallowManagerAddress,
       chainId,
       functionName: 'executeOperation' as const,
-      args: [
-        getStablecoinAddress({ symbol, chainId }),
-        encodeProtocolName(fromOpportunity.platform),
-        encodeProtocolName(toOpportunity.platform),
-        fromOpportunity.poolAddress,
-        toOpportunity.poolAddress,
-        fromOpportunity.poolTokenAddress,
-        baseAmountIn,
-        toOpportunity.poolTokenAddress,
-        applySlippage(quote[1]) // TODO: Name variables once quote system is mature
-      ] as const
+      args: [{
+        baseAssetAddress: getStablecoinAddress({ symbol, chainId }),
+        fromProtocol: encodeProtocolName(fromOpportunity.platform),
+        toProtocol: encodeProtocolName(toOpportunity.platform),
+        fromPoolAddress: fromOpportunity.poolAddress,
+        toPoolAddress: toOpportunity.poolAddress,
+        fromLpTokenAddress: fromOpportunity.poolTokenAddress,
+        toLpTokenAddress: toOpportunity.poolTokenAddress,
+        fromLpTokenAmount: baseAmountIn,
+        toMinLpTokenAmount: applySlippage(quote[1]) // TODO: Name variables once quote system is mature
+      }] as const
     }
   }, [fromOpportunity, toOpportunity, baseAmountIn, quote])
 

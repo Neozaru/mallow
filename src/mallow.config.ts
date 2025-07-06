@@ -37,7 +37,7 @@ type RiskAlgo = 'avg' | 'max' | 'weighted'
 type MallowConfig = {
   enabledChains: readonly [Chain, ...Chain[]];
   chains: { [c in ChainId]: ChainConfig };
-  mallowContractAddresses: { [c in ChainId]: { manager: Address } };
+  mallowContractAddresses: { [c in ChainId]: { manager: Address, bridgeHandler: Address } };
   risks: {
     algo: RiskAlgo;
     defaults: {
@@ -118,8 +118,14 @@ const mallowConfig: MallowConfig = {
   mallowContractAddresses: {
     [base.id]: {
       // manager: '0x4E00a24d7A6CF315EBc631A612E56a4037B0EE57'
-      manager: '0xD89F7f0cB4B122123755A3EF0d43c7015A747FB6' // With spot
+      // manager: '0xD89F7f0cB4B122123755A3EF0d43c7015A747FB6' // With spot
       // manager: '0x71E9Bf1e3cdfEB5f72E15164d1c59B571F279a85' all ERC
+      manager: '0x4C3a38e4bd4F071C0D8B952B81fd19A1Ff57b5bf',
+      bridgeHandler: '0x7052E4379026a4C98207A78F1d57B1D69dCB1a4e'
+    },
+    [arbitrum.id]: {
+      manager: '0x053a5478A7e6627939B366189361bBEfA9Cc94d1',
+      bridgeHandler: '0x3DdDC12bc69a0fA74507F2F1c95176938446F7fA'
     }
   },
   risks: {

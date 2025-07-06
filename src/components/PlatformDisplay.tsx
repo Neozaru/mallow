@@ -1,13 +1,14 @@
 import getChainName from '@/utils/getChainName';
+import { tokenLogo } from '@/utils/logosUtils';
 import Link from 'next/link';
 import styled from 'styled-components';
 import { arbitrum, avalanche, base, bsc, gnosis, linea, mainnet, optimism, polygon, scroll, sei, sonic, zksync } from 'viem/chains';
 
 const platformIcons = {
   coinbase: "https://assets.coingecko.com/markets/images/23/large/Coinbase_Coin_Primary.png",
-  binance: "https://cryptologos.cc/logos/binance-coin-bnb-logo.png",
+  binance: "logos/platforms/binance.png",
   kraken: "https://assets.coingecko.com/markets/images/29/large/kraken.jpg",
-  aave: "https://cryptologos.cc/logos/aave-aave-logo.png",
+  aave: "/logos/platforms/aave.png",
   morpho: "https://assets.coingecko.com/coins/images/29837/standard/Morpho-token-icon.png",
   beefy: "https://assets.coingecko.com/coins/images/12704/standard/bifi.png",
   dsr: "https://pbs.twimg.com/profile_images/1828469202753122304/i8YRkB4A_400x400.jpg",
@@ -16,31 +17,33 @@ const platformIcons = {
 }
 
 const tokenIcons = {
-  USDC: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png",
-  USDT: "https://cryptologos.cc/logos/tether-usdt-logo.png",
-  aUSDC: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png",
-  aUSDT: "https://cryptologos.cc/logos/tether-usdt-logo.png",
-  aUSDS: "https://img.cryptorank.io/coins/usds1724768606452.png",
-  DAI: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png",
-  xDAI: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png",
-  WXDAI: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png",
-  EURC: "https://assets.coingecko.com/coins/images/26045/standard/euro.png?1696525125",
-  USDS: "https://img.cryptorank.io/coins/usds1724768606452.png",
-  GHO: "https://app.aave.com/icons/tokens/gho.svg",
+  USDC: tokenLogo('usdc.png'),
+  USDT: tokenLogo('usdt.png'),
+  aUSDC: tokenLogo('usdc.png'),
+  aUSDT: tokenLogo('usdt.png'),
+  aUSDS: tokenLogo('usds.png'),
+  DAI: tokenLogo('dai.png'),
+  xDAI: tokenLogo('dai.png'),
+  WXDAI: tokenLogo('dai.png'),
+  EURC: tokenLogo('eurc.webp'),
+  USDS: tokenLogo('usds.png'),
+  GHO: tokenLogo('gho.png'),
+  aGHO: tokenLogo('gho.png'),
+  stkGHO: tokenLogo('gho.png'),
 }
 
 const chainIcons = {
   [mainnet.id]: "https://svgmix.com/uploads/3287b3-ethereum-eth.svg",
-  [bsc.id]: "https://cryptologos.cc/logos/binance-coin-bnb-logo.png",
-  [polygon.id]: "https://cryptologos.cc/logos/polygon-matic-logo.png",
+  [bsc.id]: "/logos/networks/bnb.png",
+  [polygon.id]: "logos/networks/polygon.png",
   [gnosis.id]: "https://s1.coincarp.com/logo/1/gnosis-gno.png?style=200&v=1630481838",
-  [optimism.id]: "https://cryptologos.cc/logos/optimism-ethereum-op-logo.png",
-  [arbitrum.id]: "https://cryptologos.cc/logos/arbitrum-arb-logo.png",
+  [optimism.id]: "/logos/networks/op.png",
+  [arbitrum.id]: "/logos/networks/arbitrum.png",
   [zksync.id]: "https://s2.coinmarketcap.com/static/img/coins/200x200/24091.png",
   [scroll.id]: "https://scroll.io/_next/static/media/Scroll_Logomark.ad5d0348.svg",
   [base.id]: "https://www.base.org/document/apple-touch-icon.png",
   [sonic.id]: "https://s2.coinmarketcap.com/static/img/coins/200x200/32684.png",
-  [avalanche.id]: "https://cryptologos.cc/logos/avalanche-avax-logo.png",
+  [avalanche.id]: "/logos/networks/avalanche.png",
   [linea.id]: "https://images.seeklogo.com/logo-png/52/1/linea-logo-png_seeklogo-527155.png",
   [sei.id]: "https://blog.sei.io/content/images/size/w100/2022/08/Sei-logo-only-6.png"
 }

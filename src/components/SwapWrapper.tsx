@@ -1,6 +1,6 @@
 import { useOpportunities } from '@/hooks/useOpportunities';
 import SwapComponent from './SwapComponent';
-import { base } from 'viem/chains';
+import { arbitrum, base } from 'viem/chains';
 import { useMemo } from 'react';
 import LoadingSpinner from './LoadingSpinner';
 import { useSearchParams } from 'next/navigation';
@@ -28,9 +28,19 @@ const SwapWrapper = () => {
           poolAddress: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913' as const,
           apy: 0,
           type: 'onchain' as const
+        }, {
+          id: 'spot-usdc-42161',
+          symbol: 'USDC',
+          platform: 'spot' as const,
+          poolName: 'Spot',
+          chainId: arbitrum.id,
+          poolTokenAddress: '0xaf88d065e77c8cc2239327c5edb3a432268e5831' as const,
+          poolAddress: '0xaf88d065e77c8cc2239327c5edb3a432268e5831' as const,
+          apy: 0,
+          type: 'onchain' as const
         }, // TODO: make useOpportunities return spot stuff too
         ...opportunities?.filter(opportunity =>
-          opportunity.chainId === base.id && opportunity.symbol === 'USDC' &&
+            [base.id, arbitrum.id].includes(opportunity.chainId) && opportunity.symbol === 'USDC' &&
           !opportunity.poolName.includes('Boost') // Beefy boosts are different and require claiming
         ) ?? []
       ]
