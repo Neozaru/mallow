@@ -40,7 +40,7 @@ const SwapWrapper = () => {
           type: 'onchain' as const
         }, // TODO: make useOpportunities return spot stuff too
         ...opportunities?.filter(opportunity =>
-            [base.id, arbitrum.id].includes(opportunity.chainId) && opportunity.symbol === 'USDC' &&
+            ([base.id, arbitrum.id] as number[]).includes(opportunity.chainId) && opportunity.symbol === 'USDC' &&
           !opportunity.poolName.includes('Boost') // Beefy boosts are different and require claiming
         ) ?? []
       ]
