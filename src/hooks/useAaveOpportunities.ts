@@ -5,11 +5,11 @@ import getSupportedChainIds from '@/utils/getSupportedChainIds'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { Address } from 'viem'
-import { arbitrum, avalanche, base, bsc, gnosis, mainnet, optimism, polygon, scroll, zksync } from 'viem/chains'
 import { useSSRData } from './useSSRData'
 import { useReadContracts } from 'wagmi'
 
 import aaveATokenAbi from '@/abis/aaveAToken.abi'
+import { aaveChainNames } from '@/utils/aaveChainNames'
 
 function convertAprToApy(apr: number): number {
   const SECONDS_PER_YEAR = 31_536_000; // 60 * 60 * 24 * 365
@@ -20,21 +20,9 @@ type AaveReserveData = {
   id: string;
   symbol: string;
   interestRateStrategyAddress: Address;
+  aTokenAddress: Address;
   underlyingAsset: Address;
   variableBorrowRate: string;
-}
-
-const aaveChainNames = {
-  [mainnet.id]: 'mainnet',
-  [optimism.id]: 'optimism',
-  [arbitrum.id]: 'arbitrum',
-  [zksync.id]: 'zksync',
-  [base.id]: 'base',
-  [polygon.id]: 'polygon',
-  [gnosis.id]: 'gnosis',
-  [scroll.id]: 'scroll',
-  [avalanche.id]: 'avalanche',
-  [bsc.id]: 'bnb',
 }
 
 const supportedChainIds = getSupportedChainIds()
@@ -77,7 +65,7 @@ export function useAaveOpportunities({ enabled } = { enabled: true }) {
     if (isAaveDataLoading || isPoolsDataLoading || isSSRDataLoading || !aaveStablecoinData) {
       return []
     }
-    return aaveStablecoinData.map(({ id, symbol, interestRateStrategyAddress, variableBorrowRate, underlyingAsset }, i) => {
+    return aaveStablecoinData.map(({ id, symbol, aTokenAddress, variableBorrowRate, underlyingAsset }, i) => {
       const isNewAToken = symbol.startsWith('A')
       const spotTokenSymbol = isNewAToken ? symbol.slice(1) : symbol
       const chainId = poolIdToChainId(id)
@@ -88,7 +76,7 @@ export function useAaveOpportunities({ enabled } = { enabled: true }) {
       return createOpportunity({
         id,
         symbol: spotTokenSymbol,
-        poolTokenAddress: interestRateStrategyAddress,
+        poolTokenAddress: aTokenAddress,
         poolAddress,
         platform: 'aave' as const,
         poolName: `Aave ${spotTokenSymbol}`,

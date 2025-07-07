@@ -20,6 +20,7 @@ const tokenIcons = {
   USDC: tokenLogo('usdc.png'),
   USDT: tokenLogo('usdt.png'),
   aUSDC: tokenLogo('usdc.png'),
+  stkaUSDC: tokenLogo('usdc.png'),
   aUSDT: tokenLogo('usdt.png'),
   aUSDS: tokenLogo('usds.png'),
   DAI: tokenLogo('dai.png'),
