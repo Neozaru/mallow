@@ -73,5 +73,5 @@ export function useAaveStakingOpportunities({ enabled } = { enabled: true }) {
       })
     }) || []
     return { data: opportunities.filter(identity), isLoading: false }
-  }, [readContractsData, isLoading, error])
+  }, [readContractsData, isAaveOpportunitiesLoading, aaveOpportunities, isLoading, error])
 }
