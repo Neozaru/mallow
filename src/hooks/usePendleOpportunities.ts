@@ -28,9 +28,9 @@ export function usePendleOpportunities({ enabled } = { enabled: true }) {
   const { isLoading, data: pendleStablecoinData } = useQuery({
     queryKey: ['pendledata'],
     queryFn: async () => {
-      const { data } = await axios.get(
-        `/api/defi/pendle/assets?symbols=${stablecoins}&chainIds=${supportedChainIds}`
-      )
+      const symbolsFilter = [...stablecoins, ...stablecoins.map(s => `stka${s}`)]
+      const url = `/api/defi/pendle/assets?symbols=${symbolsFilter}&chainIds=${supportedChainIds}`
+      const { data } = await axios.get(url)
       return data
     },
     staleTime: 30 * 1000,

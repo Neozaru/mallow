@@ -23,7 +23,6 @@ export function useBalancesFromOpportunities({
   }, [opportunities])
   
   const { data: tokenBalances, isLoading: isLoadingBalances, refetch } = useTokenBalances(accountAddresses, tokenConfigs)
-
   return useMemo(() => {
     if (isLoadingBalances || !opportunities || !enabled || !tokenConfigs) {
       return { data: [], isLoading: true }

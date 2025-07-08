@@ -46,7 +46,8 @@ export function useAaveStakingOpportunities({ enabled } = { enabled: true }) {
       const stakingApy = (parseInt(rewardsTokenData[0].maxEmissionPerSecond) * 31_536_000) / Math.max(parseInt(targetLiquidity), parseInt(totalAssets))
       const aaveOpportunity = aaveOpportunities.find(o =>
         o.chainId === chainId &&
-        o.poolTokenAddress === rewardsTokenData[0].rewardTokenData.token)
+        o.poolTokenAddress.toLocaleLowerCase() === rewardsTokenData[0].rewardTokenData.token.toLocaleLowerCase()
+      )
       const symbol = aaveOpportunity?.symbol || rewardsTokenData[0].rewardTokenData.symbol
       if (!isStablecoin(symbol)) {
         return null
