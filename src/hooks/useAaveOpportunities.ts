@@ -10,6 +10,7 @@ import { useReadContracts } from 'wagmi'
 
 import aaveATokenAbi from '@/abis/aaveAToken.abi'
 import { aaveChainNames } from '@/utils/aaveChainNames'
+import { useSexyDaiData } from './useSexyDaiData'
 
 function convertAprToApy(apr: number): number {
   const SECONDS_PER_YEAR = 31_536_000; // 60 * 60 * 24 * 365
@@ -59,10 +60,11 @@ export function useAaveOpportunities({ enabled } = { enabled: true }) {
   }, [isAaveDataLoading, aaveStablecoinData])
   const { data: aavePoolsData, isLoading: isPoolsDataLoading } = useReadContracts(aavePoolReadContractParams)
   // For sUSDS rate (will use it as proxy for Aave USDS rate)
-  const { data: ssrDatauseSSRData, isLoading: isSSRDataLoading } = useSSRData() 
+  const { data: ssrData, isLoading: isSSRDataLoading } = useSSRData()
+  const { data: sexyDaiData , isLoading: isSexyDaiDataLoading } = useSexyDaiData()
 
   const aaveOpportunities: YieldOpportunityOnChain[] = useMemo(() => {
-    if (isAaveDataLoading || isPoolsDataLoading || isSSRDataLoading || !aaveStablecoinData) {
+    if (isAaveDataLoading || isPoolsDataLoading || isSSRDataLoading || isSexyDaiDataLoading || !aaveStablecoinData) {
       return []
     }
     return aaveStablecoinData.map(({ id, symbol, aTokenAddress, variableBorrowRate, underlyingAsset }, i) => {
@@ -70,9 +72,25 @@ export function useAaveOpportunities({ enabled } = { enabled: true }) {
       const spotTokenSymbol = isNewAToken ? symbol.slice(1) : symbol
       const chainId = poolIdToChainId(id)
       const poolAddress = aavePoolsData?.[i]?.result
-      // Hack to take USDS in account approx. Couldn't get anything useful from the API
-      const usdsAPY = ssrDatauseSSRData?.apy || 0.065
-      const apy = convertAprToApy(Number(variableBorrowRate) / 1000000000000000000000000000) + (spotTokenSymbol === 'USDS' ? usdsAPY : 0) 
+
+      function getNativeApy(symbol: string): number {
+        if (symbol === 'USDS') {
+          return ssrData?.apy || 0.045
+        } else if (symbol === 'sDAI') {
+          // Hardcoded as harder to compute on Gnosis
+          return sexyDaiData?.apy || 0.05
+        }
+        return 0
+      }
+      function getRateToPrincipal(symbol: string): number {
+        if (symbol === 'sDAI') {
+          // sDAI uses chi to convert shares to principal
+          return sexyDaiData?.rateToPrincipal || 1
+        }
+        return 1
+      }
+      const apy = convertAprToApy(Number(variableBorrowRate) / 1000000000000000000000000000) + getNativeApy(spotTokenSymbol)
+      const rateToPrincipal = getRateToPrincipal(spotTokenSymbol)
       return createOpportunity({
         id,
         symbol: spotTokenSymbol,
@@ -82,12 +100,13 @@ export function useAaveOpportunities({ enabled } = { enabled: true }) {
         poolName: `Aave ${spotTokenSymbol}`,
         chainId,
         apy,
+        rateToPrincipal,
         type: 'onchain' as const,
         metadata: {
           link: `https://app.aave.com/reserve-overview/?underlyingAsset=${underlyingAsset}&marketName=proto_${aaveChainNames[chainId] || 'mainnet'}_v3`
         }
       })
     })
-  }, [aaveStablecoinData, isAaveDataLoading, isPoolsDataLoading, isSSRDataLoading, ssrDatauseSSRData, aavePoolsData])
-  return { data: aaveOpportunities, isLoading: enabled && (isPoolsDataLoading || isSSRDataLoading || isAaveDataLoading) }
+  }, [aaveStablecoinData, isAaveDataLoading, isPoolsDataLoading, isSSRDataLoading, isSexyDaiDataLoading, ssrData, aavePoolsData, sexyDaiData])
+  return { data: aaveOpportunities, isLoading: enabled && (isPoolsDataLoading || isSSRDataLoading || isAaveDataLoading || isSexyDaiDataLoading) }
 }

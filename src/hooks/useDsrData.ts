@@ -48,7 +48,7 @@ export function useSDaiData(): LoadableData<DaiPotData> {
     }
     const typedReadContractsData = readContractsData as ContractCallBigIntResult[]
     const dsr = unsafeConvertBigNumberToNumer(typedReadContractsData[0].result || 0)
-    const chi = unsafeConvertBigNumberToNumer(typedReadContractsData[1].result || 0)
+    const chi = unsafeConvertBigNumberToNumer(typedReadContractsData[1].result || 0) || 0
     const rho = unsafeConvertBigNumberToNumer(typedReadContractsData[2].result || 0)
 
     const apy = Math.pow(

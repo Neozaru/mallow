@@ -9,6 +9,7 @@ const stablecoins = [
   'EURC',
   'stkGHO',
   'WXDAI',
+  'sDAI',
   'USDS',
   'USD0'
 ]
