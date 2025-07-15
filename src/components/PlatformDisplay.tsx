@@ -28,6 +28,7 @@ const tokenIcons = {
   sDAI: tokenLogo('sdai.png'),
   WXDAI: tokenLogo('dai.png'),
   EURC: tokenLogo('eurc.webp'),
+  EURe: tokenLogo('eure.svg'),
   USDS: tokenLogo('usds.png'),
   GHO: tokenLogo('gho.png'),
   aGHO: tokenLogo('gho.png'),

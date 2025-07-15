@@ -44,6 +44,12 @@ const stablecoinAddresses = [
       1: '0xdc035d45d973e3ec169d2276ddab16f1e407384f',
       8453: '0x820c137fa70c8691f0e44dc420a5e53c168921dc'
     }
+  },
+  {
+    symbol: 'EURe',
+    addresses: {
+      100: '0xcb444e90d8198415266c6a2724b7900fb12fc56e'
+    }
   }
 ]
 

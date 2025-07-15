@@ -7,6 +7,7 @@ const stablecoins = [
   'arbUSDCe',
   'GHO',
   'EURC',
+  'EURe',
   'stkGHO',
   'WXDAI',
   'sDAI',
