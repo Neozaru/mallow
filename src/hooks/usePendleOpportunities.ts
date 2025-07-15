@@ -4,7 +4,7 @@ import getSupportedChainIds from '@/utils/getSupportedChainIds'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { useMemo } from 'react'
-import { arbitrum, base, gnosis, mainnet, optimism, polygon, scroll, zksync } from 'viem/chains'
+import { arbitrum, base, gnosis, mainnet, optimism, polygon, scroll, sonic, zksync } from 'viem/chains'
 
 const supportedChainIds = getSupportedChainIds()
 
@@ -17,6 +17,7 @@ const pendleChainNames = {
   [polygon.id]: 'polygon',
   [gnosis.id]: 'gnosis',
   [scroll.id]: 'scroll',
+  [sonic.id]: 'sonic',
 }
 
 const getTokenSymbolFromName = pendleSymbolName => {
