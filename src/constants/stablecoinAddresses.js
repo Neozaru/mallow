@@ -9,7 +9,7 @@ const stablecoinAddresses = [
       324: '0x1d17cbcf0d6d143135ae902365d2e5e2a16538d4',   // zkSync
       100: '0xddafbb505ad214d7b80b1f830fccc89b60fb7a83',   // Gnosis
       8453: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',   // Base
-      137: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174' // Polygon
+      137: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359' // Polygon
     }
   },
   {
