@@ -21,6 +21,8 @@ const tokenIcons = {
   USDT: tokenLogo('usdt.png'),
   aUSDC: tokenLogo('usdc.png'),
   stkaUSDC: tokenLogo('usdc.png'),
+  stkaUSDT: tokenLogo('usdt.png'),
+  stkaGHO: tokenLogo('gho.png'),
   aUSDT: tokenLogo('usdt.png'),
   aUSDS: tokenLogo('usds.png'),
   DAI: tokenLogo('dai.png'),
