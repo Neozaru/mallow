@@ -28,7 +28,7 @@ type YieldOpportunityOnChain = YieldOpportunityBase & {
 }
 
 type YieldOpportunityExchange = YieldOpportunityBase & {
-  platform: 'kraken' | 'coinbase' | 'binance';
+  platform: 'kraken' | 'coinbase' | 'binance' | 'bitstamp';
   type: 'exchange';
 }
 

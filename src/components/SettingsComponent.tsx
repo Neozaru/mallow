@@ -54,6 +54,8 @@ const SettingsComponent = () => {
   const [krakenApiSecret, setKrakenApiSecret] = useState('')
   const [binanceApiKey, setBinanceApiKey] = useState('')
   const [binanceApiSecret, setBinanceApiSecret] = useState('')
+  const [bitstampApiKey, setBitstampApiKey] = useState('')
+  const [bitstampApiSecret, setBitstampApiSecret] = useState('')
   const [onChainAccounts, setOnChainAccounts] = useState('')
   const [manualPositions, setManualPositions] = useState('')
 
@@ -67,6 +69,8 @@ const SettingsComponent = () => {
     setKrakenApiSecret(settings.apiKeys.krakenApiSecret)
     setBinanceApiKey(settings.apiKeys.binanceApiKey)
     setBinanceApiSecret(settings.apiKeys.binanceApiSecret)
+    setBitstampApiKey(settings.apiKeys.bitstampApiKey)
+    setBitstampApiSecret(settings.apiKeys.bitstampApiSecret)
     setOnChainAccounts(
       settings.onChainAccounts.map(account => `${account.address}`).join('\n')
     )
@@ -113,12 +117,14 @@ const SettingsComponent = () => {
         krakenApiSecret,
         binanceApiKey,
         binanceApiSecret,
+        bitstampApiKey,
+        bitstampApiSecret
       },
       onChainAccounts: onChainAccountsNewSettings,
       manualPositions: manualPositionsNewSettings,
     })
     router.push('/pro')
-  }, [router, binanceApiKey, binanceApiSecret, krakenApiKey, krakenApiSecret, coinbaseKeyName, coinbaseApiSecret, onChainAccounts, manualPositions])
+  }, [router, binanceApiKey, binanceApiSecret, krakenApiKey, krakenApiSecret, coinbaseKeyName, coinbaseApiSecret, bitstampApiKey, bitstampApiSecret, onChainAccounts, manualPositions])
 
   const saveSettingsForm = useCallback((e: React.FormEvent) => {
     e.preventDefault()
@@ -225,6 +231,25 @@ const SettingsComponent = () => {
             value={binanceApiSecret}
             onChange={(e) => setBinanceApiSecret(e.target.value)}
             placeholder="Enter your Binance API Secret"
+          />
+        </InputGroup>
+        {/* Bitstamp */}
+        <InputGroup>
+          <Label htmlFor="binanceApiKey">Bitstamp API Key:</Label>
+          <Input
+            id="bitstampApiKey"
+            type="text"
+            value={bitstampApiKey}
+            onChange={(e) => setBitstampApiKey(e.target.value)}
+            placeholder="Enter your Bitstamp API Key"
+          />
+          <Label htmlFor="binanceApiSecret">Bitstamp API Secret:</Label>
+          <Input
+            id="bitstampApiSecret"
+            type="text"
+            value={bitstampApiSecret}
+            onChange={(e) => setBitstampApiSecret(e.target.value)}
+            placeholder="Enter your Bitstamp API Secret"
           />
         </InputGroup>
         <ActionButton text='Save Settings' callback={saveSettings} />

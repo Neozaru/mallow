@@ -3,6 +3,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import SettingsService from './settingsService';
 import { createHash, createHmac } from 'crypto';
 import { stringify } from 'querystring';
+import getNewNonce from './getNewNonce';
 
 class RequestQueue {
   private queue: Promise<void> = Promise.resolve();
@@ -40,14 +41,6 @@ function getKrakenSignature(endpoint, data, secret) {
   return signature;
 }
 
-let nonce = Math.floor(Date.now() / 1000)
-
-export const getNonce = () => {
-  const currentNonce = nonce
-  nonce += 1
-  return currentNonce
-};
-
 type KrakenResponse = {
   error: unknown[];
   result: { [symbol: string]: string };
@@ -83,7 +76,7 @@ export async function getKrakenBalances(): Promise<YieldPositionExchange[]> {
   }
   const endpoint = '/0/private/Balance'
   const payload = {
-    nonce: getNonce()
+    nonce: getNewNonce()
   }
   const signature = getKrakenSignature(endpoint, payload, apiSecret)
   const headers = {

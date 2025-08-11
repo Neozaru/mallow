@@ -1,4 +1,5 @@
 import { getBinanceBalance } from '@/lib/getBinanceBalance'
+import { getBitstampBalance } from '@/lib/getBitstampBalance'
 import { getCoinbaseBalance } from '@/lib/getCoinbaseBalance'
 import { getKrakenBalances } from '@/lib/getKrakenBalances'
 import SettingsService from '@/lib/settingsService'
@@ -27,6 +28,12 @@ const useExchangeBalances = (enabled: boolean): LoadableData<YieldPositionExchan
         queryFn: getKrakenBalances,
         staleTime: Infinity,
         enabled: enabled && !!SettingsService.getSettings().apiKeys.krakenApiKey && !!SettingsService.getSettings().apiKeys.krakenApiSecret
+      },
+      {
+        queryKey: ['bitstamp'],
+        queryFn: getBitstampBalance,
+        staleTime: Infinity,
+        enabled: enabled && !!SettingsService.getSettings().apiKeys.bitstampApiKey && !!SettingsService.getSettings().apiKeys.bitstampApiSecret
       }
     ]
   })

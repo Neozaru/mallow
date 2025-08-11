@@ -1,10 +1,10 @@
-import forwardAxiosError from '@/utils/forwardAxiosError';
+import forwardAxiosError from '@/utils/forwardAxiosError'
 import axios from 'axios'
-import { Agent } from 'https';
-import _ from 'lodash';
+import { Agent } from 'https'
+import _ from 'lodash'
 
 export default async function handler(req, res) {
-  const { endpoint } = req.query;
+  const { endpoint } = req.query
   const url = `https://api.coinbase.com/api/v3/brokerage/${endpoint.join('/')}`
   const headersToPass = _.pick(req.headers, 'authorization')
   try {

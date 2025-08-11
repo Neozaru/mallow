@@ -8,6 +8,8 @@ interface ApiKeys {
   krakenApiSecret: string;
   binanceApiKey: string;
   binanceApiSecret: string;
+  bitstampApiKey: string;
+  bitstampApiSecret: string;
 }
 
 export interface OnChainAccount {
@@ -59,6 +61,8 @@ class SettingsService {
         krakenApiSecret: '',
         binanceApiKey: '',
         binanceApiSecret: '',
+        bitstampApiKey: '',
+        bitstampApiSecret: '',
       },
       onChainAccounts: [],
       manualPositions: [],
