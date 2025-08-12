@@ -24,6 +24,7 @@ type YieldOpportunityOnChain = YieldOpportunityBase & {
   rateToPrincipal?: number; // Optional: When the LP token is non-rebasing
   convertPrincipalToLP?: (principal: bigint) => bigint; // Hack.
   risk?: RiskValue;
+  expiry?: Date;
   type: 'onchain';
 }
 

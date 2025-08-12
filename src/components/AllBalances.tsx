@@ -16,6 +16,7 @@ import EthereumAddress from './EthereumAddress';
 import Link from 'next/link';
 import { base } from 'viem/chains';
 import ToggleButton from './ToggleButton';
+import sortApyCell from '@/lib/sortApyCell';
 
 type AllBalancesProps = {
   accountAddresses: Array<Address> | [];
@@ -175,10 +176,11 @@ const columns = [
             <Link className=' text-black bg-[#d98e04] hover:bg-[#d98e04]/80 p-2 rounded' href={`/swap?from=${id}`} passHref>Zap</Link>
           </div>
       } else {
-        return (<ApyCell apy={apy}/>)
+        const expiry = value.type === 'onchain' ? value?.expiry : undefined
+        return (<ApyCell apy={apy} expiry={expiry}/>)
       }
     },
-    sortingFn: 'basic',
+    sortingFn: sortApyCell,
     aggregationFn: 'mean',
     enableGrouping: false,
   }),

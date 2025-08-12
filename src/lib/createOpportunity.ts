@@ -1,6 +1,5 @@
 import getOpportunityRisk from './getOpportunityRisk'
 
-
 const createOpportunity = params => {
   return {
     ...params,

@@ -55,6 +55,7 @@ export function usePendleOpportunities({ enabled } = { enabled: true }) {
         poolName: info.name,
         chainId,
         apy,
+        expiry: new Date(info.expiry),
         type: 'onchain' as const,
         rateToPrincipal,
         metadata: {

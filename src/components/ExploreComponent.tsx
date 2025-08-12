@@ -12,6 +12,7 @@ import RiskGauge from './RiskGauge';
 import SearchBar from './SearchBar';
 import styled from 'styled-components';
 import { useDebounce } from 'use-debounce';
+import sortApyCell from '@/lib/sortApyCell';
 
 const Container = styled.div`
   padding-top: 10px;
@@ -38,10 +39,14 @@ const columns = [
     aggregationFn: 'mean',
     enableGrouping: false,
   }),
-  columnHelper.accessor('apy', {
+  columnHelper.accessor(row => row, {
+    id: 'apy',
     header: () => 'Apy',
-    cell: info => <ApyCell apy={info.renderValue()}/>,
-    sortingFn: 'basic',
+    cell: info => {
+      const { apy, expiry } = info.getValue()
+      return <ApyCell apy={apy} expiry={expiry} />
+    },
+    sortingFn: sortApyCell,
     aggregationFn: 'mean',
     enableGrouping: false,
   })

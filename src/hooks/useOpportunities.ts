@@ -30,6 +30,5 @@ export function useOpportunities() {
     ...(morphoOpportunities || []),
     ...(pendleOpportunities || []),
   ], [aaveOpportunities, aaveStakingOpportunities, beefyOpportunities, sexyDaiOpportunities, morphoOpportunities, pendleOpportunities])
-
   return { data: allOpportunities, isLoading }
 }
