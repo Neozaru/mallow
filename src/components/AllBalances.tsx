@@ -95,7 +95,7 @@ const NothingToShow = styled.div`
   text-align: center;
 `;
 
-const columnHelper = createColumnHelper<YieldPositionExchange | YieldPositionOnChain | YieldPositionManual>()
+const columnHelper = createColumnHelper<YieldPositionAnyWithBalanceUsd>()
 
 const balanceSortingFn = (rowA, rowB) => {
   return rowA.original.balanceUsd > rowB.original.balanceUsd
@@ -103,8 +103,8 @@ const balanceSortingFn = (rowA, rowB) => {
   : -1
 }
 
-const balanceAggregationFn = (columnId, leafRows: Row<YieldPositionAny>[]) => {
-  const res = sumBy(leafRows, leafRow => (leafRow.getUniqueValues<YieldPositionAny>('balance')[0]).balanceUsd)
+const balanceAggregationFn = (columnId, leafRows: Row<YieldPositionAnyWithBalanceUsd>[]) => {
+  const res = sumBy(leafRows, leafRow => (leafRow.getUniqueValues<YieldPositionAnyWithBalanceUsd>('balance')[0]).balanceUsd)
   return {
     balanceUsd: res
   }
@@ -145,7 +145,7 @@ const columns = [
     id: 'balance',
     header: () => <span>Balance</span>,
     cell: info => {
-      const { balanceUsd, formattedBalance, symbol, type } = info.getValue() as YieldPositionAny
+      const { balanceUsd, formattedBalance, symbol, type } = info.getValue() as YieldPositionAnyWithBalanceUsd
       return (
       <BalancesWrapper>
         {balanceUsd >= 0 && <span>${formatUsdBalance(balanceUsd)}<br/></span>}
@@ -161,7 +161,7 @@ const columns = [
     header: () => 'Account',
     cell: info => {
       const value = info.renderValue()
-      return value ? <EthereumAddress address={value} enableCopy={true}/> : ''
+      return value ? <EthereumAddress address={value} enableLink={true}/> : ''
     },
     enableGrouping: false
   }),
@@ -206,7 +206,7 @@ const AllBalances: React.FC<AllBalancesProps> = ({
   const { data: exchangeBalances, isLoading: isExchangeBalancesLoading } = useExchangeBalances(enableExchanges)
   const { data: onChainBalances, isLoading: isOnChainBalancesLoading } = useOnChainBalances(accountAddresses)
 
-  const allBalances: YieldPositionAny[] = useMemo<YieldPositionAny[]>(() => {
+  const allBalances: YieldPositionAnyWithBalanceUsd[] = useMemo<YieldPositionAnyWithBalanceUsd[]>(() => {
     if (isOnChainBalancesLoading || isExchangeBalancesLoading) {
       return []
     }

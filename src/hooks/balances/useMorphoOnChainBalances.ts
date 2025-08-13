@@ -68,7 +68,7 @@ export function useMorphoOnChainBalances(accountAddresses: Address[]): LoadableD
         ...opportunity,
         accountAddress,
         balance,
-        balanceUsd: parseFloat(formattedBalance),
+        balanceUnderlying: parseFloat(formattedBalance),
         formattedBalance,
       }
     })

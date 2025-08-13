@@ -1,14 +1,18 @@
 const tokenDecimals = {
   'USDT': 6,
   'USDC': 6,
-  'aUSDC': 6,
-  'aUSDT': 6,
-  'stkaUSDC': 6,
-  'stkaUSDT': 6,
-  'aEURC': 6,
   'EURC': 6
 }
 
+const findDecimalsAssumingPrefix = symbolWithPrefix => {
+  for (const [symbol, decimals] of Object.entries(tokenDecimals)) {
+    if (symbolWithPrefix.endsWith(symbol)) {
+      return decimals
+    }
+  }
+}
+
 export function getTokenDecimals(symbol: string) {
-  return tokenDecimals[symbol] || 18
+  const recordedDecimals = tokenDecimals[symbol] || findDecimalsAssumingPrefix(symbol)
+  return recordedDecimals || 18
 }

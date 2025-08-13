@@ -96,14 +96,15 @@ const SettingsComponent = () => {
     }))
 
     const manualPositionsNewSettings: YieldPositionManual[] = manualPositions.split('\n').map(s => s.trim()).filter(s => s !== '').map((line, i) => {
-      const [name, balanceUsd, apy] = line.split(',')
+      const [name, balanceUnderlying, apy] = line.split(',')
       return {
         id: `manual-${name}-${i}`,
         symbol: name, 
         poolName: name,
-        balanceUsd: parseFloat(balanceUsd),
-        balance: BigInt(balanceUsd),
-        formattedBalance: `${parseFloat(balanceUsd)}`,
+        balanceUnderlying: parseFloat(balanceUnderlying),
+        balanceUsd: parseFloat(balanceUnderlying),
+        balance: BigInt(balanceUnderlying),
+        formattedBalance: `${parseFloat(balanceUnderlying)}`,
         type: 'manual' as const,
         apy: parseFloat(apy)
       }

@@ -34,6 +34,7 @@ export async function getBinanceBalance(): Promise<YieldPositionExchange[]> {
       return {
         platform: 'binance' as const,
         formattedBalance,
+        balanceUnderlying: formattedBalance,
         balanceUsd: formattedBalance,
         symbol,
         poolName: `Spot ${symbol}`,

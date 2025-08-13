@@ -93,7 +93,7 @@ export function useMorphoBalances(accountAddresses: Address[]): LoadableData<Yie
           poolTokenAddress: position.vault.address,
           symbol,
           balance,
-          balanceUsd: position.assetsUsd,
+          balanceUnderlying: position.assetsUsd,
           formattedBalance,
           platform: 'morpho' as const,
           poolName: position.vault.name,

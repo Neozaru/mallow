@@ -9,8 +9,9 @@ import { useSSRBalances } from './useSSRBalances'
 import { usePendleBalances } from './usePendleBalances'
 import { useMorphoOnChainBalances } from './useMorphoOnChainBalances'
 import { useAaveStakingBalances } from './useAaveStakingBalances'
+import useCurrencyRates from '../useCurrencyRates'
 
-export function useOnChainBalances(accountAddresses: Address[]): LoadableData<YieldPositionAny[]> {
+export function useOnChainBalances(accountAddresses: Address[]): LoadableData<YieldPositionAnyWithBalanceUsd[]> {
   const { data: spotBalances, isLoading: isLoadingSpot, refetch: refetchSpotBalances } = useSpotBalances(accountAddresses)
   const { data: aaveBalances, isLoading: isLoadingAave, refetch: refetchAaveBalances } = useAaveBalances(accountAddresses)
   const { data: aaveStakingBalances, isLoading: isLoadingAaveStaking, refetch: refetchAaveStakingBalances } = useAaveStakingBalances(accountAddresses)
@@ -26,6 +27,19 @@ export function useOnChainBalances(accountAddresses: Address[]): LoadableData<Yi
     [isLoadingSpot, isLoadingAave, isLoadingAaveStaking, isLoadingMorpho, isLoadingBeefy, isLoadingSexyDai, isLoadingSSR, isLoadingPendle]
   )
 
+  const { data: currencyRates } = useCurrencyRates()
+  const addBalanceUsd = useCallback((position: YieldPositionOnChain) => {
+    let balanceUsd = position.balanceUnderlying
+    // TODO: More generic instead of just EUR.
+    if (currencyRates && currencyRates['EUR'] && position.symbol.includes('EUR')) {
+      balanceUsd = position.balanceUnderlying * currencyRates['EUR']
+    }
+    return {
+      ...position,
+      balanceUsd
+    }
+  }, [currencyRates])
+
   const allBalances = useMemo(() => [
     ...(spotBalances || []),
     ...(aaveBalances || []),
@@ -35,7 +49,7 @@ export function useOnChainBalances(accountAddresses: Address[]): LoadableData<Yi
     ...(sexyDaiBalances || []),
     ...(ssrBalances || []),
     ...(pendleBalances || []),
-  ], [spotBalances, aaveBalances, aaveStakingBalances, morphoBalances, beefyBalances, sexyDaiBalances, ssrBalances, pendleBalances])
+  ].map(addBalanceUsd), [addBalanceUsd, spotBalances, aaveBalances, aaveStakingBalances, morphoBalances, beefyBalances, sexyDaiBalances, ssrBalances, pendleBalances])
 
   const refetchAll = useCallback(() => {
     refetchSpotBalances?.()
@@ -48,7 +62,7 @@ export function useOnChainBalances(accountAddresses: Address[]): LoadableData<Yi
     refetchPendleBalances?.() 
   }, [refetchSpotBalances, refetchAaveBalances, refetchAaveStakingBalances, refetchMorphoBalances, refetchBeefyBalances, refetchSexyDaiBalances, refetchSSRBalances, refetchPendleBalances]) 
 
-  const filteredBalances = useMemo<YieldPositionAny[]>(() => {
+  const filteredBalances = useMemo<YieldPositionAnyWithBalanceUsd[]>(() => {
     return allBalances.flat().filter(b => b.balance > 0)
   }, [allBalances])
 

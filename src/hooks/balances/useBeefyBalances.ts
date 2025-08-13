@@ -42,7 +42,7 @@ export function useBeefyBalances(accountAddresses: Address[]): LoadableData<Yiel
       return {
         accountAddress,
         balance,
-        balanceUsd: parseFloat(formattedBalance),
+        balanceUnderlying: parseFloat(formattedBalance),
         formattedBalance,
         ...opportunity
       }

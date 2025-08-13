@@ -51,6 +51,7 @@ export async function getCoinbaseBalance(): Promise<YieldPositionExchange[]> {
       return {
         platform: 'coinbase' as const,
         formattedBalance: pos.total_balance_crypto,
+        balanceUnderlying: Number(pos.total_balance_fiat),
         balanceUsd: Number(pos.total_balance_fiat),
         symbol,
         poolName: `Spot ${symbol}`,

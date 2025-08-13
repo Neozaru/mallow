@@ -35,7 +35,7 @@ export function useSpotBalances(accountAddresses: Address[]): LoadableData<Yield
         poolTokenAddress: tokenAddress,
         poolAddress: tokenAddress,
         balance,
-        balanceUsd: parseFloat(formattedBalance),
+        balanceUnderlying: parseFloat(formattedBalance),
         formattedBalance,
         platform: 'spot' as const,
         poolName: `Spot ${symbol}`,

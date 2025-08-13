@@ -40,7 +40,7 @@ export function useBalancesFromOpportunities({
         ...opportunity,
         accountAddress,
         balance,
-        balanceUsd: opportunity.rateToPrincipal ? parseFloat(formattedBalance) * opportunity.rateToPrincipal : parseFloat(formattedBalance),
+        balanceUnderlying: opportunity.rateToPrincipal ? parseFloat(formattedBalance) * opportunity.rateToPrincipal : parseFloat(formattedBalance),
         formattedBalance,
       }
     }) || []

@@ -59,7 +59,7 @@ export function useAaveStakingOpportunities({ enabled } = { enabled: true }) {
       const rateToPrincipal = stakeTokenData.price ? parseInt(stakeTokenData.price) / Math.pow(10, 8) : 1
       return createOpportunity({
         id: `aave-staked-${symbol.toLowerCase()}`,
-        symbol,
+        symbol: `stka${symbol}`,
         poolTokenAddress: poolAddress,
         poolAddress,
         platform: 'aave' as const,

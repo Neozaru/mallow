@@ -39,17 +39,21 @@ type YieldOpportunityManual = YieldOpportunityBase & {
 
 type PositionBalances = {
   balance: bigint;
-  balanceUsd: number;
+  balanceUnderlying: number;
   formattedBalance: string;
+}
+
+type WithBalanceUsd = {
+  balanceUsd: number;
 }
 
 type YieldPositionOnChain = YieldOpportunityOnChain & PositionBalances & { accountAddress: EvmAddressInternal }
 
-type YieldPositionExchange = YieldOpportunityExchange & PositionBalances
+type YieldPositionExchange = YieldOpportunityExchange & PositionBalances & WithBalanceUsd
 
-type YieldPositionManual = YieldOpportunityManual & PositionBalances
+type YieldPositionManual = YieldOpportunityManual & PositionBalances & WithBalanceUsd
 
-type YieldPositionAny = YieldPositionOnChain | YieldPositionExchange | YieldPositionManual
+type YieldPositionAnyWithBalanceUsd = (YieldPositionOnChain | YieldPositionExchange | YieldPositionManual) & WithBalanceUsd
 
 type LoadableData<T> = {
   isLoading: boolean;

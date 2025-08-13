@@ -25,13 +25,13 @@ export function useSSRBalances(accountAddresses: Address[]): LoadableData<YieldP
       const { accountAddress, balance, chainId, tokenAddress } = shareBalanceData
       const formattedBalance = formatUnits(balance, 18)
       const { apy, sUSDSPriceUsd } = ssrData
-      const balanceUsd = sUSDSPriceUsd * parseFloat(formattedBalance)
+      const balanceUnderlying = sUSDSPriceUsd * parseFloat(formattedBalance)
       return [{
         id: `ssr`,
         accountAddress,
         symbol: 'USDS',
         balance,
-        balanceUsd,
+        balanceUnderlying,
         poolTokenAddress: tokenAddress,
         poolAddress: tokenAddress,
         formattedBalance,

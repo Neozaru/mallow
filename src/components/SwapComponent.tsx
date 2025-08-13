@@ -113,7 +113,7 @@ const SwapComponent = ({ opportunities, fromOpportunityId, toOpportunityId }: Pr
     return {
       base: found.balance,
       display: found.formattedBalance,
-      displayUsd: found.balanceUsd.toLocaleString('en-US', {
+      displayUsd: found.balanceUnderlying.toLocaleString('en-US', {
         style: 'currency',
         currency: 'USD'
       }),

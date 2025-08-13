@@ -24,8 +24,8 @@ export function useSDaiBalances(accountAddress: Address): LoadableData<YieldPosi
       const { chainId, address } = dsrContracts[i]
       const balance = bal.balance
       const formattedBalance = formatUnits(balance, 18)
-      const balanceUsd = parseInt(`${balance}`) * sDaiData.chi / RAY
-      const formattedBalanceUsd = formatUnits(BigInt(balanceUsd), 18)
+      const balanceUnderlying = parseInt(`${balance}`) * sDaiData.chi / RAY
+      const formattedbalanceUnderlying = formatUnits(BigInt(balanceUnderlying), 18)
       return {
         id: `${chainId}-DSR`,
         accountAddress,
@@ -34,7 +34,7 @@ export function useSDaiBalances(accountAddress: Address): LoadableData<YieldPosi
         poolTokenAddress: address,
         poolAddress: address,
         balance,
-        balanceUsd: parseFloat(formattedBalanceUsd),
+        balanceUnderlying: parseFloat(formattedbalanceUnderlying),
         formattedBalance,
         platform: 'dsr' as const,
         chainId,

@@ -71,6 +71,7 @@ const fetchSpotBalances = async ({ apiKey, secretKey }) => {
       return {
         platform: 'bitstamp' as const,
         formattedBalance,
+        balanceUnderlying: formattedBalance,
         balanceUsd: formattedBalance,
         symbol,
         poolName: `Spot ${symbol}`,
@@ -104,12 +105,12 @@ const fetchEarnBalances = async ({ apiKey, secretKey }) => {
       return {
         platform: 'bitstamp' as const,
         formattedBalance,
+        balanceUnderlying: formattedBalance,
         balanceUsd: formattedBalance,
         symbol,
         poolName: `Earn ${symbol}`,
         type: 'exchange' as const,
-        apy,
-        isSpot: true
+        apy
       }
     })
   } catch (error) {

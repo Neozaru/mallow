@@ -17,15 +17,21 @@ const platformIcons = {
   pendle: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-dQOIOQMdZqULJmTErCR_UY-loP626kk_EA&s'
 }
 
+// TODO: Proper icons based on underlying asset
 const tokenIcons = {
   USDC: tokenLogo('usdc.png'),
-  USDT: tokenLogo('usdt.png'),
   aUSDC: tokenLogo('usdc.png'),
+  USDT: tokenLogo('usdt.png'),
+  ptaUSDC: tokenLogo('usdc.png'),
+  ptstkaUSDC: tokenLogo('usdc.png'),
   stkaUSDC: tokenLogo('usdc.png'),
+  ptstkaUSDT: tokenLogo('usdt.png'),
   stkaUSDT: tokenLogo('usdt.png'),
   stkaGHO: tokenLogo('gho.png'),
   aUSDT: tokenLogo('usdt.png'),
   aUSDS: tokenLogo('usds.png'),
+  ptaUSDS: tokenLogo('usds.png'),
+  ptUSDS: tokenLogo('usds.png'),
   DAI: tokenLogo('dai.png'),
   xDAI: tokenLogo('dai.png'),
   sDAI: tokenLogo('sdai.png'),
@@ -36,6 +42,7 @@ const tokenIcons = {
   GHO: tokenLogo('gho.png'),
   aGHO: tokenLogo('gho.png'),
   stkGHO: tokenLogo('gho.png'),
+
 }
 
 const chainIcons = {
@@ -168,7 +175,7 @@ function ExternalLink({ href }) {
     <Link href={href} target="_blank" rel="noopener noreferrer">
       ↗
     </Link>
-  );
+  )
 }
 
 const PlatformDisplay = (params: PlatformParameters) => {

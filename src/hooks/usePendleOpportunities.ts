@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { useMemo } from 'react'
 import { arbitrum, base, gnosis, mainnet, optimism, polygon, scroll, sonic, zksync } from 'viem/chains'
+import { useAaveStakingOpportunities } from './useAaveStakingOpportunities'
 
 const supportedChainIds = getSupportedChainIds()
 
@@ -22,7 +23,7 @@ const pendleChainNames = {
 
 const getTokenSymbolFromName = pendleSymbolName => {
   const pendleSymbolTrimmed = pendleSymbolName.split(' ')[0]
-  return pendleSymbolTrimmed
+  return `pt${pendleSymbolTrimmed}`
 }
 
 export function usePendleOpportunities({ enabled } = { enabled: true }) {
@@ -38,15 +39,27 @@ export function usePendleOpportunities({ enabled } = { enabled: true }) {
     enabled
   })
 
+  const { data: aaveStakingOpportunities, isLoading: isLoadingAaveStakingOpportunities } = useAaveStakingOpportunities()
+
   const pendleOpportunities: YieldOpportunityOnChain[] = useMemo(() => {
-    if (isLoading || !pendleStablecoinData) {
+    if (isLoading || isLoadingAaveStakingOpportunities || !pendleStablecoinData || !aaveStakingOpportunities) {
       return []
     }
     return pendleStablecoinData.map(({ info, rates, chainId }) => {
       const id = `pendle-${chainId}-${info.address}`
       const symbol = getTokenSymbolFromName(info.name)
       const apy = rates.impliedApy
-      const rateToPrincipal = rates.ptToUnderlyingTokenRate
+      const rateToUnderlying = rates.ptToUnderlyingTokenRate
+      
+      const matchingAaveUmbrellaOpportunity = aaveStakingOpportunities.find(op =>
+        op.poolAddress.toLocaleLowerCase() === info.underlyingAsset.split('-')[1].toLocaleLowerCase() &&
+        op.chainId === chainId
+      )
+      const rateFromUnderlyingToPrincipal = matchingAaveUmbrellaOpportunity
+        ? matchingAaveUmbrellaOpportunity.rateToPrincipal
+        : 1
+
+      const rateToPrincipal = rateToUnderlying * rateFromUnderlyingToPrincipal
       return createOpportunity({
         id,
         symbol,
@@ -63,6 +76,6 @@ export function usePendleOpportunities({ enabled } = { enabled: true }) {
         }
       })
     })
-  }, [pendleStablecoinData, isLoading])
+  }, [pendleStablecoinData, isLoading, isLoadingAaveStakingOpportunities, aaveStakingOpportunities])
   return { data: pendleOpportunities, isLoading }
 }

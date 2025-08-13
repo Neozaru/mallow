@@ -120,6 +120,7 @@ export async function getKrakenBalances(): Promise<YieldPositionExchange[]> {
         balance,
         poolName,
         formattedBalance: `${balance}`,
+        balanceUnderlying: Number(balance),
         balanceUsd: Number(balance),
         type: 'exchange' as const,
         apy,

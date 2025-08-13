@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React, { useState } from "react";
 import { FaCopy, FaThumbsUp } from 'react-icons/fa';
 import styled from 'styled-components';
@@ -7,7 +8,7 @@ const Wrapper = styled.span`
   color: #e5e7eb;
 `
 
-const EthereumAddress = ({ address, enableCopy = false }) => {
+const EthereumAddress = ({ address, enableCopy = false, enableLink = false }) => {
   const [copied, setCopied] = useState(false);
 
   const shortenAddress = address =>
@@ -25,6 +26,7 @@ const EthereumAddress = ({ address, enableCopy = false }) => {
       {enableCopy && <button style={{ marginLeft: "8px" }}>
         {copied ? <FaThumbsUp/> : <FaCopy/>}
       </button>}
+      {enableLink && <Link target='blank' href={`https://debank.com/profile/${address}`}> ↗</Link>}
     </Wrapper>
   );
 };

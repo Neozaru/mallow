@@ -54,7 +54,7 @@ export function useSexyDaiBalances(accountAddresses: Address[]): LoadableData<Yi
         console.error('Sexy DAI error: Undefined result', {i, assetBalanceData, error: assetBalanceData[i]?.error})
         return []
       }
-      const balanceUsd = parseFloat(formatUnits(assetBalanceData[i].result, 18))
+      const balanceUnderlying = parseFloat(formatUnits(assetBalanceData[i].result, 18))
       const opportunity = find(sexyDaiOpportunities, { poolTokenAddress: shareBalanceData.tokenAddress })
       if (!opportunity) {
         throw new Error('Cant find back sexyDAI oppportunity')
@@ -63,7 +63,7 @@ export function useSexyDaiBalances(accountAddresses: Address[]): LoadableData<Yi
         ...opportunity,
         accountAddress,
         balance,
-        balanceUsd,
+        balanceUnderlying,
         formattedBalance,
       }]
     })
