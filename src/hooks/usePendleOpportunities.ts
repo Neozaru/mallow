@@ -40,16 +40,14 @@ export function usePendleOpportunities({ enabled } = { enabled: true }) {
   })
 
   const { data: aaveStakingOpportunities, isLoading: isLoadingAaveStakingOpportunities } = useAaveStakingOpportunities()
-
   const pendleOpportunities: YieldOpportunityOnChain[] = useMemo(() => {
     if (isLoading || isLoadingAaveStakingOpportunities || !pendleStablecoinData || !aaveStakingOpportunities) {
       return []
     }
-    return pendleStablecoinData.map(({ info, rates, chainId }) => {
+    return pendleStablecoinData.map(({ info, rates, isActive, chainId }) => {
       const id = `pendle-${chainId}-${info.address}`
       const symbol = getTokenSymbolFromName(info.name)
-      const apy = rates.impliedApy
-      const rateToUnderlying = rates.ptToUnderlyingTokenRate
+      const [apy, rateToUnderlying] = isActive ? [rates.impliedApy, rates.ptToUnderlyingTokenRate] : [0, 1]
       
       const matchingAaveUmbrellaOpportunity = aaveStakingOpportunities.find(op =>
         op.poolAddress.toLocaleLowerCase() === info.underlyingAsset.split('-')[1].toLocaleLowerCase() &&

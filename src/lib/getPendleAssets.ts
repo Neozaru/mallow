@@ -27,22 +27,32 @@ type PendleAssetRates = {
 const getPendleAssetsForChain = async ({ marketNames, chainId }) => {
   try {
     const { data: activeMarkets } = await axiosGetCached<PendleMarketsResponse>(`https://api-v2.pendle.finance/core/v1/${chainId}/markets/active`)
-    const stablecoinActiveMarkets = activeMarkets.markets.filter(market => marketNames.includes(market.name))
-    if (stablecoinActiveMarkets.length === 0) {
+    const { data: inactiveMarkets } = await axiosGetCached<PendleMarketsResponse>(`https://api-v2.pendle.finance/core/v1/${chainId}/markets/inactive`)
+
+    const activeStablecoinMarkets = activeMarkets.markets.filter(market => marketNames.includes(market.name))
+    const inactiveStablecoinMarkets = inactiveMarkets.markets.filter(market => marketNames.includes(market.name))
+    if (activeStablecoinMarkets.length === 0 && inactiveStablecoinMarkets.length === 0) {
       return []
     }
     
-    const marketRatesPromises = map(stablecoinActiveMarkets, 'address').map(marketAddress => {
+    const marketRatesPromises = map(activeStablecoinMarkets, 'address').map(marketAddress => {
       return axiosGetCached<PendleAssetRates>(`https://api-v2.pendle.finance/core/v1/sdk/${chainId}/markets/${marketAddress}/swapping-prices`)
     })
     const marketRatesResult = await Promise.all(marketRatesPromises)
     const marketRates = map(marketRatesResult, 'data')
     
-    return stablecoinActiveMarkets.map((market, i) => ({
+    const dataForActive = activeStablecoinMarkets.map((market, i) => ({
+      isActive: true,
       info: market,
       rates: marketRates[i],
       chainId
     }))
+    const dataForInactive = inactiveStablecoinMarkets.map(market => ({
+      isActive: false,
+      info: market,
+      chainId
+    }))
+    return [...dataForActive, ...dataForInactive]
   } catch (e) {
     console.warn(`Error while fetching Pendle opportunities for chain ${chainId}`, e)
     return []

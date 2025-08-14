@@ -9,9 +9,9 @@ const Apy = styled.div`
   text-align: right;
 `
 
-const Expiry = styled.div<{ isexpired: boolean }>`
+const Expiry = styled.div<{ isexpired: 'true' | 'false' }>`
   font-size: 13px;
-  color: ${props => props.isexpired ? 'red' : '#b4b0c4'};
+  color: ${props => props.isexpired === 'true' ? 'red' : '#b4b0c4'};
   text-align: right;
 `;
 
@@ -25,7 +25,7 @@ const today = new Date()
 const ApyCell = ({ apy, expiry }: Props) => {
   return <ApyCellWrapper>
     <Apy>{formatApy(apy)}</Apy>
-    {expiry && <Expiry isexpired={today >= expiry}>⏱ {expiry.toLocaleString('en-US', { month: 'short', day: 'numeric' })}</Expiry>}
+    {expiry && <Expiry isexpired={`${today >= expiry}`}>⏱ {expiry.toLocaleString('en-US', { month: 'short', day: 'numeric' })}</Expiry>}
   </ApyCellWrapper>
 }
 
