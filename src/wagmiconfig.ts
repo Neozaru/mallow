@@ -3,12 +3,16 @@ import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { mapValues } from 'lodash'
 import mallowConfig from './mallow.config'
 
+const transports = mapValues(mallowConfig.chains, ({ rpcUrl }) => {
+  return http(`${rpcUrl}`)
+})
+
+console.log('transports', transports)
+
 export const wagmiconfig = getDefaultConfig({
   ssr: true,
   chains: mallowConfig.enabledChains,
   appName: 'Mallow',
   projectId: `${process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID}`,
-  transports: mapValues(mallowConfig.chains, ({ rpcUrl }) => {
-    return http(rpcUrl)
-  })
+  transports
 })

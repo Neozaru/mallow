@@ -1,5 +1,5 @@
 import { Address } from 'viem'
-import { arbitrum, base, gnosis, mainnet, optimism, scroll, zksync, polygon, avalanche, linea, sonic, Chain, bsc, fraxtal, mantle, berachain, mode, metis, moonbeam, rootstock, sei, celo, unichain } from 'viem/chains'
+import { arbitrum, base, gnosis, mainnet, optimism, scroll, zksync, polygon, avalanche, linea, sonic, Chain, bsc, fraxtal, mantle, berachain, metis, rootstock, sei, celo, unichain } from 'viem/chains'
 
 type ChainConfig = {
   rpcUrl?: string
@@ -21,9 +21,7 @@ const enabledChains = [
   fraxtal,
   mantle,
   berachain,
-  mode,
   metis,
-  moonbeam,
   rootstock,
   sei,
   celo,
