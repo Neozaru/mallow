@@ -2,6 +2,26 @@ import stablecoins from '@/constants/stablecoins';
 import SettingsService from './settingsService';
 import axios, { isAxiosError } from 'axios';
 import { createHmac } from 'crypto';
+import computeBinanceEffectiveApy from './computeBinanceEffectiveAPY';
+
+const sendRequest = ({ requestPath, queryParams = {}, apiKey, secretKey }) => {
+  const allQueryParams = {
+    timestamp: `${Date.now()}`,
+    recvWindow: `${60000}`,
+    ...queryParams
+  }
+  const queryString = new URLSearchParams(allQueryParams).toString()
+  const signature = createHmac('sha256', secretKey)
+    .update(queryString)
+    .digest('hex')
+
+  const url = `${requestPath}?${queryString}&signature=${signature}`
+  return axios.get(url, {
+      headers: {
+        'X-MBX-APIKEY': apiKey
+      },
+    })
+}
 
 export async function getBinanceBalance(): Promise<YieldPositionExchange[]> {
   const apiKey = SettingsService.getSettings().apiKeys.binanceApiKey
@@ -9,24 +29,16 @@ export async function getBinanceBalance(): Promise<YieldPositionExchange[]> {
   if (!apiKey || !secretKey) {
     return []
   }
-  const requestPath = '/api/exchanges/binance/v1/capital/config/getall';
-  
-  const timestamp = Date.now()
-  const queryString = `timestamp=${timestamp}&recvWindow=60000`
-  const signature = createHmac('sha256', secretKey)
-    .update(queryString)
-    .digest('hex')
 
-  const url = `${requestPath}?${queryString}&signature=${signature}`
   try {
-    const response = await axios.get(url, {
-      headers: {
-        'X-MBX-APIKEY': apiKey
-      },
+    const balancesResponse = await sendRequest({
+      requestPath: '/api/exchanges/binance/v1/capital/config/getall',
+      apiKey,
+      secretKey
     })
 
-    const balances = response.data
-    return balances.filter(
+    const balances = balancesResponse.data
+    const spotBalances = balances.filter(
       b => stablecoins.includes(b.coin)
     ).map(b => {
       const formattedBalance = parseFloat(b.free) + parseFloat(b.locked)
@@ -43,6 +55,33 @@ export async function getBinanceBalance(): Promise<YieldPositionExchange[]> {
         isSpot: true
       }
     })
+
+    const earnResponse = await sendRequest({
+      requestPath: '/api/exchanges/binance/v1/simple-earn/flexible/position',
+      queryParams: { size: 100 },
+      apiKey,
+      secretKey
+    })
+    const flexEarnPositions = earnResponse.data
+    const earnBalances = flexEarnPositions.rows.filter(
+      b => stablecoins.includes(b.asset)
+    ).map(b => {
+      const formattedBalance = parseFloat(b.totalAmount)
+      const symbol = b.asset
+      const apy = computeBinanceEffectiveApy(b)
+      return {
+        platform: 'binance' as const,
+        formattedBalance,
+        balanceUnderlying: formattedBalance,
+        balanceUsd: formattedBalance,
+        symbol,
+        poolName: `Flex Earn ${symbol}`,
+        type: 'exchange' as const,
+        apy
+      }
+    })
+
+    return [...spotBalances, ...earnBalances]
   } catch (error) {
     console.error('Error fetching balances:', isAxiosError(error) && error.response?.data || error)
     return []
