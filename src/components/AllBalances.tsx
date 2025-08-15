@@ -2,7 +2,7 @@
 
 import { useOnChainBalances } from '@/hooks/balances/useOnChainBalances';
 import { pick, sumBy } from 'lodash'
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { createColumnHelper, getCoreRowModel, getExpandedRowModel, getGroupedRowModel, getSortedRowModel, GroupingState, Row, SortingState, useReactTable } from '@tanstack/react-table';
 import PlatformDisplay from './PlatformDisplay';
@@ -17,6 +17,7 @@ import Link from 'next/link';
 import { base } from 'viem/chains';
 import ToggleButton from './ToggleButton';
 import sortApyCell from '@/lib/sortApyCell';
+import useCurrencyRates from '@/hooks/useCurrencyRates';
 
 type AllBalancesProps = {
   accountAddresses: Array<Address> | [];
@@ -55,6 +56,10 @@ const Total = styled.div`
   font-size: 3rem;
   font-weight: bold;
   margin-bottom: 0px;
+  cursor: pointer;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
 `;
 
 const TotalWithAPY = styled.div`
@@ -95,6 +100,8 @@ const NothingToShow = styled.div`
   text-align: center;
 `;
 
+const availableCurrencies = ['USD', 'EUR', 'BTC']
+
 const columnHelper = createColumnHelper<YieldPositionAnyWithBalanceUsd>()
 
 const balanceSortingFn = (rowA, rowB) => {
@@ -119,12 +126,6 @@ const BalancesWrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
-
-const GrandTotal = styled.div`
-  font-size: 13px;
-  color: #b4b0c4;
-  display: none;
-`
 
 const columns = [
   columnHelper.accessor(row => row, {
@@ -227,6 +228,10 @@ const AllBalances: React.FC<AllBalancesProps> = ({
   const hideZeroApy = false
   const [countSpot, setCountSpot] = useState(true)
 
+  const [currency, setCurrency] = useState(availableCurrencies[0])
+
+  const { data: currencyRates } = useCurrencyRates()
+
   const allBalancesFiltered = useMemo(() => {
     return allBalances.filter(({ balanceUsd, apy, isSpot }) =>
       balanceUsd >= smallBalancesHideAmount
@@ -235,16 +240,29 @@ const AllBalances: React.FC<AllBalancesProps> = ({
     )
   }, [allBalances, hideZeroApy, countSpot])
 
+  const toggleCurrency = useCallback(() => {
+    if (!currencyRates) return;
+
+    const currentIndex = availableCurrencies.indexOf(currency);
+    const nextIndex = (currentIndex + 1) % availableCurrencies.length;
+
+    setCurrency(availableCurrencies[nextIndex]);
+  }, [currency, currencyRates, setCurrency]);
 
   const balancesSum = useMemo(
     () => sumBy(allBalancesFiltered, 'balanceUsd'),
     [allBalancesFiltered]
   )
 
-  const balancesGrandTotal = useMemo(
-    () => sumBy(allBalances, 'balanceUsd'),
-    [allBalances]
-  )
+  const formatDashboardBalance = useCallback((balanceUsd) => {
+    if (!currencyRates || currency === 'USD') {
+      return `$${formatUsdBalance(balanceUsd)}`
+    } else if (currency === 'EUR') {
+      return `€${formatUsdBalance(balanceUsd / currencyRates['EUR'])}`
+    } else if (currency === 'BTC') {
+      return `₿${formatUsdBalance(balanceUsd / currencyRates['BTC'], 2, 5)}`
+    }
+  }, [currencyRates, currency])
 
   const averageAPY = useMemo(
     () => {
@@ -309,14 +327,14 @@ const AllBalances: React.FC<AllBalancesProps> = ({
         <ComponentHeader>
           <Summary>
             <TotalWithAPY>
-              <Total>${formatUsdBalance(balancesSum, 0, 0)}{hideZeroApy && <GrandTotal>/${formatUsdBalance(balancesGrandTotal, 0, 0)}</GrandTotal>}</Total>
+              <Total onClick={toggleCurrency}>{formatDashboardBalance(balancesSum)}</Total>
               <APY>{(hasEnoughBalance ? averageAPY*100 : 0).toFixed(2)}% APY</APY>
             </TotalWithAPY>
             {hasEnoughBalance && <Details>
               <Earnings>
-                <span>Year ${formatUsdBalance(earnings.year, 0, 0)}</span>
-                <span>Month ${formatUsdBalance(earnings.month, 0, 0)}</span>
-                <span>Day ${formatUsdBalance(earnings.day, 0, 0)}</span>
+                <span>Year {formatDashboardBalance(earnings.year)}</span>
+                <span>Month {formatDashboardBalance(earnings.month)}</span>
+                <span>Day {formatDashboardBalance(earnings.day)}</span>
               </Earnings>
             </Details>}
           </Summary>
