@@ -7,8 +7,6 @@ const transports = mapValues(mallowConfig.chains, ({ rpcUrl }) => {
   return http(`${rpcUrl}`)
 })
 
-console.log('transports', transports)
-
 export const wagmiconfig = getDefaultConfig({
   ssr: true,
   chains: mallowConfig.enabledChains,

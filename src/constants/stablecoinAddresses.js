@@ -1,3 +1,5 @@
+import { arbitrum, avalanche, base, gnosis, mainnet, polygon } from 'viem/chains'
+
 const stablecoinAddresses = [
   {
     symbol: 'USDC',
@@ -48,7 +50,18 @@ const stablecoinAddresses = [
   {
     symbol: 'EURe',
     addresses: {
-      100: '0xcb444e90d8198415266c6a2724b7900fb12fc56e'
+      [mainnet.id]: '0x39b8b6385416f4ca36a20319f70d28621895279d',
+      [gnosis.id]: '0xcb444e90d8198415266c6a2724b7900fb12fc56e',
+      [polygon.id]: '0xe0aea583266584dafbb3f9c3211d5588c73fea8d',
+      [arbitrum.id]: '0x0c06ccf38114ddfc35e07427b9424adcca9f44f8'
+    }
+  },
+  {
+    symbol: 'EURC',
+    addresses: {
+      [mainnet.id]: '0x1abaea1f7c830bd89acc67ec4af516284b1bc33c',
+      [base.id]: '0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42',
+      [avalanche.id]: '0xc891eb4cbdeff6e073e859e987815ed1505c2acd',
     }
   }
 ]
