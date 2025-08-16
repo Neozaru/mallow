@@ -106,7 +106,6 @@ const fetchEarnBalances = async ({ apiKey, secretKey }) => {
         platform: 'bitstamp' as const,
         formattedBalance,
         balanceUnderlying: formattedBalance,
-        balanceUsd: formattedBalance,
         symbol,
         poolName: `Earn ${symbol}`,
         type: 'exchange' as const,

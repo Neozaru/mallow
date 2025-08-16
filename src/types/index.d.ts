@@ -49,7 +49,7 @@ type WithBalanceUsd = {
 
 type YieldPositionOnChain = YieldOpportunityOnChain & PositionBalances & { accountAddress: EvmAddressInternal }
 
-type YieldPositionExchange = YieldOpportunityExchange & PositionBalances & WithBalanceUsd
+type YieldPositionExchange = YieldOpportunityExchange & PositionBalances
 
 type YieldPositionManual = YieldOpportunityManual & PositionBalances & WithBalanceUsd
 

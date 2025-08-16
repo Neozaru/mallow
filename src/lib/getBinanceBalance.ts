@@ -73,7 +73,6 @@ export async function getBinanceBalance(): Promise<YieldPositionExchange[]> {
         platform: 'binance' as const,
         formattedBalance,
         balanceUnderlying: formattedBalance,
-        balanceUsd: formattedBalance,
         symbol,
         poolName: `Flex Earn ${symbol}`,
         type: 'exchange' as const,

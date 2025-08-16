@@ -1,6 +1,5 @@
 "use client";
 
-import { useOnChainBalances } from '@/hooks/balances/useOnChainBalances';
 import { pick, sumBy } from 'lodash'
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -11,13 +10,13 @@ import MallowTable from './MallowTable';
 import ApyCell from './ApyCell';
 import LoadingSpinner from './LoadingSpinner';
 import { Address } from 'viem';
-import useExchangeBalances from '@/hooks/balances/useExchangeBalances';
 import EthereumAddress from './EthereumAddress';
 import Link from 'next/link';
 import { base } from 'viem/chains';
 import ToggleButton from './ToggleButton';
 import sortApyCell from '@/lib/sortApyCell';
 import useCurrencyRates from '@/hooks/useCurrencyRates';
+import useAllBalances from '@/hooks/balances/useAllbalances';
 
 type AllBalancesProps = {
   accountAddresses: Array<Address> | [];
@@ -203,26 +202,11 @@ const AllBalances: React.FC<AllBalancesProps> = ({
   displayAccounts = false,
   enableExchanges = false
 }) => {
-
-  const { data: exchangeBalances, isLoading: isExchangeBalancesLoading } = useExchangeBalances(enableExchanges)
-  const { data: onChainBalances, isLoading: isOnChainBalancesLoading } = useOnChainBalances(accountAddresses)
-
-  const allBalances: YieldPositionAnyWithBalanceUsd[] = useMemo<YieldPositionAnyWithBalanceUsd[]>(() => {
-    if (isOnChainBalancesLoading || isExchangeBalancesLoading) {
-      return []
-    }
-    return [
-      ...(onChainBalances || emptyArray),
-      ...(exchangeBalances || emptyArray),
-      ...(manualPositions || emptyArray),
-    ]
-  }, [
-    onChainBalances,
-    exchangeBalances,
+  const { data: allBalances, isLoading } = useAllBalances({
+    accountAddresses,
     manualPositions,
-    isOnChainBalancesLoading,
-    isExchangeBalancesLoading
-  ])
+    enableExchanges
+  })
 
   const smallBalancesHideAmount = 1
   const hideZeroApy = false
@@ -284,10 +268,6 @@ const AllBalances: React.FC<AllBalancesProps> = ({
   
   const [sorting, setSorting] = useState<SortingState>([{id: 'balance', desc: true}])
   const [grouping, setGrouping] = React.useState<GroupingState>([])
-
-  const isLoading = useMemo(() => {
-    return isOnChainBalancesLoading || isExchangeBalancesLoading
-  }, [isOnChainBalancesLoading, isExchangeBalancesLoading])
 
   const columnVisibility = useMemo(() => ({
     chainId: false,
