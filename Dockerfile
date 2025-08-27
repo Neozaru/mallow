@@ -3,7 +3,7 @@ FROM node:22-alpine AS builder
 
 WORKDIR /mallow
 
-COPY package.json tsconfig.json next-env.d.ts postcss.config.mjs package-lock.json* pnpm-lock.yaml* yarn.lock* next.config.ts tailwind.config.ts .eslintrc.json ./
+COPY package.json tsconfig.json postcss.config.mjs package-lock.json* next.config.ts tailwind.config.ts .eslintrc.json ./
 
 RUN npm ci
 
