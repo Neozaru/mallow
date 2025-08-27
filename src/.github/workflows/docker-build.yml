@@ -1,0 +1,26 @@
+name: Build Docker image
+
+on:
+  push:
+    branches: [ main ]   # trigger only on pushes to "main"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout your repo code
+      - uses: actions/checkout@v4
+
+      # Log in to GitHub Container Registry (ghcr.io)
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build and push your Docker image
+      - uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/mallow:latest
