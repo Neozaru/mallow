@@ -3,7 +3,6 @@ services:
     image: ghcr.io/neozaru/mallow:${TAG:-latest}
     build:
       context: .
-      target: production
     pull_policy: ${PULL_POLICY:-missing} 
     env_file:
       - ${RUNTIME_ENV_FILE:-.env.local}
