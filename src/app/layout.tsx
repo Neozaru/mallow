@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import '@rainbow-me/rainbowkit/styles.css';
+import { PublicEnvScript } from 'next-runtime-env';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -28,6 +29,8 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" href="/mallowLogoPurple.svg" type="image/x-icon"/>
+        {/* By default, next inlines the .env at build time. This library allows runtime env. */}
+        <PublicEnvScript />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

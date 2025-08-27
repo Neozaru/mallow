@@ -1,5 +1,6 @@
 import { Address } from 'viem'
 import { arbitrum, base, gnosis, mainnet, optimism, scroll, zksync, polygon, avalanche, linea, sonic, Chain, bsc, fraxtal, mantle, berachain, metis, rootstock, sei, celo, unichain } from 'viem/chains'
+import { env } from 'next-runtime-env'
 
 type ChainConfig = {
   rpcUrl?: string
@@ -53,64 +54,64 @@ const mallowConfig: MallowConfig = {
   enabledChains,
   chains: {
     [mainnet.id]: {
-      rpcUrl: process.env.NEXT_PUBLIC_MAINNET_URL,
+      rpcUrl: env('NEXT_PUBLIC_MAINNET_URL'),
     },
     [optimism.id]: {
-      rpcUrl: process.env.NEXT_PUBLIC_OPTIMISM_URL,
+      rpcUrl: env('NEXT_PUBLIC_OPTIMISM_URL'),
     },
     [arbitrum.id]: {
-      rpcUrl: process.env.NEXT_PUBLIC_ARBITRUM_URL,
+      rpcUrl: env('NEXT_PUBLIC_ARBITRUM_URL'),
     },
     [scroll.id]: {
-      rpcUrl: process.env.NEXT_PUBLIC_SCROLL_URL,
+      rpcUrl: env('NEXT_PUBLIC_SCROLL_URL'),
     },
     [zksync.id]: {
-      rpcUrl: process.env.NEXT_PUBLIC_ZKSYNC_URL,
+      rpcUrl: env('NEXT_PUBLIC_ZKSYNC_URL'),
     },
     [gnosis.id]: {
-      rpcUrl: process.env.NEXT_PUBLIC_GNOSIS_URL,
+      rpcUrl: env('NEXT_PUBLIC_GNOSIS_URL'),
     },
     [base.id]: {
-      rpcUrl: process.env.NEXT_PUBLIC_BASE_URL,
+      rpcUrl: env('NEXT_PUBLIC_BASE_URL'),
     },
     [polygon.id]: {
-      rpcUrl: process.env.NEXT_PUBLIC_POLYGON_URL,
+      rpcUrl: env('NEXT_PUBLIC_POLYGON_URL'),
     },
     [sonic.id]: {
-      rpcUrl: process.env.NEXT_PUBLIC_SONIC_URL,
+      rpcUrl: env('NEXT_PUBLIC_SONIC_URL'),
     },
     [avalanche.id]: {
-      rpcUrl: process.env.NEXT_PUBLIC_AVALANCHE_URL,
+      rpcUrl: env('NEXT_PUBLIC_AVALANCHE_URL'),
     },
     [bsc.id]: {
-      rpcUrl: process.env.NEXT_PUBLIC_BNB_URL,
+      rpcUrl: env('NEXT_PUBLIC_BNB_URL'),
     },
     [linea.id]: {
-      rpcUrl: process.env.NEXT_PUBLIC_LINEA_URL,
+      rpcUrl: env('NEXT_PUBLIC_LINEA_URL'),
     },
     [fraxtal.id]: {
-      rpcUrl: process.env.NEXT_PUBLIC_FRAX_URL,
+      rpcUrl: env('NEXT_PUBLIC_FRAX_URL'),
     },
     [mantle.id]: {
-      rpcUrl: process.env.NEXT_PUBLIC_MANTLE_URL,
+      rpcUrl: env('NEXT_PUBLIC_MANTLE_URL'),
     },
     [berachain.id]: {
-      rpcUrl: process.env.NEXT_PUBLIC_BERACHAIN_URL,
+      rpcUrl: env('NEXT_PUBLIC_BERACHAIN_URL'),
     },
     [metis.id]: {
-      rpcUrl: process.env.NEXT_PUBLIC_METIS_URL,
+      rpcUrl: env('NEXT_PUBLIC_METIS_URL'),
     },
     [rootstock.id]: {
-      rpcUrl: process.env.NEXT_PUBLIC_ROOTSTOCK_URL,
+      rpcUrl: env('NEXT_PUBLIC_ROOTSTOCK_URL'),
     },
     [sei.id]: {
-      rpcUrl: process.env.NEXT_PUBLIC_SEI_URL,
+      rpcUrl: env('NEXT_PUBLIC_SEI_URL'),
     },
     [celo.id]: {
-      rpcUrl: process.env.NEXT_PUBLIC_CELO_URL,
+      rpcUrl: env('NEXT_PUBLIC_CELO_URL'),
     },
     [unichain.id]: {
-      rpcUrl: process.env.NEXT_PUBLIC_UNICHAIN_URL,
+      rpcUrl: env('NEXT_PUBLIC_UNICHAIN_URL'),
     }
   },
   mallowContractAddresses: {
