@@ -23,4 +23,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/mallow:latest
+          tags: ghcr.io/neozaru/mallow:latest
