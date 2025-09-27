@@ -1,4 +1,4 @@
-import { arbitrum, avalanche, base, bsc, gnosis, mainnet, optimism, polygon, scroll, zksync } from 'viem/chains';
+import { arbitrum, avalanche, base, bsc, gnosis, mainnet, optimism, plasma, polygon, scroll, zksync } from 'viem/chains';
 
 export const aaveChainNames = {
   [mainnet.id]: 'mainnet',
@@ -11,4 +11,5 @@ export const aaveChainNames = {
   [scroll.id]: 'scroll',
   [avalanche.id]: 'avalanche',
   [bsc.id]: 'bnb',
+  [plasma.id]: 'plasma',
 }

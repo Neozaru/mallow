@@ -1,5 +1,5 @@
 import { Address } from 'viem'
-import { arbitrum, base, gnosis, mainnet, optimism, scroll, zksync, polygon, avalanche, linea, sonic, Chain, bsc, fraxtal, mantle, berachain, metis, rootstock, sei, celo, unichain } from 'viem/chains'
+import { arbitrum, base, gnosis, mainnet, optimism, scroll, zksync, polygon, avalanche, linea, sonic, Chain, bsc, fraxtal, mantle, berachain, metis, rootstock, sei, celo, unichain, plasma } from 'viem/chains'
 import { env } from 'next-runtime-env'
 
 type ChainConfig = {
@@ -26,7 +26,8 @@ const enabledChains = [
   rootstock,
   sei,
   celo,
-  unichain
+  unichain,
+  plasma
 ] as [Chain, ...Chain[]]
 
 type ChainId = (typeof enabledChains[number])['id']
@@ -112,7 +113,10 @@ const mallowConfig: MallowConfig = {
     },
     [unichain.id]: {
       rpcUrl: env('NEXT_PUBLIC_UNICHAIN_URL'),
-    }
+    },
+    [plasma.id]: {
+      rpcUrl: env('NEXT_PUBLIC_PLASMA_URL'),
+    },
   },
   mallowContractAddresses: {
     [base.id]: {

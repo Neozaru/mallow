@@ -2,7 +2,7 @@ import getChainName from '@/utils/getChainName';
 import { tokenLogo } from '@/utils/logosUtils';
 import Link from 'next/link';
 import styled from 'styled-components';
-import { arbitrum, avalanche, base, bsc, gnosis, linea, mainnet, optimism, polygon, scroll, sei, sonic, zksync } from 'viem/chains';
+import { arbitrum, avalanche, base, bsc, gnosis, linea, mainnet, optimism, plasma, polygon, scroll, sei, sonic, zksync } from 'viem/chains';
 
 const platformIcons = {
   coinbase: "https://assets.coingecko.com/markets/images/23/large/Coinbase_Coin_Primary.png",
@@ -22,6 +22,7 @@ const tokenIcons = {
   USDC: tokenLogo('usdc.png'),
   aUSDC: tokenLogo('usdc.png'),
   USDT: tokenLogo('usdt.png'),
+  USDT0: tokenLogo('usdt0.png'),
   ptaUSDC: tokenLogo('usdc.png'),
   ptstkaUSDC: tokenLogo('usdc.png'),
   stkaUSDC: tokenLogo('usdc.png'),
@@ -58,7 +59,8 @@ const chainIcons = {
   [sonic.id]: "https://s2.coinmarketcap.com/static/img/coins/200x200/32684.png",
   [avalanche.id]: "/logos/networks/avalanche.png",
   [linea.id]: "https://images.seeklogo.com/logo-png/52/1/linea-logo-png_seeklogo-527155.png",
-  [sei.id]: "https://blog.sei.io/content/images/size/w100/2022/08/Sei-logo-only-6.png"
+  [sei.id]: "https://blog.sei.io/content/images/size/w100/2022/08/Sei-logo-only-6.png",
+  [plasma.id]: "/logos/networks/plasma.png",
 }
 
 const platformNames = {

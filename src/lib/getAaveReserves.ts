@@ -1,6 +1,6 @@
 import { UiPoolDataProvider } from '@aave/contract-helpers';
 import * as markets from '@bgd-labs/aave-address-book';
-import { arbitrum, avalanche, base, bsc, gnosis, mainnet, metis, optimism, polygon, scroll, sonic, zksync } from 'viem/chains';
+import { arbitrum, avalanche, base, bsc, gnosis, mainnet, metis, optimism, plasma, polygon, scroll, sonic, zksync } from 'viem/chains';
 import getRpcProviderForChain from '@/utils/getRpcProviderForChain';
 
 // TODO: Is there a better to map them ? This is harder to maintain.
@@ -16,7 +16,8 @@ const marketsPerChain = {
   [avalanche.id]: markets.AaveV3Avalanche,
   [bsc.id]: markets.AaveV3BNB,
   [metis.id]: markets.AaveV3Metis,
-  [sonic.id]: markets.AaveV3Sonic
+  [sonic.id]: markets.AaveV3Sonic,
+  [plasma.id]: markets.AaveV3Plasma,
 }
 
 const getAaveReservesForChain = async chainId => {
