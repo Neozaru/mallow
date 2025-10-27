@@ -1,5 +1,5 @@
 import getChainName from '@/utils/getChainName';
-import { tokenLogo } from '@/utils/logosUtils';
+import { networkLogo, tokenLogo } from '@/utils/logosUtils';
 import Link from 'next/link';
 import styled from 'styled-components';
 import { arbitrum, avalanche, base, bsc, gnosis, linea, mainnet, optimism, plasma, polygon, scroll, sei, sonic, zksync } from 'viem/chains';
@@ -47,20 +47,20 @@ const tokenIcons = {
 }
 
 const chainIcons = {
-  [mainnet.id]: "https://svgmix.com/uploads/3287b3-ethereum-eth.svg",
-  [bsc.id]: "/logos/networks/bnb.png",
-  [polygon.id]: "logos/networks/polygon.png",
-  [gnosis.id]: "https://s1.coincarp.com/logo/1/gnosis-gno.png?style=200&v=1630481838",
-  [optimism.id]: "/logos/networks/op.png",
-  [arbitrum.id]: "/logos/networks/arbitrum.png",
-  [zksync.id]: "https://s2.coinmarketcap.com/static/img/coins/200x200/24091.png",
-  [scroll.id]: "https://scroll.io/_next/static/media/Scroll_Logomark.ad5d0348.svg",
-  [base.id]: "https://www.base.org/document/apple-touch-icon.png",
-  [sonic.id]: "https://s2.coinmarketcap.com/static/img/coins/200x200/32684.png",
-  [avalanche.id]: "/logos/networks/avalanche.png",
-  [linea.id]: "https://images.seeklogo.com/logo-png/52/1/linea-logo-png_seeklogo-527155.png",
-  [sei.id]: "https://blog.sei.io/content/images/size/w100/2022/08/Sei-logo-only-6.png",
-  [plasma.id]: "/logos/networks/plasma.png",
+  [mainnet.id]: networkLogo('ethereum.svg'),
+  [bsc.id]: networkLogo('bnb.png'),
+  [polygon.id]:networkLogo('polygon.png'),
+  [gnosis.id]: networkLogo('gnosis.png'),
+  [optimism.id]: networkLogo('op.png'),
+  [arbitrum.id]: networkLogo('arbitrum.png'),
+  [zksync.id]: networkLogo('zksync.png'),
+  [scroll.id]: networkLogo('scroll.svg'),
+  [base.id]: networkLogo('base.png'),
+  [sonic.id]: networkLogo('sonic.png'),
+  [avalanche.id]: networkLogo('avalanche.png'),
+  [linea.id]: networkLogo('linea.png'),
+  [sei.id]: networkLogo('sei.png'),
+  [plasma.id]: networkLogo('plasma.png'),
 }
 
 const platformNames = {
