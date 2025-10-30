@@ -13,7 +13,7 @@ import { aaveChainNames } from '@/utils/aaveChainNames'
 import { useSexyDaiData } from './useSexyDaiData'
 
 function convertAprToApy(apr: number): number {
-  const SECONDS_PER_YEAR = 31_536_000; // 60 * 60 * 24 * 365
+  const SECONDS_PER_YEAR = 31_536_000;
   return Math.pow(1 + apr / SECONDS_PER_YEAR, SECONDS_PER_YEAR) - 1;
 }
 
@@ -24,6 +24,7 @@ type AaveReserveData = {
   aTokenAddress: Address;
   underlyingAsset: Address;
   variableBorrowRate: string;
+  liquidityRate: string;
 }
 
 const supportedChainIds = getSupportedChainIds()
@@ -67,7 +68,7 @@ export function useAaveOpportunities({ enabled } = { enabled: true }) {
     if (isAaveDataLoading || isPoolsDataLoading || isSSRDataLoading || isSexyDaiDataLoading || !aaveStablecoinData) {
       return []
     }
-    return aaveStablecoinData.map(({ id, symbol, aTokenAddress, variableBorrowRate, underlyingAsset }, i) => {
+    return aaveStablecoinData.map(({ id, symbol, liquidityRate, aTokenAddress, underlyingAsset }, i) => {
       const isNewAToken = symbol.startsWith('A')
       const spotTokenSymbol = isNewAToken ? symbol.slice(1) : symbol
       const chainId = poolIdToChainId(id)
@@ -89,7 +90,7 @@ export function useAaveOpportunities({ enabled } = { enabled: true }) {
         }
         return 1
       }
-      const apy = convertAprToApy(Number(variableBorrowRate) / 1000000000000000000000000000) + getNativeApy(spotTokenSymbol)
+      const apy = convertAprToApy(Number(liquidityRate) / 1e27) + getNativeApy(spotTokenSymbol)
       const rateToPrincipal = getRateToPrincipal(spotTokenSymbol)
       return createOpportunity({
         id,

@@ -164,6 +164,7 @@ const mallowConfig: MallowConfig = {
       pendle: 2
     },
     symbols: {
+      EURE: 1,
       AUSDC: 1,
       AUSDT: 1,
       ADAI: 1,
@@ -171,12 +172,19 @@ const mallowConfig: MallowConfig = {
       USDC: 0,
       EURC: 0,
       USDT: 1,
+      USDT0: 1,
       DAI: 1,
+      SDAI: 1,
       XDAI: 1,
       WXDAI: 1,
       USDS: 1,
       GHO: 1,
-      STKGHO: 2
+      STKGHO: 2,
+      STKAGHO: 2,
+      STKAUSDC: 2,
+      STKAUSDT: 2,
+      STKAUSDT0: 2,
+      PTAUSDT0: 2,
     }
   }
 }
