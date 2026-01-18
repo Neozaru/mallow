@@ -1,5 +1,6 @@
-import { arbitrum, avalanche, base, gnosis, mainnet, polygon } from 'viem/chains'
+import { arbitrum, avalanche, base, gnosis, linea, mainnet, polygon } from 'viem/chains'
 
+// TODO: Use <chain>.id everywhere for consistency
 const stablecoinAddresses = [
   {
     symbol: 'USDC',
@@ -11,7 +12,8 @@ const stablecoinAddresses = [
       324: '0x1d17cbcf0d6d143135ae902365d2e5e2a16538d4',   // zkSync
       100: '0xddafbb505ad214d7b80b1f830fccc89b60fb7a83',   // Gnosis
       8453: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',   // Base
-      137: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359' // Polygon
+      137: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359', // Polygon
+      [linea.id]: '0x176211869cA2b568f2A7D4EE941E073a821EE1ff',
     }
   },
   {
@@ -24,7 +26,8 @@ const stablecoinAddresses = [
       324: '0x493257fd37edb34451f62edf8d2a0c418852ba4c', // zkSync (USDT address currently unavailable)
       100: '0x4ecaba5870353805a9f068101a40e0f32ed605c6', // Gnosis (USDT address unavailable)
       8453: '0xfde4c96c8593536e31f229ea8f37b2ada2699bb2', // Base (USDT address unavailable)
-      137: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f' // Polygon
+      137: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f', // Polygon
+      [linea.id]: '0xA219439258ca9da29E9Cc4cE5596924745e12B93',
     }
   },
   {
