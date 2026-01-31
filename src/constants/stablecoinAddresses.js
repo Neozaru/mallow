@@ -1,4 +1,4 @@
-import { arbitrum, avalanche, base, gnosis, linea, mainnet, polygon } from 'viem/chains'
+import { arbitrum, avalanche, base, gnosis, linea, mainnet, optimism, polygon } from 'viem/chains'
 
 // TODO: Use <chain>.id everywhere for consistency
 const stablecoinAddresses = [
@@ -28,6 +28,22 @@ const stablecoinAddresses = [
       8453: '0xfde4c96c8593536e31f229ea8f37b2ada2699bb2', // Base (USDT address unavailable)
       137: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f', // Polygon
       [linea.id]: '0xA219439258ca9da29E9Cc4cE5596924745e12B93',
+    }
+  },
+  {
+    symbol: 'USDT0',
+    addresses: {
+      [arbitrum.id]:'0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+      [polygon.id ]:'0xc2132D05D31c914A87C6611C10748AEb04B58e8F',
+      [optimism.id]:'0x01bFF41798a0BcF287b996046Ca68b395DbC1071',
+    }
+  },
+  {
+    symbol: 'USD₮0',
+   addresses: {
+      [arbitrum.id]:'0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+      [polygon.id ]:'0xc2132D05D31c914A87C6611C10748AEb04B58e8F',
+      [optimism.id]:'0x01bFF41798a0BcF287b996046Ca68b395DbC1071',
     }
   },
   {

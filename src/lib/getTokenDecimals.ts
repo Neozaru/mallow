@@ -1,6 +1,7 @@
 const tokenDecimals = {
   'USDT': 6,
   'USDT0': 6,
+  'USD₮0': 6,
   'USDC': 6,
   'EURC': 6
 }

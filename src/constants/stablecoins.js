@@ -1,6 +1,7 @@
 const stablecoins = [
   'USDT',
   'USDT0',
+  'USD₮0',
   'DAI',
   'USDC',
   'USDC.e',

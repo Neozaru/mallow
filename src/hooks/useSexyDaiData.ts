@@ -33,6 +33,17 @@ export function useSexyDaiData() {
     const totalSupply = contractData?.[0]?.result || BigInt(0)
     const totalAssets = contractData?.[1]?.result || BigInt(0)
 
+    if (!totalSupply || totalSupply === BigInt(0) || !totalAssets || totalAssets === BigInt(0)) {
+      console.error(`Error with SexyDai data: totalSupply=${totalSupply}, totalAssets=${totalAssets}`)
+      return {
+        data: {
+          apy: 0,
+          rateToPrincipal: 0
+        },
+        isLoading: false,
+      }
+    }
+
     const precision = BigInt(10) ** BigInt(18);
     const scaledRatio = totalAssets * precision / totalSupply
     const floatRatio = Number(scaledRatio) / 1e18

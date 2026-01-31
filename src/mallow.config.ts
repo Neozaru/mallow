@@ -173,6 +173,7 @@ const mallowConfig: MallowConfig = {
       EURC: 0,
       USDT: 1,
       USDT0: 1,
+      'USD₮0': 1,
       DAI: 1,
       SDAI: 1,
       XDAI: 1,
