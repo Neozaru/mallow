@@ -11,7 +11,12 @@ const currenciesConfig = [
     queryUrl: 'https://api.frankfurter.dev/v1/latest?from=EUR&to=USD',
     extractData: data => data.rates.USD
   },
-    {
+  {
+    currency: 'JPY',
+    queryUrl: 'https://api.frankfurter.dev/v1/latest?from=JPY&to=USD',
+    extractData: data => data.rates.USD
+  },
+  {
     currency: 'BTC',
     queryUrl: 'https://blockchain.info/ticker',
     extractData: data => data.USD.last

@@ -47,12 +47,16 @@ type MorphoVaultsResult = {
 // Subjective whitelist of collateral.
 const collateralWhitelist = [
   'UNI',
+  'USDC',
+  'EURC',
+  'JPYC',
   'wstETH',
   'cbETH',
   'cbBTC',
   'WBTC',
   'rETH',
-  'WETH'
+  'WETH',
+  'rETH',
 ]
 
 const isVaultCollateralInWhitelist = vault => {

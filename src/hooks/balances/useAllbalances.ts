@@ -21,9 +21,11 @@ const useAllBalances = ({
   const { data: currencyRates } = useCurrencyRates()
   const addBalanceUsd = useCallback((position: YieldPositionOnChain) => {
     let balanceUsd = position.balanceUnderlying
-    // TODO: More generic instead of just EUR.
+    // TODO: More generic instead of just EUR/JPY.
     if (currencyRates && currencyRates['EUR'] && position.symbol.includes('EUR')) {
       balanceUsd = position.balanceUnderlying * currencyRates['EUR']
+    } else if (currencyRates && currencyRates['JPY'] && position.symbol.includes('JPY')) {
+      balanceUsd = position.balanceUnderlying * currencyRates['JPY']
     }
     return {
       ...position,

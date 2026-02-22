@@ -14,7 +14,8 @@ const stablecoins = [
   'WXDAI',
   'sDAI',
   'USDS',
-  'USD0'
+  'USD0',
+  'JPYC',
 ]
 
 export default stablecoins

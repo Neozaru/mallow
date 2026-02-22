@@ -20,6 +20,7 @@ const platformIcons = {
 // TODO: Proper icons based on underlying asset
 const tokenIcons = {
   USDC: tokenLogo('usdc.png'),
+  JPYC: tokenLogo('jpyc.png'),
   aUSDC: tokenLogo('usdc.png'),
   USDT: tokenLogo('usdt.png'),
   USDt: tokenLogo('usdt.png'),

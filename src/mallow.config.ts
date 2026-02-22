@@ -7,13 +7,13 @@ type ChainConfig = {
 }
 
 const enabledChains = [
-  mainnet, 
+  mainnet,
   optimism, 
   arbitrum, 
   scroll,
   base, 
   zksync, 
-  gnosis, 
+  gnosis,
   polygon, 
   avalanche, 
   linea,
@@ -170,6 +170,7 @@ const mallowConfig: MallowConfig = {
       ADAI: 1,
       AUSDS: 2,
       USDC: 0,
+      JPYC: 2,
       EURC: 0,
       USDT: 1,
       USDT0: 1,
