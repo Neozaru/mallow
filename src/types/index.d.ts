@@ -47,13 +47,17 @@ type WithBalanceUsd = {
   balanceUsd: number;
 }
 
+type WithCurrency = {
+  currency: string;
+}
+
 type YieldPositionOnChain = YieldOpportunityOnChain & PositionBalances & { accountAddress: EvmAddressInternal }
 
 type YieldPositionExchange = YieldOpportunityExchange & PositionBalances
 
 type YieldPositionManual = YieldOpportunityManual & PositionBalances & WithBalanceUsd
 
-type YieldPositionAnyWithBalanceUsd = (YieldPositionOnChain | YieldPositionExchange | YieldPositionManual) & WithBalanceUsd
+type YieldPositionAnyWithCurrencyInfo = (YieldPositionOnChain | YieldPositionExchange | YieldPositionManual) & WithBalanceUsd & WithCurrency
 
 type LoadableData<T> = {
   isLoading: boolean;

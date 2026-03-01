@@ -5,6 +5,24 @@ import useCurrencyRates from '../useCurrencyRates'
 
 const emptyArray = []
 
+const supportedCurrencies = ['USD', 'EUR', 'JPY', 'BTC']
+
+const getPositionCurrency = (position: YieldPositionOnChain) => {
+  const { symbol } = position
+  const currencyFromSymbol = supportedCurrencies.find(currency => symbol.includes(currency))
+  if (currencyFromSymbol) {
+    return currencyFromSymbol
+  }
+  return 'USD';
+}
+
+const addCurrency = (position: YieldPositionOnChain) => {
+  return {
+    ...position,
+    currency: getPositionCurrency(position)
+  }
+}
+
 const useAllBalances = ({
   accountAddresses,
   manualPositions,
@@ -19,21 +37,18 @@ const useAllBalances = ({
   }, [isOnChainBalancesLoading, isExchangeBalancesLoading])
 
   const { data: currencyRates } = useCurrencyRates()
-  const addBalanceUsd = useCallback((position: YieldPositionOnChain) => {
-    let balanceUsd = position.balanceUnderlying
-    // TODO: More generic instead of just EUR/JPY.
-    if (currencyRates && currencyRates['EUR'] && position.symbol.includes('EUR')) {
-      balanceUsd = position.balanceUnderlying * currencyRates['EUR']
-    } else if (currencyRates && currencyRates['JPY'] && position.symbol.includes('JPY')) {
-      balanceUsd = position.balanceUnderlying * currencyRates['JPY']
-    }
+
+  const addBalanceUsd = useCallback((position: YieldPositionOnChain & WithCurrency) => {
+    const rate = currencyRates && position.currency !== 'USD' ? currencyRates[position.currency] : 1
+    const balanceUsd = position.balanceUnderlying * rate
+    console.warn('=== Adding balanceUsd to position', { position, rate, balanceUsd })
     return {
       ...position,
-      balanceUsd
+      balanceUsd,
     }
   }, [currencyRates])
 
-  const allBalances: YieldPositionAnyWithBalanceUsd[] = useMemo<YieldPositionAnyWithBalanceUsd[]>(() => {
+  const allBalances: YieldPositionAnyWithCurrencyInfo[] = useMemo<YieldPositionAnyWithCurrencyInfo[]>(() => {
     if (isLoading) {
       return []
     }
@@ -41,7 +56,9 @@ const useAllBalances = ({
       ...(onChainBalances || emptyArray),
       ...(exchangeBalances || emptyArray),
       ...(manualPositions || emptyArray),
-    ].map(addBalanceUsd)
+    ]
+    .map(addCurrency)
+    .map(addBalanceUsd)
   }, [
     onChainBalances,
     exchangeBalances,

@@ -17,6 +17,7 @@ import ToggleButton from './ToggleButton';
 import sortApyCell from '@/lib/sortApyCell';
 import useCurrencyRates from '@/hooks/useCurrencyRates';
 import useAllBalances from '@/hooks/balances/useAllbalances';
+import CurrencyExposureChart from './CurrencyExposureChart';
 
 type AllBalancesProps = {
   accountAddresses: Array<Address> | [];
@@ -101,7 +102,7 @@ const NothingToShow = styled.div`
 
 const availableCurrencies = ['USD', 'EUR', 'BTC']
 
-const columnHelper = createColumnHelper<YieldPositionAnyWithBalanceUsd>()
+const columnHelper = createColumnHelper<YieldPositionAnyWithCurrencyInfo>()
 
 const balanceSortingFn = (rowA, rowB) => {
   return rowA.original.balanceUsd > rowB.original.balanceUsd
@@ -109,8 +110,8 @@ const balanceSortingFn = (rowA, rowB) => {
   : -1
 }
 
-const balanceAggregationFn = (columnId, leafRows: Row<YieldPositionAnyWithBalanceUsd>[]) => {
-  const res = sumBy(leafRows, leafRow => (leafRow.getUniqueValues<YieldPositionAnyWithBalanceUsd>('balance')[0]).balanceUsd)
+const balanceAggregationFn = (columnId, leafRows: Row<YieldPositionAnyWithCurrencyInfo>[]) => {
+  const res = sumBy(leafRows, leafRow => (leafRow.getUniqueValues<YieldPositionAnyWithCurrencyInfo>('balance')[0]).balanceUsd)
   return {
     balanceUsd: res
   }
@@ -145,7 +146,7 @@ const columns = [
     id: 'balance',
     header: () => <span>Balance</span>,
     cell: info => {
-      const { balanceUsd, formattedBalance, symbol, type } = info.getValue() as YieldPositionAnyWithBalanceUsd
+      const { balanceUsd, formattedBalance, symbol, type } = info.getValue() as YieldPositionAnyWithCurrencyInfo
       return (
       <BalancesWrapper>
         {balanceUsd >= 0 && <span>${formatUsdBalance(balanceUsd)}<br/></span>}
@@ -322,7 +323,10 @@ const AllBalances: React.FC<AllBalancesProps> = ({
         <div className='flex flex-row items-start pl-2 pb-2'>
           <ToggleButton label='Include spot positions' enabled={countSpot} setEnabled={setCountSpot} />
         </div>
-        {hasEnoughBalance ? <MallowTable table={table}/>
+        {hasEnoughBalance ? <div>
+            <MallowTable table={table}/>
+            <CurrencyExposureChart positions={allBalancesFiltered}/>
+          </div>
         : <NothingToShowWrapper>
             <NothingToShow>Nothing to show 🤷</NothingToShow>
             <div>Supported platforms are Aave, Morpho, Beefy and DSR (more to come soon).</div>
