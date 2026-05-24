@@ -21,9 +21,27 @@ export function useOnChainBalances(accountAddresses: Address[]): LoadableData<Yi
   const { data: pendleBalances, isLoading: isLoadingPendle, refetch: refetchPendleBalances } = usePendleBalances(accountAddresses)
   const isLoading = useMemo(
     () => {
-      return some([isLoadingSpot, isLoadingAave, isLoadingAaveStaking, isLoadingMorpho, isLoadingBeefy, isLoadingSexyDai, isLoadingSSR, isLoadingPendle])
+      return some([
+        isLoadingSpot, 
+        isLoadingAave, 
+        isLoadingAaveStaking, 
+        isLoadingMorpho, 
+        isLoadingBeefy, 
+        isLoadingSexyDai,
+        isLoadingSSR,
+        isLoadingPendle,
+      ])
     },
-    [isLoadingSpot, isLoadingAave, isLoadingAaveStaking, isLoadingMorpho, isLoadingBeefy, isLoadingSexyDai, isLoadingSSR, isLoadingPendle]
+    [
+      isLoadingSpot, 
+      isLoadingAave, 
+      isLoadingAaveStaking, 
+      isLoadingMorpho, 
+      isLoadingBeefy, 
+      isLoadingSexyDai, 
+      isLoadingSSR,
+      isLoadingPendle,
+    ]
   )
 
   const allBalances = useMemo(() => [
@@ -35,7 +53,16 @@ export function useOnChainBalances(accountAddresses: Address[]): LoadableData<Yi
     ...(sexyDaiBalances || []),
     ...(ssrBalances || []),
     ...(pendleBalances || []),
-  ], [spotBalances, aaveBalances, aaveStakingBalances, morphoBalances, beefyBalances, sexyDaiBalances, ssrBalances, pendleBalances])
+  ], [
+    spotBalances,
+    aaveBalances,
+    aaveStakingBalances,
+    morphoBalances,
+    beefyBalances,
+    sexyDaiBalances,
+    ssrBalances,
+    pendleBalances,
+  ])
 
   const refetchAll = useCallback(() => {
     refetchSpotBalances?.()
@@ -45,8 +72,17 @@ export function useOnChainBalances(accountAddresses: Address[]): LoadableData<Yi
     refetchBeefyBalances?.()
     refetchSexyDaiBalances?.()
     refetchSSRBalances?.()
-    refetchPendleBalances?.() 
-  }, [refetchSpotBalances, refetchAaveBalances, refetchAaveStakingBalances, refetchMorphoBalances, refetchBeefyBalances, refetchSexyDaiBalances, refetchSSRBalances, refetchPendleBalances]) 
+    refetchPendleBalances?.()
+  }, [
+    refetchSpotBalances,
+    refetchAaveBalances,
+    refetchAaveStakingBalances,
+    refetchMorphoBalances,
+    refetchBeefyBalances,
+    refetchSexyDaiBalances,
+    refetchSSRBalances,
+    refetchPendleBalances,
+  ]) 
 
   const filteredBalances = useMemo<YieldPositionOnChain[]>(() => {
     return allBalances.flat().filter(b => b.balance > 0)

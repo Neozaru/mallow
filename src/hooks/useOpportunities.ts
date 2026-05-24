@@ -17,9 +17,23 @@ export function useOpportunities() {
 
   const isLoading = useMemo(
     () => {
-      return some([isLoadingAave, isLoadingAaveStaking, isLoadingBeefy, isLoadingSexyDai, isLoadingMorpho, isLoadingPendle])
+      return some([
+        isLoadingAave, 
+        isLoadingAaveStaking, 
+        isLoadingBeefy, 
+        isLoadingSexyDai, 
+        isLoadingMorpho, 
+        isLoadingPendle,
+      ])
     },
-    [isLoadingAave, isLoadingAaveStaking, isLoadingBeefy, isLoadingSexyDai, isLoadingMorpho, isLoadingPendle]
+    [
+      isLoadingAave, 
+      isLoadingAaveStaking, 
+      isLoadingBeefy, 
+      isLoadingSexyDai, 
+      isLoadingMorpho,
+      isLoadingPendle,
+    ]
   )
 
   const allOpportunities = useMemo(() => [
@@ -29,6 +43,13 @@ export function useOpportunities() {
     ...(sexyDaiOpportunities || []),
     ...(morphoOpportunities || []),
     ...(pendleOpportunities || []),
-  ], [aaveOpportunities, aaveStakingOpportunities, beefyOpportunities, sexyDaiOpportunities, morphoOpportunities, pendleOpportunities])
+  ], [
+    aaveOpportunities, 
+    aaveStakingOpportunities, 
+    beefyOpportunities, 
+    sexyDaiOpportunities, 
+    morphoOpportunities, 
+    pendleOpportunities,
+  ])
   return { data: allOpportunities, isLoading }
 }

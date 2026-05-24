@@ -3,12 +3,12 @@ import createOpportunity from '@/lib/createOpportunity'
 import { GET_VAULTS } from '@/lib/graphqlMorpho/GET_VAULTS'
 import { baseToShares } from '@/lib/lpUtils'
 import getMorphoVaultLink from '@/utils/getMorphoVaultLink'
-import getSupportedChainIds from '@/utils/getSupportedChainIds'
 import { useQuery } from '@tanstack/react-query'
 import request from 'graphql-request'
 import { every } from 'lodash'
 import { useMemo } from 'react'
 import { Address } from 'viem'
+import { arbitrum, base, mainnet, optimism, polygon, unichain } from 'viem/chains'
 
 type MorphoVault = {
   id: string;
@@ -59,13 +59,22 @@ const collateralWhitelist = [
   'rETH',
 ]
 
+const chainsWhitelist = [
+  mainnet.id,
+  optimism.id,
+  arbitrum.id,
+  base.id,
+  polygon.id,
+  unichain.id,
+]
+
 const isVaultCollateralInWhitelist = vault => {
   return every(vault.state.allocation, alloc => !alloc.market.collateralAsset || collateralWhitelist.includes(alloc.market.collateralAsset?.symbol))
 }
 
 const useMorphoOpportunities = () => {
 
-  const { data, isLoading } = useQuery<MorphoVaultsResult>({
+  const { data, isLoading, error } = useQuery<MorphoVaultsResult>({
     queryKey: ['vaults'],
     queryFn: () =>
       request(
@@ -73,7 +82,7 @@ const useMorphoOpportunities = () => {
         GET_VAULTS,
         {
           where: {
-            chainId_in: getSupportedChainIds(),
+            chainId_in: chainsWhitelist,
             assetSymbol_in: stablecoins,
             whitelisted: true
           },
@@ -82,6 +91,10 @@ const useMorphoOpportunities = () => {
   })
 
   return useMemo(() => {
+    if (error && !isLoading) {
+      console.error('Error fetching Morpho vaults', error)
+      return { data: [], isLoading: false }
+    }
     if (isLoading || !data) {
       return { data: [], isLoading: true }
     }
@@ -105,7 +118,7 @@ const useMorphoOpportunities = () => {
         })
       })
     return { data: opportunities, isLoading: false }
-  }, [data, isLoading])
+  }, [data, error, isLoading])
 
 }
 
