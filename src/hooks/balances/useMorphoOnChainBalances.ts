@@ -61,7 +61,10 @@ export function useMorphoOnChainBalances(accountAddresses: Address[]): LoadableD
       if (!opportunity) {
         throw new Error(`Morpho: Unexpected opportunity mismatch ${JSON.stringify({ tokenAddress, chainId })}`)
       }
-      const balance = sharesToBaseNR(sharesBalance, BigInt(opportunity.rateToPrincipal || 1))
+      const balance = (sharesToBaseNR(
+        sharesBalance,
+        BigInt(Math.round(Number(opportunity.rateToPrincipal || 1) * 1_000_000))
+      )) / BigInt(1_000_000);
       const formattedBalance = formatBalanceWithSymbol(balance, opportunity.symbol)
 
       return {

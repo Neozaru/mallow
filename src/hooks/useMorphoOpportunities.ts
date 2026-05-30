@@ -1,7 +1,7 @@
 import stablecoins from '@/constants/stablecoins'
 import createOpportunity from '@/lib/createOpportunity'
 import { GET_VAULTS } from '@/lib/graphqlMorpho/GET_VAULTS'
-import { baseToShares } from '@/lib/lpUtils'
+import { baseToShares, sharePriceToBigInt } from '@/lib/lpUtils'
 import getMorphoVaultLink from '@/utils/getMorphoVaultLink'
 import { useQuery } from '@tanstack/react-query'
 import request from 'graphql-request'
@@ -21,12 +21,10 @@ type MorphoVault = {
   asset: {
     symbol: string;
   };
-  dailyApys: {
-    netApy: number;
-    apy: number;
-  };
   state: {
-    sharePrice: number;
+    avgNetApyExcludingRewards: number;
+    avgNetApy: number;
+    sharePriceNumber: number;
     sharePriceUsd: number;
     allocation: {
       market: {
@@ -35,7 +33,7 @@ type MorphoVault = {
         }
       }
     }[]
-  }
+  };
 }
 
 type MorphoVaultsResult = {
@@ -84,7 +82,7 @@ const useMorphoOpportunities = () => {
           where: {
             chainId_in: chainsWhitelist,
             assetSymbol_in: stablecoins,
-            whitelisted: true
+            listed: true
           },
         }
       )
@@ -108,9 +106,11 @@ const useMorphoOpportunities = () => {
           poolName: vault.name,
           poolTokenAddress: vault.address,
           chainId: vault.chain.id,
-          apy: vault.dailyApys.apy,
-          rateToPrincipal: vault.state.sharePrice,
-          convertPrincipalToLP: principal => baseToShares(principal, BigInt(vault.state.sharePrice)), // TODO: Find definitive solution
+          apy: vault.state.avgNetApyExcludingRewards,
+          rateToPrincipal: BigInt(Math.round(Number(vault.state.sharePriceNumber) * 1_000_000)),
+          convertPrincipalToLP: principal =>
+            baseToShares(principal, BigInt(Math.round(Number(vault.state.sharePriceNumber) * 1_000_000))),
+          // convertPrincipalToLP: principal => principal / vault.state.sharePrice, // TODO: Find definitive solution
           type: 'onchain' as const,
           metadata: {
             link: getMorphoVaultLink(vault)

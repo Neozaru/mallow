@@ -8,18 +8,6 @@ export const GET_VAULTS = gql`
           id
           network
         }
-        dailyApys {
-          netApy
-          apy
-        }
-        monthlyApys {
-          netApy
-          apy
-        }
-        weeklyApys {
-          netApy
-          apy
-        }
         asset {
           symbol
         }
@@ -28,13 +16,10 @@ export const GET_VAULTS = gql`
           level
           type
         }
-        riskAnalysis {
-          score
-          isUnderReview
-        }
         state {
-          sharePrice
-          sharePriceUsd
+          sharePriceNumber
+          avgNetApyExcludingRewards
+          avgNetApy
           allocation {
             market {
               collateralAsset {
@@ -46,7 +31,7 @@ export const GET_VAULTS = gql`
         id
         name
         address
-        whitelisted
+        listed
       }
     }
   }
