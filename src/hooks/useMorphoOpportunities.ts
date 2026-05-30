@@ -1,7 +1,7 @@
 import stablecoins from '@/constants/stablecoins'
 import createOpportunity from '@/lib/createOpportunity'
 import { GET_VAULTS } from '@/lib/graphqlMorpho/GET_VAULTS'
-import { baseToShares, sharePriceToBigInt } from '@/lib/lpUtils'
+import { baseToShares } from '@/lib/lpUtils'
 import getMorphoVaultLink from '@/utils/getMorphoVaultLink'
 import { useQuery } from '@tanstack/react-query'
 import request from 'graphql-request'
